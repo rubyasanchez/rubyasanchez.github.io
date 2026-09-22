@@ -1,0 +1,93 @@
+---
+const navItems = [
+	{ href: "/", label: "Home" },
+	{ href: "/work", label: "Case Studies" },
+	{ href: "/about", label: "About" },
+	{ href: "/resume", label: "Resume" },
+];
+
+const currentPath = Astro.url.pathname;
+
+function isActive(href: string) {
+	if (href === "/") return currentPath === "/";
+	return currentPath.startsWith(href);
+}
+---
+
+<header class="site-header">
+	<div class="container site-header-inner">
+		<a class="wordmark" href="/">Ruby Sanchez</a>
+		<nav aria-label="Primary">
+			<ul>
+				{
+					navItems.map((item) => (
+						<li>
+							<a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+		</nav>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		border-bottom: 1px solid var(--color-line);
+	}
+
+	.site-header-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-2);
+		padding-block: var(--space-2);
+	}
+
+	.wordmark {
+		font-family: var(--font-serif);
+		font-size: 1.0625rem;
+		font-weight: 600;
+		text-decoration: none;
+		color: var(--color-ink);
+	}
+
+	nav ul {
+		display: flex;
+		gap: clamp(1rem, 2vw, 2rem);
+	}
+
+	nav a {
+		font-size: 0.9375rem;
+		font-weight: 500;
+		text-decoration: none;
+		color: var(--color-ink-soft);
+		padding-block: 0.25rem;
+		border-bottom: 1px solid transparent;
+		transition: color 0.15s ease, border-color 0.15s ease;
+	}
+
+	nav a:hover {
+		color: var(--color-ink);
+	}
+
+	nav a[aria-current="page"] {
+		color: var(--color-ink);
+		border-bottom-color: var(--color-accent);
+	}
+
+	@media (max-width: 560px) {
+		.site-header-inner {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--space-1);
+		}
+
+		nav ul {
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+	}
+</style>

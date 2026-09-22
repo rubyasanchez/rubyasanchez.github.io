@@ -1,0 +1,30 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="About">
+	<section class="section">
+		<div class="container prose">
+			<p class="eyebrow">About</p>
+			<h1>About</h1>
+			<p class="dek placeholder">
+				[PLACEHOLDER: full narrative coming next &mdash; cognitive science
+				background, human-centered/structured approach to design, interest in
+				accessibility and behavior-centered design, and the UCSC Swim &amp;
+				Dive team-captain leadership story will go here.]
+			</p>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	h1 {
+		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+		margin-top: var(--space-1);
+	}
+
+	.dek {
+		font-size: 1.0625rem;
+		margin-top: var(--space-3);
+	}
+</style>

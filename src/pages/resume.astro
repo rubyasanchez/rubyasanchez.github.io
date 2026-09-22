@@ -1,0 +1,59 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="Resume">
+	<section class="section">
+		<div class="container prose">
+			<p class="eyebrow">Resume</p>
+			<h1>Resume</h1>
+			<p class="dek">
+				Download a copy below, or reach out directly for the full version.
+			</p>
+			<div class="resume-links">
+				<a class="resume-button" href="/resume/[PLACEHOLDER: ux-resume.pdf]">
+					Download UX Resume (PDF)
+				</a>
+				<a class="resume-button" href="/resume/[PLACEHOLDER: pm-resume.pdf]">
+					Download PM Resume (PDF)
+				</a>
+			</div>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	h1 {
+		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+		margin-top: var(--space-1);
+	}
+
+	.dek {
+		font-size: 1.0625rem;
+		color: var(--color-ink-soft);
+		margin-top: var(--space-3);
+	}
+
+	.resume-links {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	.resume-button {
+		display: inline-block;
+		padding: 0.75rem 1.5rem;
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+		text-decoration: none;
+		font-weight: 500;
+		font-size: 0.9375rem;
+		border-radius: 2px;
+		transition: opacity 0.15s ease;
+	}
+
+	.resume-button:hover {
+		opacity: 0.88;
+	}
+</style>

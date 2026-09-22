@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ProjectCard from "../../components/ProjectCard.astro";
+import { projects } from "../../data/projects";
+---
+
+<BaseLayout title="Case Studies">
+	<section class="section">
+		<div class="container">
+			<div class="prose">
+				<p class="eyebrow">Selected Work</p>
+				<h1>Case Studies</h1>
+				<p class="intro">
+					A closer look at how I approach research, design, and cross-functional
+					leadership &mdash; from early problem framing to shipped outcomes.
+				</p>
+			</div>
+			<div class="project-grid">
+				{projects.map((project) => <ProjectCard project={project} />)}
+			</div>
+		</div>
+	</section>
+</BaseLayout>
+
+<style>
+	h1 {
+		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
+		margin-top: var(--space-1);
+	}
+
+	.intro {
+		font-size: 1.0625rem;
+		color: var(--color-ink-soft);
+		margin-top: var(--space-2);
+	}
+
+	.project-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+		gap: var(--space-3);
+		margin-top: var(--space-4);
+	}
+</style>

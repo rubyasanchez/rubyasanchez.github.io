@@ -1,0 +1,45 @@
+---
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container site-footer-inner">
+		<p>&copy; {year} Ruby Sanchez</p>
+		<ul class="contact-links">
+			<li><a href="mailto:[PLACEHOLDER: email]">Email</a></li>
+			<li><a href="[PLACEHOLDER: LinkedIn URL]">LinkedIn</a></li>
+		</ul>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		border-top: 1px solid var(--color-line);
+		margin-top: var(--space-5);
+	}
+
+	.site-footer-inner {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-2);
+		flex-wrap: wrap;
+		padding-block: var(--space-3);
+		font-size: 0.875rem;
+		color: var(--color-ink-faint);
+	}
+
+	.contact-links {
+		display: flex;
+		gap: var(--space-3);
+	}
+
+	.contact-links a {
+		color: var(--color-ink-soft);
+		text-decoration: none;
+	}
+
+	.contact-links a:hover {
+		color: var(--color-accent);
+	}
+</style>
