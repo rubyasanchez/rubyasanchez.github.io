@@ -1,0 +1,127 @@
+---
+interface Props {
+	beforeSrc: string;
+	beforeAlt: string;
+	beforeLabel?: string;
+	afterSrc: string;
+	afterAlt: string;
+	afterLabel?: string;
+}
+
+const {
+	beforeSrc,
+	beforeAlt,
+	beforeLabel = "Original homepage",
+	afterSrc,
+	afterAlt,
+	afterLabel = "Redesigned homepage (staging)",
+} = Astro.props;
+---
+
+<div
+	class="before-after"
+	data-before={beforeSrc}
+	data-before-alt={beforeAlt}
+	data-before-label={beforeLabel}
+	data-after={afterSrc}
+	data-after-alt={afterAlt}
+	data-after-label={afterLabel}
+>
+	<div class="ba-toggle" role="tablist" aria-label="Before and after comparison">
+		<button type="button" class="ba-btn is-active" data-state="before" aria-pressed="true">Before</button>
+		<button type="button" class="ba-btn" data-state="after" aria-pressed="false">After</button>
+	</div>
+	<figure class="ba-figure">
+		<img class="ba-image" src={beforeSrc} alt={beforeAlt} />
+		<figcaption class="ba-caption">{beforeLabel}</figcaption>
+	</figure>
+</div>
+
+<script>
+	function initBeforeAfter(widget: Element) {
+		const img = widget.querySelector<HTMLImageElement>(".ba-image");
+		const caption = widget.querySelector<HTMLElement>(".ba-caption");
+		const buttons = widget.querySelectorAll<HTMLButtonElement>(".ba-btn");
+		const data = (widget as HTMLElement).dataset;
+		if (!img || !caption) return;
+
+		function setState(state: string) {
+			img!.style.opacity = "0";
+			window.setTimeout(() => {
+				img!.src = state === "before" ? data.before! : data.after!;
+				img!.alt = state === "before" ? data.beforeAlt! : data.afterAlt!;
+				caption!.textContent = state === "before" ? data.beforeLabel! : data.afterLabel!;
+				img!.style.opacity = "1";
+			}, 150);
+			buttons.forEach((btn) => {
+				const active = btn.dataset.state === state;
+				btn.classList.toggle("is-active", active);
+				btn.setAttribute("aria-pressed", String(active));
+			});
+		}
+
+		buttons.forEach((btn) => btn.addEventListener("click", () => setState(btn.dataset.state!)));
+		img.addEventListener("click", () => {
+			const activeBtn = widget.querySelector<HTMLButtonElement>(".ba-btn.is-active");
+			setState(activeBtn?.dataset.state === "before" ? "after" : "before");
+		});
+	}
+
+	document.querySelectorAll(".before-after").forEach(initBeforeAfter);
+</script>
+
+<style>
+	.before-after {
+		margin: var(--space-4) 0;
+	}
+
+	.ba-toggle {
+		display: flex;
+		gap: 0.5rem;
+		justify-content: center;
+		margin-bottom: var(--space-2);
+	}
+
+	.ba-btn {
+		padding: 0.4rem 1.125rem;
+		border-radius: 999px;
+		border: 1px solid var(--color-line);
+		background: var(--color-bg);
+		font-family: var(--font-sans);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--color-ink-soft);
+		cursor: pointer;
+		transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+	}
+
+	.ba-btn:hover {
+		border-color: var(--color-accent);
+	}
+
+	.ba-btn.is-active {
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+		border-color: var(--color-accent);
+	}
+
+	.ba-figure {
+		margin: 0;
+	}
+
+	.ba-image {
+		width: 100%;
+		display: block;
+		border-radius: 3px;
+		border: 1px solid var(--color-line);
+		cursor: pointer;
+		transition: opacity 0.15s ease;
+	}
+
+	.ba-caption {
+		margin-top: var(--space-1);
+		font-size: 0.875rem;
+		color: var(--color-ink-faint);
+		text-align: center;
+	}
+</style>

@@ -1,0 +1,212 @@
+---
+import CroppedImage from "./CroppedImage.astro";
+
+type Step = {
+	title: string;
+	who: string;
+	text: string;
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+	cropTop?: number;
+	cropBottom?: number;
+	cropX?: number;
+	radius?: string;
+};
+
+interface Props {
+	steps: Step[];
+	label?: string;
+}
+
+const { steps, label = "Design walkthrough" } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<div class="strip bleed">
+	<div class="strip-scroller" role="region" aria-label={label} tabindex="0">
+		<ol class="strip-track">
+			{
+				steps.map((step, i) => (
+					<li class="strip-item">
+						<figure>
+							<CroppedImage
+								class="strip-shot"
+								src={step.src}
+								alt={step.alt}
+								width={step.width}
+								height={step.height}
+								cropTop={step.cropTop}
+								cropBottom={step.cropBottom}
+								cropX={step.cropX}
+								radius={step.radius}
+							/>
+							<figcaption>
+								<span class="strip-meta">
+									<span class="strip-num">{pad(i + 1)}</span> {step.title}
+									<span class="strip-who">· {step.who}</span>
+								</span>
+								{step.text}
+							</figcaption>
+						</figure>
+					</li>
+				))
+			}
+		</ol>
+	</div>
+	<div class="strip-controls">
+		<button type="button" class="strip-nav" data-dir="-1" aria-label="Previous step" disabled>←</button>
+		<button type="button" class="strip-nav" data-dir="1" aria-label="Next step">→</button>
+	</div>
+</div>
+
+<script>
+	function initStrip(strip: HTMLElement) {
+		const scroller = strip.querySelector<HTMLElement>(".strip-scroller")!;
+		const items = [...strip.querySelectorAll<HTMLElement>(".strip-item")];
+		const [prev, next] = strip.querySelectorAll<HTMLButtonElement>(".strip-nav");
+
+		function update() {
+			const max = scroller.scrollWidth - scroller.clientWidth;
+			prev.disabled = scroller.scrollLeft <= 4;
+			next.disabled = scroller.scrollLeft >= max - 4;
+			strip.classList.toggle("is-static", max <= 4);
+		}
+
+		function step(dir: number) {
+			// Bring the next item that starts right (or left) of the visible edge to that edge.
+			const edge = scroller.getBoundingClientRect().left;
+			const deltas = items.map((item) => item.getBoundingClientRect().left - edge);
+			const delta =
+				dir > 0 ? deltas.find((d) => d > 8) : [...deltas].reverse().find((d) => d < -8);
+			if (delta !== undefined) scroller.scrollBy({ left: delta, behavior: "smooth" });
+		}
+
+		prev.addEventListener("click", () => step(-1));
+		next.addEventListener("click", () => step(1));
+		scroller.addEventListener("scroll", update, { passive: true });
+		// Lazy images change the track width after load, so watch sizes rather than the window.
+		const observer = new ResizeObserver(update);
+		observer.observe(scroller);
+		observer.observe(strip.querySelector(".strip-track")!);
+		update();
+	}
+
+	document.querySelectorAll<HTMLElement>(".strip").forEach(initStrip);
+</script>
+
+<style>
+	.strip {
+		--strip-h: clamp(22rem, 58vh, 30rem);
+		margin-top: var(--space-4);
+	}
+
+	.strip-scroller {
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+		scroll-padding-inline: 0;
+		overscroll-behavior-x: contain;
+		padding-bottom: var(--space-2);
+	}
+
+	.strip-scroller:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 4px;
+	}
+
+	.strip-track {
+		display: flex;
+		gap: var(--space-3);
+		width: max-content;
+	}
+
+	.strip-item {
+		scroll-snap-align: start;
+		padding-left: 0;
+	}
+
+	.strip-item::before {
+		content: none;
+	}
+
+	.strip-item figure {
+		display: flex;
+		flex-direction: column;
+		width: min-content;
+		margin: 0;
+	}
+
+	/* Every screen shares one height on desktop; wide mentor screens shrink
+	   proportionally (via their own --ratio) to fit a phone. */
+	.strip-item :global(.strip-shot) {
+		width: min(calc(var(--strip-h) * var(--ratio)), calc(100vw - 4rem));
+	}
+
+	.strip-item figcaption {
+		margin-top: var(--space-2);
+		font-size: var(--text-sm);
+		line-height: 1.45;
+		text-align: left;
+		color: var(--color-ink-soft);
+	}
+
+	.strip-meta {
+		display: block;
+		margin-bottom: 0.125rem;
+		font-weight: 600;
+		color: var(--color-ink);
+	}
+
+	.strip-num {
+		color: var(--color-accent);
+	}
+
+	.strip-who {
+		font-weight: 400;
+		color: var(--color-ink-faint);
+	}
+
+	.strip-controls {
+		display: flex;
+		justify-content: flex-end;
+		gap: var(--space-1);
+		margin-top: var(--space-1);
+	}
+
+	.strip.is-static .strip-controls {
+		display: none;
+	}
+
+	.strip-nav {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		border: 1px solid var(--color-line);
+		background: var(--color-bg);
+		font-size: var(--text-body);
+		color: var(--color-ink);
+		cursor: pointer;
+		transition: border-color 0.2s ease, opacity 0.2s ease;
+	}
+
+	.strip-nav:hover:not(:disabled) {
+		border-color: var(--color-accent);
+	}
+
+	.strip-nav:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	.strip-nav:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	@media (max-width: 40rem) {
+		.strip {
+			--strip-h: 26rem;
+		}
+	}
+</style>

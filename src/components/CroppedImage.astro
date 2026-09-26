@@ -1,0 +1,68 @@
+---
+interface Props {
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+	/** Percent of the source image to trim from the top, bottom, and each side (e.g. a baked-in title bar). */
+	cropTop?: number;
+	cropBottom?: number;
+	cropX?: number;
+	/** Corner radius of the visible frame, e.g. to match a device outline. */
+	radius?: string;
+	loading?: "eager" | "lazy";
+	class?: string;
+}
+
+const {
+	src,
+	alt,
+	width,
+	height,
+	cropTop = 0,
+	cropBottom = 0,
+	cropX = 0,
+	radius = "6px",
+	loading = "lazy",
+	class: className,
+} = Astro.props;
+
+const visibleY = 100 - cropTop - cropBottom;
+const visibleX = 100 - 2 * cropX;
+const visibleW = (width * visibleX) / 100;
+const visibleH = (height * visibleY) / 100;
+const frameStyle = [
+	`aspect-ratio: ${visibleW} / ${visibleH}`,
+	`--ratio: ${visibleW / visibleH}`,
+	`--img-w: ${(100 / visibleX) * 100}%`,
+	`--img-h: ${(100 / visibleY) * 100}%`,
+	`--img-left: ${(-cropX / visibleX) * 100}%`,
+	`--img-top: ${(-cropTop / visibleY) * 100}%`,
+	`border-radius: ${radius}`,
+].join("; ");
+---
+
+<div class:list={["crop", className]} style={frameStyle}>
+	<img src={src} alt={alt} width={width} height={height} loading={loading} />
+	<slot />
+</div>
+
+<style>
+	.crop {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.crop img {
+		position: absolute;
+		left: var(--img-left);
+		top: var(--img-top);
+		width: var(--img-w);
+		height: var(--img-h);
+		max-width: none;
+		max-height: none;
+		margin: 0;
+		border: 0;
+		border-radius: 0;
+	}
+</style>

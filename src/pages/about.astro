@@ -1,30 +1,132 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CorkboardCollage from "../components/CorkboardCollage.astro";
+import DeskIllustration from "../components/DeskIllustration.astro";
+
+const approach = [
+	{
+		title: "Research before design",
+		body: "Pair qualitative and quantitative methods before committing to a direction.",
+	},
+	{
+		title: "Systems over screens",
+		body: "When the problem lives in a workflow, fix the workflow — not just the interface.",
+	},
+	{
+		title: "Access is not optional",
+		body: "Accessibility and inclusive design get evaluated with the same rigor as everything else.",
+	},
+	{
+		title: "AI held to the same bar",
+		body: "Structured, tested, and accountable to real users — not just clever.",
+	},
+];
 ---
 
 <BaseLayout title="About">
+	<h1 class="sr-only">About Ruby Sanchez</h1>
+	<section class="section desk-section">
+		<div class="container">
+			<DeskIllustration />
+		</div>
+	</section>
+
+	<section class="section board-section">
+		<div class="container">
+			<CorkboardCollage />
+		</div>
+	</section>
+
 	<section class="section">
 		<div class="container prose">
-			<p class="eyebrow">About</p>
-			<h1>About</h1>
-			<p class="dek placeholder">
-				[PLACEHOLDER: full narrative coming next &mdash; cognitive science
-				background, human-centered/structured approach to design, interest in
-				accessibility and behavior-centered design, and the UCSC Swim &amp;
-				Dive team-captain leadership story will go here.]
-			</p>
+			<div class="bio">
+				<p class="reveal" style="--i:0">
+					I got into UX through Cognitive Science — through being endlessly curious about
+					why people do what they do online, and what that says about how a system is
+					built. That curiosity turned into a career path I didn't fully expect: first as
+					a researcher pulling apart why people kept getting lost on a public data
+					platform, then redesigning how an entire research lab onboards and
+					communicates, and now as a graduate student at Berkeley split between UX design
+					and product management, because "just design" or "just strategy" never felt
+					like the whole picture on its own.
+				</p>
+				<p class="reveal" style="--i:1">
+					I'm especially drawn to public health, education, and social computing — places
+					where getting the design wrong has real consequences for who gets heard and who
+					gets left out. The parts of a system I care most about are usually the ones
+					nobody notices when they're working: the label that finally makes sense, the
+					workflow that stops losing people halfway through, the AI feature that earns
+					trust instead of demanding it.
+				</p>
+				<p class="reveal" style="--i:2">
+					Outside of research and design, I'm the captain of the UC Santa Cruz Swim &amp;
+					Dive team — a role I stepped into knowing a lot more about swimming than about
+					leading 70 people through a season. It taught me that most of leadership is
+					just clear communication and knowing when to listen, which turns out to be
+					exactly what cross-functional design work asks of you too.
+				</p>
+			</div>
+		</div>
+
+		<div class="container prose">
+			<h2 class="reveal" style="--i:0">How I approach problems</h2>
+			<div class="approach-list">
+				{
+					approach.map((a, i) => (
+						<div class="approach-item reveal" style={`--i:${i + 1}`}>
+							<p class="approach-title">{a.title}</p>
+							<p class="approach-body">{a.body}</p>
+						</div>
+					))
+				}
+			</div>
 		</div>
 	</section>
 </BaseLayout>
 
 <style>
-	h1 {
-		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
-		margin-top: var(--space-1);
+	.desk-section {
+		padding-bottom: var(--space-2);
 	}
 
-	.dek {
-		font-size: 1.0625rem;
+	.board-section {
+		padding-top: var(--space-2);
+		padding-bottom: var(--space-3);
+	}
+
+	.bio p {
 		margin-top: var(--space-3);
+	}
+
+	.bio p:first-child {
+		margin-top: 0;
+	}
+
+	h2 {
+		font-size: 1.375rem;
+		margin-top: var(--space-5);
+	}
+
+	.approach-list {
+		margin-top: var(--space-3);
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+		gap: var(--space-3) var(--space-4);
+	}
+
+	.approach-item {
+		padding-top: var(--space-2);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.approach-title {
+		font-weight: 600;
+		color: var(--color-ink);
+	}
+
+	.approach-body {
+		margin-top: 0.25rem;
+		font-size: 0.9375rem;
+		color: var(--color-ink-soft);
 	}
 </style>

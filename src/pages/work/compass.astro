@@ -1,28 +1,877 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+import CaseSection from "../../components/CaseSection.astro";
+import JobsToBeDone from "../../components/JobsToBeDone.astro";
+import Decision from "../../components/Decision.astro";
+import AnnotatedShot from "../../components/AnnotatedShot.astro";
+import FlowStrip from "../../components/FlowStrip.astro";
+import CroppedImage from "../../components/CroppedImage.astro";
+
+const img = (name: string) => `/images/case-studies/compass/${name}`;
 ---
 
-<BaseLayout title="Compass | AI Mentorship Tool">
-	<section class="section">
-		<div class="container prose">
-			<p class="eyebrow">AI Mentorship Tool</p>
-			<h1>Compass</h1>
-			<p class="dek placeholder">
-				[PLACEHOLDER: full case study coming next &mdash; Problem, Process,
-				Key Decisions, and Outcome sections will go here.]
-			</p>
+<CaseStudyLayout
+	slug="compass"
+	title="Compass"
+	subtitle="AI Mentorship Tool"
+	summary="Scaling mentorship for 30+ students without losing the human connection."
+	role="UX Design Lead"
+	timeline="January–June 2025"
+	skills={["Product thinking", "AI interaction design", "Prototyping", "Design leadership"]}
+>
+	<Fragment slot="visual">
+		<CroppedImage
+			class="hero-shot"
+			src={img("v2-04-respond.png")}
+			alt="The mentor's response composer: every source question on the left, an optional AI draft the mentor edits in the middle, and recipient controls with a Publish as David Lee button on the right"
+			width={1536}
+			height={1190}
+			cropTop={10.4}
+			cropBottom={5.6}
+			cropX={3.2}
+			loading="eager"
+		/>
+	</Fragment>
+
+	<!-- 2 · The problem -->
+	<CaseSection eyebrow="The problem" title="One-on-one mentorship doesn't scale. Group chats don't feel personal.">
+		<p>
+			As the Tech4Good Lab at UC Santa Cruz grew, faculty couldn't meaningfully mentor every
+			undergraduate researcher.
+		</p>
+		<div class="stat-row">
+			<div class="stat">
+				<p class="stat-value">1 hr</p>
+				<p class="stat-label">per student, per week — the recommended baseline for mentoring an undergraduate researcher</p>
+			</div>
+			<div class="stat">
+				<p class="stat-value">30 hrs</p>
+				<p class="stat-label">per week to mentor 30 students one-on-one — nearly a full workweek, before any teaching or research</p>
+			</div>
 		</div>
-	</section>
-</BaseLayout>
+		<div class="compare">
+			<div class="compare-panel">
+				<p class="compare-kicker">One group chat</p>
+				<p class="math math-flow">
+					<span><b>30+</b> students</span><span class="math-arrow" aria-hidden="true">→</span><span>one busy chat</span><span class="math-arrow" aria-hidden="true">→</span><span><b class="hot">questions get buried</b></span>
+				</p>
+				<div class="chat" aria-hidden="true">
+					<span class="bubble w1"></span>
+					<span class="bubble w2 me"></span>
+					<span class="bubble q">How do I catch up on my research…?</span>
+					<span class="bubble w3"></span>
+					<span class="bubble w1 me"></span>
+					<span class="bubble w2"></span>
+					<span class="bubble w3"></span>
+				</div>
+				<p class="compare-note">
+					“A chaotic mess of disparate messages that prevent a coherent conversation.”
+				</p>
+			</div>
+		</div>
+		<p class="source-line">
+			Mentoring baseline from <a href="#ref-stefanucci">Stefanucci, 2019</a>; group chat quote from
+			<a href="#ref-lei">Lei et al., 2023</a>.
+		</p>
+	</CaseSection>
+
+	<!-- 3 · Starting point -->
+	<CaseSection eyebrow="Starting point" title="Redesigning a research tool, not starting from scratch">
+		<p>
+			Compass began as our lab's published research on large-group mentorship chat. It
+			introduced <strong>multi-person conversational units</strong>: structured moments that
+			condense many related messages into one interaction
+			(<a href="#ref-lei">Lei et al., 2023</a>).
+		</p>
+		<p>
+			The model worked, but the original, non-AI version still left much of the condensing work to
+			people. My team's brief was to redesign the experience with AI in the loop, for our own lab.
+		</p>
+	</CaseSection>
+
+	<!-- 4 · Framing -->
+	<CaseSection eyebrow="Framing" title="Two roles, two jobs to be done">
+		<JobsToBeDone
+			jobs={[
+				{
+					who: "Mentor · faculty",
+					when: "my lab grows beyond who I can meet with one-on-one",
+					want: "keep track of every student's questions without reading every message",
+					so: "I can give real guidance to the whole lab without it consuming my week",
+				},
+				{
+					who: "Mentee · undergraduate researcher",
+					when: "I'm one of dozens of students in a busy lab chat",
+					want: "know my question reached my mentor, and catch up on what I missed",
+					so: "I feel heard and keep growing as a researcher",
+				},
+			]}
+		/>
+		<p class="hmw">
+			How might we use AI to condense a fast-moving group chat without making mentorship feel
+			automated?
+		</p>
+	</CaseSection>
+
+	<!-- 5 · Exploration -->
+	<CaseSection eyebrow="Exploration" title="How can AI reduce group chat noise?">
+		<p>
+			Each round answered one question rather than polishing a solution too early: how should
+			prompts evolve, how should people navigate long conversations, and how should summaries
+			connect back to the original discussion?
+		</p>
+		<div class="stages bleed">
+			<div class="stage">
+				<p class="stage-label"><span>01</span> Paper sketches</p>
+				<div class="stage-row">
+					<figure>
+						<img
+							src={img("wireframe-sketch.jpg")}
+							alt="Early pencil-and-paper wireframe sketches for the mentor and mentee chat flows"
+							width={1800}
+							height={1350}
+							loading="lazy"
+						/>
+						<figcaption><strong>Mentor + mentee flows</strong>Explore freely before committing to a direction</figcaption>
+					</figure>
+				</div>
+			</div>
+			<div class="stage">
+				<p class="stage-label"><span>02</span> Lo-fi explorations</p>
+				<div class="stage-row">
+					<figure>
+						<img
+							src={img("mentor-chat-intro.png")}
+							alt="Lo-fi exploration: a mentor chat where Compass AI posts the current topic and prompt"
+							width={400}
+							height={855}
+							loading="lazy"
+						/>
+						<figcaption><strong>AI-guided chat</strong>How should prompts appear?</figcaption>
+					</figure>
+					<figure>
+						<img
+							src={img("poll-reminder.png")}
+							alt="Lo-fi exploration: a topic-interest poll with an AI reminder nudge"
+							width={400}
+							height={855}
+							loading="lazy"
+						/>
+						<figcaption><strong>Polls + AI nudges</strong>Collaborative reflection</figcaption>
+					</figure>
+					<figure>
+						<img
+							src={img("cluster-resume.png")}
+							alt="Lo-fi exploration: AI-clustered messages grouped under one topic"
+							width={400}
+							height={855}
+							loading="lazy"
+						/>
+						<figcaption><strong>AI clustering</strong>How does a summary link back?</figcaption>
+					</figure>
+				</div>
+				<p class="stage-note">Mixed styles: we were learning Figma as we went.</p>
+			</div>
+			<div class="stage">
+				<p class="stage-label"><span>03</span> First high-fidelity concepts</p>
+				<div class="stage-row">
+					<figure>
+						<img
+							src={img("guide-final.png")}
+							alt="First high-fidelity concept: the mentor's AI-built Conversation Guide with topics, prompts, and tips"
+							width={389}
+							height={865}
+							loading="lazy"
+						/>
+						<figcaption><strong>Mentor</strong>AI-built conversation guide</figcaption>
+					</figure>
+					<figure>
+						<img
+							src={img("feed-main.png")}
+							alt="First high-fidelity concept: the mentee's live lab chat with a Main and Feed toggle"
+							width={393}
+							height={852}
+							loading="lazy"
+						/>
+						<figcaption><strong>Mentee</strong>Live chat + catch-up feed</figcaption>
+					</figure>
+				</div>
+			</div>
+		</div>
+	</CaseSection>
+
+	<!-- 6 · The reframe -->
+	<CaseSection eyebrow="The reframe" title="Our first solution didn't close the loop.">
+		<div class="gaps">
+			<figure>
+				<img
+					src={img("guide-start.png")}
+					alt="The mentor building a Conversation Guide in a chat with Compass AI"
+					width={389}
+					height={862}
+					loading="lazy"
+				/>
+				<figcaption>
+					<strong>Mentor tool</strong>
+					Only captured questions the mentor had already noticed.
+				</figcaption>
+			</figure>
+			<figure>
+				<img
+					src={img("feed-foryou.png")}
+					alt="The mentee feed, with peer reflections clustered by theme"
+					width={393}
+					height={852}
+					loading="lazy"
+				/>
+				<figcaption>
+					<strong>Student feed</strong>
+					Helped people catch up, but never told students whether their own question had been heard.
+				</figcaption>
+			</figure>
+		</div>
+
+		<p class="statement bleed">
+			We stopped designing features and started designing <em>what happens to a question after it's asked.</em>
+		</p>
+
+		<ol class="journey bleed" aria-label="What happens to a question after it's asked">
+			<li class="j-student"><span class="j-num">01</span><span class="j-who">Student</span>Asks</li>
+			<li class="j-ai"><span class="j-num">02</span><span class="j-who">Compass</span>Recognizes</li>
+			<li class="j-mentor"><span class="j-num">03</span><span class="j-who">Mentor</span>Triages</li>
+			<li class="j-mentor"><span class="j-num">04</span><span class="j-who">Mentor</span>Responds</li>
+			<li class="j-student"><span class="j-num">05</span><span class="j-who">Student</span>Feels heard</li>
+		</ol>
+		<p class="journey-note">
+			In critique, our advisor challenged us to stop thinking in features and return to the
+			problem itself. Instead of asking what Compass should do, we started asking what should
+			happen after a student asks for help.
+		</p>
+	</CaseSection>
+
+	<!-- 7 · Decision 01 -->
+	<Decision
+		number={1}
+		title="Who gets the mentor's attention first?"
+		options={[
+			{ label: "Most upvotes", detail: "Familiar, but risks prioritizing the loudest students." },
+			{ label: "AI ranks importance", detail: "Efficient, but makes priority opaque." },
+			{
+				label: "Longest wait + AI grouping",
+				detail: "Transparent prioritization while AI reduces reading load.",
+				chosen: true,
+			},
+		]}
+	>
+		<AnnotatedShot
+			src={img("v2-03-triage.png")}
+			alt="The mentor's Needs your attention queue: a coverage bar showing 27 of 34 students acknowledged, and three AI-suggested question groups, each listing students by how long they have waited"
+			width={1536}
+			height={1190}
+			cropTop={10.4}
+			cropBottom={5.6}
+			cropX={3.2}
+			notes={[
+				{ x: 17.5, y: 37.5, text: "Longest-unanswered questions rise first. Reactions never change the order." },
+				{ x: 37, y: 31, text: "A coverage bar keeps the whole lab in view: 27 of 34 acknowledged, 7 still waiting." },
+				{ x: 21.2, y: 52.3, text: "Every AI grouping explains why, and keeps each student's name, words, and wait time." },
+				{ x: 44.3, y: 88.5, text: "“Not related” lets the mentor pull any question out of a group." },
+			]}
+		/>
+	</Decision>
+
+	<!-- 8 · Decision 02 -->
+	<Decision
+		number={2}
+		title="How much should AI actually write?"
+		options={[
+			{ label: "AI responds automatically", detail: "Fast, but removes the mentor from mentorship." },
+			{
+				label: "AI drafts, mentor authors",
+				detail: "Reduces effort while preserving human judgment.",
+				chosen: true,
+			},
+			{ label: "Mentor writes everything", detail: "Personal, but doesn't solve the scaling problem." },
+		]}
+	>
+		<AnnotatedShot
+			src={img("v2-04-respond.png")}
+			alt="The response composer: three source questions, an editable AI draft labeled as an optional starting point, recipient and delivery choices, and a Publish as David Lee button"
+			width={1536}
+			height={1190}
+			cropTop={10.4}
+			cropBottom={5.6}
+			cropX={3.2}
+			notes={[
+				{ x: 27, y: 44.5, text: "Every source question stays visible in the student's own words, and can be removed." },
+				{ x: 30.3, y: 27.5, text: "The draft is labeled optional and built only from those sources. The composer shows how much has been edited." },
+				{ x: 77.3, y: 25.2, text: "The mentor chooses exactly who receives it, and how: shared chat, office hours, or a private follow-up." },
+				{ x: 77.8, y: 75.5, text: "Nothing is sent until the mentor publishes in their own name. Compass never posts on their behalf." },
+			]}
+		/>
+	</Decision>
+
+	<!-- 9 · Final experience -->
+	<CaseSection eyebrow="Final experience" title="From question to human response">
+		<p>Follow Nora, an undergraduate researcher, from her question to a reply from David, her mentor.</p>
+		<FlowStrip
+			label="The five-step Compass flow, scrollable"
+			steps={[
+				{
+					title: "Ask",
+					who: "Student",
+					text: "Student posts naturally in the existing chat.",
+					src: img("v2-01-ask.png"),
+					alt: "Nora posts her question in the live Tech4Good Lab chat alongside her peers' research updates",
+					width: 486,
+					height: 1084,
+					cropTop: 13.3,
+					cropBottom: 6.1,
+					cropX: 9.9,
+					radius: "7.7% / 3.4%",
+				},
+				{
+					title: "Acknowledge",
+					who: "Student",
+					text: "Compass confirms the question entered the queue.",
+					src: img("v2-02-acknowledge.png"),
+					alt: "Your question was recognized, with a received, queued, addressed progress tracker",
+					width: 486,
+					height: 1112,
+					cropTop: 15.5,
+					cropBottom: 5.9,
+					cropX: 9.9,
+					radius: "7.7% / 3.4%",
+				},
+				{
+					title: "Triage",
+					who: "Mentor",
+					text: "AI groups related questions; wait time determines priority.",
+					src: img("v2-03-triage.png"),
+					alt: "The mentor's Needs your attention queue with AI-suggested question groups ordered by wait time",
+					width: 1536,
+					height: 1190,
+					cropTop: 10.4,
+					cropBottom: 5.6,
+					cropX: 3.2,
+				},
+				{
+					title: "Respond",
+					who: "Mentor",
+					text: "AI drafts; mentor edits and publishes.",
+					src: img("v2-04-respond.png"),
+					alt: "The response composer with source questions, an editable AI draft, and a Publish as David Lee button",
+					width: 1536,
+					height: 1190,
+					cropTop: 10.4,
+					cropBottom: 5.6,
+					cropX: 3.2,
+				},
+				{
+					title: "Feel heard",
+					who: "Student",
+					text: "The mentor's response appears alongside the student's original question.",
+					src: img("v2-05-feel-heard.png"),
+					alt: "David's reply shown under Nora's original message, with a next step for Thursday office hours",
+					width: 486,
+					height: 1112,
+					cropTop: 15.5,
+					cropBottom: 5.9,
+					cropX: 9.9,
+					radius: "7.7% / 3.4%",
+				},
+			]}
+		/>
+	</CaseSection>
+
+	<!-- 10 · Leadership + outcome -->
+	<CaseSection eyebrow="Leadership" title="Leading through ambiguity">
+		<p>
+			With no PhD lead or senior designer directing the work, I became the point person for our
+			four-person team, in my first quarter in the lab.
+		</p>
+		<ul class="lead-row">
+			<li><strong>Set direction</strong>Set every milestone, so each round had a clear finish line.</li>
+			<li><strong>Ran critiques</strong>Weekly work sessions to critique and build together.</li>
+			<li><strong>Managed scope</strong>Narrowed high fidelity to the mentor's experience.</li>
+			<li><strong>Coordinated stakeholders</strong>Brought in critique from our professor, the kind of mentor Compass was built for.</li>
+		</ul>
+
+		<div class="landing">
+			<div>
+				<h3>Where it landed</h3>
+				<p>
+					Compass reached a complete high-fidelity concept, but the project paused before
+					prototyping and usability testing when our team became under-resourced. The result is a
+					complete design concept, not yet a validated solution.
+				</p>
+				<p>
+					In addition to the designs, I co-wrote the introduction to the next Compass research
+					paper, framing the challenge of large-group mentorship and how our work builds on the
+					original model.
+				</p>
+			</div>
+			<div>
+				<h3>What I'd do next</h3>
+				<p>
+					Return to needfinding. AI has changed how students find answers and seek
+					support since we designed Compass. Before continuing the solution, I'd conduct new
+					research with mentors and mentees to understand what mentorship looks like today, where
+					their needs have shifted, and which interactions still benefit most from a human mentor.
+				</p>
+				<p>
+					Prototype the AI interactions. I'd use Figma Make to build a functional
+					prototype that captures how AI grouping, drafting, and mentor controls behave in a real
+					conversation, rather than evaluating those interactions through screens alone.
+				</p>
+				<p>
+					Test the core assumptions. I'd conduct usability testing with mentors and
+					mentees to evaluate both the experience and the product decisions behind it, especially
+					whether wait-time prioritization feels fair and whether AI-assisted responses actually
+					help students feel heard.
+				</p>
+			</div>
+		</div>
+
+		<div class="sources">
+			<p class="sources-label">Sources</p>
+			<ol class="refs">
+				<li id="ref-lei">
+					Lei, K., Yu, M., Lewellen, M., Ku, V., &amp; Lee, D. T. (2023). Compass: Supporting Large
+					Group Mentorship in a Chat-Based UI. <em>Proceedings of the ACM on Human-Computer
+					Interaction, 7</em>(CSCW1).
+					<a href="https://doi.org/10.1145/3579470">doi.org/10.1145/3579470</a>
+				</li>
+				<li id="ref-stefanucci">
+					Stefanucci, J. K. (2019). Publish With Undergraduates or Perish?: Strategies for Preserving
+					Faculty Time in Undergraduate Research Supervision at Large Universities and Liberal Arts
+					Colleges. <em>Frontiers in Psychology, 10</em>, 828.
+					<a href="https://doi.org/10.3389/fpsyg.2019.00828">doi.org/10.3389/fpsyg.2019.00828</a>
+				</li>
+			</ol>
+		</div>
+	</CaseSection>
+</CaseStudyLayout>
 
 <style>
-	h1 {
-		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
-		margin-top: var(--space-1);
+	/* ---------- Hero ---------- */
+	:global(.hero-shot) {
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 12px 32px -12px rgb(28 27 25 / 0.18);
 	}
 
-	.dek {
-		font-size: 1.0625rem;
+	/* ---------- Problem ---------- */
+	.compare {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+		gap: var(--space-2);
+	}
+
+	.compare-panel {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		padding: var(--space-3);
+		background: var(--color-bg-raised);
+		border-radius: 3px;
+	}
+
+	.compare-panel > * {
+		margin: 0;
+	}
+
+	.compare-kicker {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+	}
+
+	.math {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.25rem 0.625rem;
+		color: var(--color-ink-soft);
+	}
+
+	.math b {
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		font-weight: 500;
+		line-height: 1.1;
+		color: var(--color-ink);
+	}
+
+	.math b.hot {
+		color: var(--color-accent);
+	}
+
+	.math-flow b.hot {
+		font-size: var(--text-lg);
+	}
+
+	.math-arrow {
+		color: var(--color-ink-faint);
+	}
+
+	.compare-note {
+		font-size: var(--text-sm);
+		line-height: 1.45;
+		color: var(--color-ink-faint);
+	}
+
+	.chat {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 5px;
+		height: 8.5rem;
+		overflow: hidden;
+		padding: var(--space-1);
+		border-radius: 3px;
+		background: var(--color-bg);
+		/* The top of the chat fades out, as older messages scroll away. */
+		mask-image: linear-gradient(to bottom, transparent, #000 45%);
+		-webkit-mask-image: linear-gradient(to bottom, transparent, #000 45%);
+	}
+
+	.bubble {
+		flex-shrink: 0;
+		height: 0.875rem;
+		border-radius: 999px;
+		background: var(--color-line);
+	}
+
+	.bubble.me {
+		align-self: flex-end;
+	}
+
+	.w1 {
+		width: 70%;
+	}
+
+	.w2 {
+		width: 50%;
+	}
+
+	.w3 {
+		width: 62%;
+	}
+
+	.bubble.q {
+		width: fit-content;
+		height: auto;
+		padding: 0.1rem 0.625rem;
+		font-size: var(--text-label);
+		color: var(--color-ink);
+		background: var(--color-bg);
+		border: 1.5px solid var(--color-accent);
+	}
+
+	.source-line {
+		font-size: var(--text-label);
+		color: var(--color-ink-faint);
+	}
+
+	.source-line a {
+		color: inherit;
+	}
+
+	.hmw {
+		margin-top: var(--space-4);
+		padding-block: var(--space-3);
+		border-block: 1px solid var(--color-line);
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		font-style: italic;
+		line-height: 1.3;
+		text-align: center;
+		text-wrap: balance;
+		color: var(--color-ink);
+	}
+
+	/* ---------- Exploration ---------- */
+	.stages {
+		--stage-h: 16rem;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-3) var(--space-4);
+		margin-top: var(--space-4);
+	}
+
+	.stage {
+		min-width: 0;
+		max-width: 100%;
+	}
+
+	.stage-label {
+		margin: 0 0 var(--space-2);
+		padding-top: var(--space-1);
+		border-top: 2px solid var(--color-ink);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-ink);
+	}
+
+	.stage-label span {
+		margin-right: 0.25rem;
+		color: var(--color-accent);
+	}
+
+	.stage-row {
+		display: flex;
+		gap: var(--space-2);
+		overflow-x: auto;
+		scroll-snap-type: x mandatory;
+	}
+
+	.stage-row figure {
+		flex-shrink: 0;
+		width: min-content;
+		margin: 0;
+		scroll-snap-align: start;
+	}
+
+	.stage-row img {
+		width: auto;
+		height: var(--stage-h);
+		max-width: none;
+		border-radius: 4px;
+	}
+
+	.stage-row figcaption,
+	.gaps figcaption {
+		margin-top: var(--space-1);
+		font-size: var(--text-label);
+		line-height: 1.4;
+		text-align: left;
+		color: var(--color-ink-faint);
+	}
+
+	.stage-row figcaption strong,
+	.gaps figcaption strong {
+		display: block;
+		color: var(--color-ink);
+	}
+
+	.stage-note {
+		margin-top: var(--space-1);
+		font-size: var(--text-label);
+		font-style: italic;
+		color: var(--color-ink-faint);
+	}
+
+	/* ---------- Reframe ---------- */
+	.gaps {
+		display: flex;
+		justify-content: center;
+		gap: var(--space-4);
+	}
+
+	.gaps figure {
+		width: min(11rem, 45%);
+		margin: 0;
+	}
+
+	.gaps img {
+		opacity: 0.9;
+	}
+
+	.gaps figcaption {
+		font-size: var(--text-sm);
+	}
+
+	.statement {
+		margin-top: var(--space-5);
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		line-height: 1.2;
+		text-align: center;
+		text-wrap: balance;
+		color: var(--color-ink);
+	}
+
+	.statement em {
+		color: var(--color-accent);
+	}
+
+	.journey {
+		display: grid;
+		grid-template-columns: repeat(5, 1fr);
+		margin-top: var(--space-4);
+	}
+
+	.journey li {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0 0.5rem;
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		line-height: 1.25;
+		text-align: center;
+		color: var(--color-ink);
+	}
+
+	/* Connector line between nodes, drawn from each node to the next. */
+	.journey li::before {
+		content: "";
+		position: absolute;
+		top: 1.375rem;
+		left: 50%;
+		width: 100%;
+		height: 2px;
+		border-radius: 0;
+		background: var(--color-line);
+	}
+
+	.journey li:last-child::before {
+		content: none;
+	}
+
+	.j-num {
+		position: relative;
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		margin-bottom: 0.375rem;
+		border-radius: 999px;
+		font-family: var(--font-sans);
+		font-size: var(--text-label);
+		font-weight: 600;
+	}
+
+	.j-student .j-num {
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+	}
+
+	.j-mentor .j-num {
+		background: var(--color-ink);
+		color: var(--color-bg);
+	}
+
+	.j-ai .j-num {
+		background: var(--color-bg);
+		border: 2px dashed var(--color-ink-faint);
+		color: var(--color-ink-soft);
+	}
+
+	.j-who {
+		font-family: var(--font-sans);
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+
+	.journey-note {
+		max-width: 38rem;
+		margin: var(--space-4) auto 0;
+		text-align: center;
+	}
+
+	/* ---------- Leadership + outcome ---------- */
+	.lead-row {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: var(--space-2);
 		margin-top: var(--space-3);
+	}
+
+	.lead-row li {
+		padding: var(--space-2) 0 0;
+		border-top: 2px solid var(--color-accent);
+		font-size: var(--text-sm);
+		line-height: 1.45;
+	}
+
+	.lead-row li::before {
+		content: none;
+	}
+
+	.lead-row strong {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-size: var(--text-sm);
+	}
+
+	.landing {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+		margin-top: var(--space-5);
+	}
+
+	.landing h3 {
+		font-size: var(--text-lg);
+		margin-bottom: var(--space-1);
+	}
+
+	.sources {
+		margin-top: var(--space-5);
+		padding-top: var(--space-2);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.sources-label {
+		margin-bottom: var(--space-1);
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.sources .refs {
+		font-size: var(--text-label);
+	}
+
+	/* ---------- Small screens ---------- */
+	@media (max-width: 48rem) {
+		.lead-row {
+			grid-template-columns: 1fr 1fr;
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.stages {
+			--stage-h: 20rem;
+		}
+
+		.journey {
+			grid-template-columns: 1fr;
+			gap: var(--space-2);
+		}
+
+		.journey li {
+			flex-direction: row;
+			align-items: center;
+			gap: 0.75rem;
+			padding: 0;
+			text-align: left;
+		}
+
+		.journey li::before {
+			top: 2.75rem;
+			left: 1.375rem;
+			width: 2px;
+			height: calc(100% - 2.75rem + var(--space-2));
+		}
+
+		.j-num {
+			flex-shrink: 0;
+			margin-bottom: 0;
+		}
+
+		.j-who {
+			order: 2;
+		}
 	}
 </style>

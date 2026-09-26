@@ -7,7 +7,7 @@ import { projects } from "../../data/projects";
 <BaseLayout title="Case Studies">
 	<section class="section">
 		<div class="container">
-			<div class="prose">
+			<div class="prose reveal">
 				<p class="eyebrow">Selected Work</p>
 				<h1>Case Studies</h1>
 				<p class="intro">
@@ -16,7 +16,7 @@ import { projects } from "../../data/projects";
 				</p>
 			</div>
 			<div class="project-grid">
-				{projects.map((project) => <ProjectCard project={project} />)}
+				{projects.map((project, index) => <ProjectCard project={project} index={index} />)}
 			</div>
 		</div>
 	</section>

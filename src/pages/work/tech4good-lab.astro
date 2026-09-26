@@ -1,28 +1,79 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
 ---
 
-<BaseLayout title="Tech4Good Lab | Lab Operations & Literature Review">
-	<section class="section">
-		<div class="container prose">
-			<p class="eyebrow">Lab Operations &amp; Literature Review</p>
-			<h1>Tech4Good Lab</h1>
-			<p class="dek placeholder">
-				[PLACEHOLDER: full case study coming next &mdash; Problem, Process,
-				Key Decisions, and Outcome sections will go here.]
-			</p>
-		</div>
-	</section>
-</BaseLayout>
+<CaseStudyLayout
+	slug="tech4good-lab"
+	title="Tech4Good Lab"
+	subtitle="Lab Operations & Literature Review"
+	tags={["Research Ops", "Leadership", "Literature Review"]}
+	summary="Led research teams across AI, design, and web projects, building leadership and workflow systems that improved cross-lab communication and collaboration."
+>
+	<Fragment slot="problem">
+		<p>
+			As the lab grew to support concurrent AI, design, and web projects, coordination
+			started to break down. Researchers on different project teams didn't have a
+			consistent way to share findings, onboard new members, or track where a given
+			project stood.
+		</p>
+		<p class="placeholder">
+			[PLACEHOLDER: a specific breakdown or incident that motivated the systems work]
+		</p>
+	</Fragment>
 
-<style>
-	h1 {
-		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
-		margin-top: var(--space-1);
-	}
+	<Fragment slot="process">
+		<ul>
+			<li>
+				Mapped the existing, informal workflows across project teams to identify where
+				communication was breaking down — onboarding, weekly syncs, literature review
+				handoffs, and deliverable tracking.
+			</li>
+			<li>
+				Interviewed <span class="placeholder">[PLACEHOLDER: number]</span> lab members across
+				roles — undergraduate researchers, project leads, and the faculty advisor — to
+				understand what a good system would need to support.
+			</li>
+			<li>
+				Designed and piloted a standardized onboarding process and documentation
+				structure so new researchers could get oriented without requiring one-on-one
+				ramp-up time from a lead every time.
+			</li>
+			<li>
+				Built a lightweight cross-lab communication rhythm — shared updates and
+				structured syncs — so leads across different projects had visibility into each
+				other's progress and blockers.
+			</li>
+		</ul>
+	</Fragment>
 
-	.dek {
-		font-size: 1.0625rem;
-		margin-top: var(--space-3);
-	}
-</style>
+	<Fragment slot="decisions">
+		<ul>
+			<li>
+				Prioritized lightweight, low-maintenance systems — templates, shared docs, a
+				simple update cadence — over heavier project management tooling, since adoption
+				mattered more than sophistication for a volunteer research team.
+			</li>
+			<li>
+				Made documentation a required deliverable of every literature review, not an
+				afterthought, so institutional knowledge stayed with the lab rather than leaving
+				when a researcher graduated.
+			</li>
+			<li>
+				Delegated ownership of specific systems — onboarding, the literature review
+				pipeline, syncs — to individual team leads rather than centralizing everything, to
+				build leadership capacity across the lab instead of a single point of failure.
+			</li>
+		</ul>
+	</Fragment>
+
+	<Fragment slot="outcome">
+		<p class="placeholder">
+			[PLACEHOLDER: quantified result, e.g. "Cut new-researcher ramp-up time from X weeks
+			to Y, across Z researchers and N concurrent projects."]
+		</p>
+		<p class="placeholder">
+			[PLACEHOLDER: any lasting artifact, e.g. "Onboarding system adopted lab-wide and
+			still in use as of [date]."]
+		</p>
+	</Fragment>
+</CaseStudyLayout>

@@ -27,9 +27,12 @@ const {
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600&family=Caveat:wght@500;600&display=swap"
 			rel="stylesheet"
 		/>
+		<script is:inline>
+			document.documentElement.classList.add("js");
+		</script>
 	</head>
 	<body>
 		<Nav />
@@ -37,5 +40,20 @@ const {
 			<slot />
 		</main>
 		<Footer />
+		<script>
+			const observer = new IntersectionObserver(
+				(entries) => {
+					for (const entry of entries) {
+						if (entry.isIntersecting) {
+							entry.target.classList.add("is-visible");
+							observer.unobserve(entry.target);
+						}
+					}
+				},
+				{ threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
+			);
+
+			document.querySelectorAll(".reveal").forEach((el) => observer.observe(el));
+		</script>
 	</body>
 </html>

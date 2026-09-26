@@ -1,0 +1,86 @@
+<div class="desk-wrap reveal">
+	<svg viewBox="0 0 960 380" class="desk-svg" role="img" aria-label="Illustration of a desk with a laptop, an iced coffee, craft scissors, a swim cap, and a phone showing a running app">
+		<!-- desk edge -->
+		<line x1="40" y1="322" x2="920" y2="322" stroke="var(--color-ink)" stroke-width="3" stroke-linecap="round" />
+
+		<!-- swim cap -->
+		<g fill="none" stroke="var(--color-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+			<path d="M64,321 C64,262 90,226 138,226 C186,226 212,262 212,321" />
+			<circle cx="138" cy="321" r="4" fill="var(--color-ink)" />
+		</g>
+
+		<!-- craft scissors -->
+		<g fill="none" stroke="var(--color-ink)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+			<circle cx="258" cy="318" r="13" />
+			<circle cx="258" cy="282" r="13" />
+			<path d="M270,310 L310,300" />
+			<path d="M270,290 L310,300" />
+			<circle cx="310" cy="300" r="3.5" fill="var(--color-ink)" />
+			<path d="M310,300 L372,272" />
+			<path d="M310,300 L372,325" />
+		</g>
+
+		<!-- laptop -->
+		<g fill="none" stroke="var(--color-ink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+			<path d="M392,321 L540,321 L528,300 L404,300 Z" fill="var(--color-bg-raised)" />
+			<rect x="446" y="308" width="40" height="10" rx="2" />
+			<path d="M404,300 L398,158 L534,158 L528,300" fill="var(--color-bg)" />
+			<line x1="416" y1="196" x2="486" y2="196" stroke-width="2.5" />
+			<line x1="416" y1="216" x2="500" y2="216" stroke-width="2.5" />
+			<line x1="416" y1="236" x2="470" y2="236" stroke-width="2.5" />
+		</g>
+
+		<!-- iced vietnamese coffee -->
+		<g stroke-linecap="round" stroke-linejoin="round">
+			<path d="M586,321 L596,190 L654,190 L664,321 Z" fill="none" stroke="var(--color-ink)" stroke-width="3" />
+			<path d="M590,264 L660,264 L664,321 L586,321 Z" fill="#e7d8bf" stroke="none" />
+			<path d="M596,190 L654,190 L650,258 L600,258 Z" fill="#7a4a30" stroke="none" />
+			<path d="M598,260 Q625,254 652,260" fill="none" stroke="var(--color-ink)" stroke-width="2" opacity="0.5" />
+			<path d="M586,321 L596,190 L654,190 L664,321 Z" fill="none" stroke="var(--color-ink)" stroke-width="3" />
+			<g fill="#fdfaf5" stroke="var(--color-ink)" stroke-width="1.5">
+				<rect x="605" y="205" width="16" height="16" rx="2" transform="rotate(-10 613 213)" />
+				<rect x="624" y="216" width="15" height="15" rx="2" transform="rotate(8 631 223)" />
+			</g>
+			<path d="M629,192 L618,196 L604,118" fill="none" stroke="var(--color-ink)" stroke-width="4" />
+		</g>
+
+		<!-- phone: current obsession -->
+		<g transform="rotate(-7 770 300)">
+			<rect x="732" y="222" width="72" height="120" rx="12" fill="var(--color-bg)" stroke="var(--color-ink)" stroke-width="3" />
+			<line x1="746" y1="238" x2="790" y2="238" stroke="var(--color-ink)" stroke-width="2" stroke-linecap="round" />
+			<path
+				d="M744,318 L756,300 L766,308 L778,278 L792,286"
+				fill="none"
+				stroke="var(--color-accent)"
+				stroke-width="3"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<circle cx="792" cy="286" r="4" fill="var(--color-accent)" />
+		</g>
+	</svg>
+	<p class="desk-caption">the desk where it all happens</p>
+</div>
+
+<style>
+	.desk-wrap {
+		margin-top: var(--space-2);
+	}
+
+	.desk-svg {
+		width: 100%;
+		height: auto;
+		max-width: 44rem;
+		display: block;
+		margin-inline: auto;
+	}
+
+	.desk-caption {
+		margin-top: var(--space-2);
+		text-align: center;
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 0.9375rem;
+		color: var(--color-ink-faint);
+	}
+</style>

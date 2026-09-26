@@ -1,0 +1,348 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { projects } from "../data/projects";
+
+interface Props {
+	slug: string;
+	title: string;
+	subtitle: string;
+	tags?: string[];
+	summary: string;
+	role?: string;
+	team?: string;
+	timeline?: string;
+	tools?: string[];
+	skills?: string[];
+	tldr?: {
+		problem: string;
+		did: string;
+		outcome: string;
+	};
+}
+
+const { slug, title, subtitle, tags, summary, role, team, timeline, tools, skills, tldr } = Astro.props;
+
+const currentIndex = projects.findIndex((p) => p.slug === slug);
+const nextProject = projects[(currentIndex + 1) % projects.length];
+
+const hasMeta = Boolean(role || team || timeline || tools?.length || skills?.length);
+const hasOverview = Astro.slots.has("overview");
+const hasReflection = Astro.slots.has("reflection");
+const hasWhatsNext = Astro.slots.has("whatsNext");
+const hasVisual = Astro.slots.has("visual");
+// Pages that pass a default slot tell their own story with CaseSection/DeepDive;
+// the rest fall back to the fixed Problem / Process / Decisions / Outcome template.
+const isStory = Astro.slots.has("default");
+---
+
+<BaseLayout title={`${title} | ${subtitle}`} description={summary}>
+	<article>
+		<header class="case-header section">
+			<div class="container prose">
+				<a class="back-link reveal" href="/work">&larr; Case Studies</a>
+				<p class="eyebrow reveal" style="--i:1">{subtitle}</p>
+				<h1 class="reveal" style="--i:2">{title}</h1>
+				{tags?.length && <p class="case-tags reveal" style="--i:3">{tags.join(" · ")}</p>}
+				<p class="case-summary reveal" style="--i:4">{summary}</p>
+
+				{
+					tldr && (
+						<dl class="tldr reveal" style="--i:5" aria-label="Case study at a glance">
+							<div>
+								<dt>The problem</dt>
+								<dd>{tldr.problem}</dd>
+							</div>
+							<div>
+								<dt>What I did</dt>
+								<dd>{tldr.did}</dd>
+							</div>
+							<div>
+								<dt>The outcome</dt>
+								<dd>{tldr.outcome}</dd>
+							</div>
+						</dl>
+					)
+				}
+
+				{
+					hasMeta && (
+						<dl class="case-meta reveal" style="--i:6">
+							{role && (
+								<div class="meta-item">
+									<dt>Role</dt>
+									<dd>{role}</dd>
+								</div>
+							)}
+							{team && (
+								<div class="meta-item">
+									<dt>Team</dt>
+									<dd>{team}</dd>
+								</div>
+							)}
+							{timeline && (
+								<div class="meta-item">
+									<dt>Timeline</dt>
+									<dd>{timeline}</dd>
+								</div>
+							)}
+							{tools?.length && (
+								<div class="meta-item">
+									<dt>Tools</dt>
+									<dd>{tools.join(", ")}</dd>
+								</div>
+							)}
+							{skills?.length && (
+								<div class="meta-item">
+									<dt>Skills</dt>
+									<dd>{skills.join(", ")}</dd>
+								</div>
+							)}
+						</dl>
+					)
+				}
+
+				{
+					hasOverview && (
+						<div class="case-copy case-overview reveal" style="--i:6">
+							<slot name="overview" />
+						</div>
+					)
+				}
+
+			</div>
+		</header>
+
+		<div class="container">
+			{
+				hasVisual ? (
+					<div class="case-visual-media reveal">
+						<slot name="visual" />
+					</div>
+				) : (
+					<div class="case-visual reveal">
+						<p class="placeholder">[PLACEHOLDER: project screenshots, mockups, or process artifacts]</p>
+					</div>
+				)
+			}
+		</div>
+
+		<div class="container">
+			<div class="case-body">
+				{
+					isStory ? (
+						<slot />
+					) : (
+						<Fragment>
+							<section class="case-section reveal">
+								<h2>Problem</h2>
+								<div class="case-copy"><slot name="problem" /></div>
+							</section>
+							<section class="case-section reveal">
+								<h2>Process</h2>
+								<div class="case-copy"><slot name="process" /></div>
+							</section>
+							<section class="case-section reveal">
+								<h2>Key Decisions</h2>
+								<div class="case-copy"><slot name="decisions" /></div>
+							</section>
+							<section class="case-section reveal">
+								<h2>Outcome</h2>
+								<div class="case-copy"><slot name="outcome" /></div>
+							</section>
+							{
+								hasReflection && (
+									<section class="case-section reveal">
+										<h2>Reflection</h2>
+										<div class="case-copy">
+											<slot name="reflection" />
+										</div>
+									</section>
+								)
+							}
+							{
+								hasWhatsNext && (
+									<section class="case-section reveal">
+										<h2>What's Next</h2>
+										<div class="case-copy">
+											<slot name="whatsNext" />
+										</div>
+									</section>
+								)
+							}
+						</Fragment>
+					)
+				}
+			</div>
+		</div>
+
+		<footer class="case-nav section">
+			<div class="container">
+				<a class="next-project reveal" href={`/work/${nextProject.slug}`}>
+					<span class="next-label">Next case study</span>
+					<span class="next-title">{nextProject.title} &rarr;</span>
+				</a>
+			</div>
+		</footer>
+	</article>
+</BaseLayout>
+
+<style>
+	.case-header {
+		padding-bottom: var(--space-3);
+	}
+
+	.back-link {
+		display: inline-block;
+		font-size: var(--text-sm);
+		font-weight: 500;
+		color: var(--color-ink-faint);
+		text-decoration: none;
+		margin-bottom: var(--space-3);
+		transition: color 0.15s ease;
+	}
+
+	.back-link:hover {
+		color: var(--color-accent);
+	}
+
+	.case-header h1 {
+		font-size: clamp(2rem, 1.6rem + 2vw, 3rem);
+		margin-top: var(--space-1);
+	}
+
+	.case-tags {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+		margin-top: var(--space-3);
+	}
+
+	.case-summary {
+		font-size: var(--text-lg);
+		color: var(--color-ink-soft);
+		margin-top: var(--space-2);
+	}
+
+	.case-meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--space-2) var(--space-4);
+		margin-top: var(--space-4);
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-line);
+	}
+
+	/* Short facts (role, timeline) take their natural width; the last item (skills) fills the rest. */
+	.meta-item:last-child {
+		flex: 1 1 14rem;
+	}
+
+	.meta-item dt {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.meta-item dd {
+		margin: 0.25rem 0 0;
+		font-size: var(--text-sm);
+		color: var(--color-ink-soft);
+	}
+
+	.case-overview {
+		margin-top: var(--space-4);
+		font-size: var(--text-body);
+	}
+
+	.case-visual {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 16rem;
+		background: var(--color-bg-raised);
+		border: 1px dashed var(--color-line);
+		border-radius: 2px;
+		padding: var(--space-3);
+		text-align: center;
+	}
+
+	.case-visual-media :global(img) {
+		display: block;
+		max-width: 34rem;
+		max-height: 32rem;
+		width: auto;
+		height: auto;
+		margin-inline: auto;
+	}
+
+	.case-body {
+		max-width: var(--content-width);
+		margin-inline: auto;
+		padding-block: var(--space-5);
+	}
+
+	/* The summary sits in the intro as a light three-column row, not a boxed callout,
+	   so the hero screenshot stays near the top of the page. */
+	.tldr {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-3);
+		margin: var(--space-4) 0 0;
+	}
+
+	.tldr dt {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+	}
+
+	.tldr dd {
+		margin: 0.375rem 0 0;
+		font-size: var(--text-sm);
+		line-height: 1.5;
+		color: var(--color-ink-soft);
+	}
+
+	@media (max-width: 40rem) {
+		.tldr {
+			grid-template-columns: 1fr;
+			gap: var(--space-2);
+		}
+	}
+
+	.case-nav {
+		border-top: 1px solid var(--color-line);
+	}
+
+	.next-project {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		text-decoration: none;
+		color: var(--color-ink);
+	}
+
+	.next-label {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.next-title {
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		transition: color 0.15s ease;
+	}
+
+	.next-project:hover .next-title {
+		color: var(--color-accent);
+	}
+</style>

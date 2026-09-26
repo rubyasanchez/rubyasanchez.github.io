@@ -3,72 +3,88 @@ import type { Project } from "../data/projects";
 
 interface Props {
 	project: Project;
+	index?: number;
 }
 
-const { project } = Astro.props;
+const { project, index = 0 } = Astro.props;
 ---
 
-<a class="project-card" href={`/work/${project.slug}`}>
-	<p class="project-card-tags">{project.tags.join(" · ")}</p>
-	<h3 class="project-card-title">
-		{project.title} <span class="project-card-subtitle">| {project.subtitle}</span>
-	</h3>
-	<p class="project-card-summary">{project.summary}</p>
-	<p class="project-card-impact placeholder">{project.impact}</p>
-	<span class="project-card-cta">View case study &rarr;</span>
+<a class="project-card reveal" href={`/work/${project.slug}`} style={`--i:${index}`}>
+	<div class="project-card-media">
+		{
+			project.image ? (
+				<img src={project.image} alt={project.imageAlt ?? project.title} loading="lazy" />
+			) : (
+				<div class="project-card-placeholder" aria-hidden="true">{project.title.charAt(0)}</div>
+			)
+		}
+	</div>
+	<div class="project-card-caption">
+		<h3 class="project-card-title">{project.title}</h3>
+		<p class="project-card-meta">{project.tags[0]} &middot; {project.subtitle} &middot; {project.year}</p>
+	</div>
 </a>
 
 <style>
 	.project-card {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-1);
-		padding: var(--space-3);
-		background: var(--color-bg-raised);
-		border: 1px solid var(--color-line);
-		border-radius: 2px;
 		text-decoration: none;
 		color: var(--color-ink);
-		transition: border-color 0.15s ease, transform 0.15s ease;
 	}
 
-	.project-card:hover {
-		border-color: var(--color-accent);
-		transform: translateY(-2px);
+	.project-card-media {
+		aspect-ratio: 4 / 3;
+		overflow: hidden;
+		border-radius: 2px;
+		border: 1px solid var(--color-line);
+		background: var(--color-bg-raised);
 	}
 
-	.project-card-tags {
-		font-size: 0.75rem;
-		font-weight: 600;
-		letter-spacing: 0.06em;
-		text-transform: uppercase;
-		color: var(--color-ink-faint);
+	.project-card-media img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+		display: block;
+		transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.project-card:hover .project-card-media img {
+		transform: scale(1.06);
+	}
+
+	.project-card-placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-family: var(--font-serif);
+		font-size: 3.5rem;
+		color: var(--color-accent);
+		opacity: 0.45;
+	}
+
+	.project-card-caption {
+		margin-top: var(--space-2);
 	}
 
 	.project-card-title {
-		font-size: 1.375rem;
-		margin-top: var(--space-1);
-	}
-
-	.project-card-subtitle {
-		font-weight: 400;
-		color: var(--color-ink-soft);
-	}
-
-	.project-card-summary {
-		color: var(--color-ink-soft);
-		margin-top: var(--space-1);
-	}
-
-	.project-card-impact {
-		font-size: 0.9375rem;
-		margin-top: var(--space-1);
-	}
-
-	.project-card-cta {
-		margin-top: var(--space-2);
-		font-size: 0.9375rem;
+		font-family: var(--font-serif);
+		font-size: 1.125rem;
 		font-weight: 500;
+		color: var(--color-ink);
+		transition: color 0.2s ease;
+	}
+
+	.project-card:hover .project-card-title {
 		color: var(--color-accent);
+	}
+
+	.project-card-meta {
+		margin-top: 0.1875rem;
+		font-size: 0.8125rem;
+		color: var(--color-ink-faint);
 	}
 </style>

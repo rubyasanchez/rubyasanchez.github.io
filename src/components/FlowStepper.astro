@@ -1,0 +1,346 @@
+---
+type Step = {
+	title: string;
+	who: string;
+	text: string;
+	src: string;
+	alt: string;
+};
+
+interface Props {
+	steps: Step[];
+	label?: string;
+}
+
+const { steps, label = "Design walkthrough" } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, "0");
+---
+
+<div class="flow" style={`--count:${steps.length}`}>
+	<div class="flow-track" role="tablist" aria-label={label}>
+		<span class="flow-line" aria-hidden="true"><span class="flow-line-fill"></span></span>
+		{
+			steps.map((step, i) => (
+				<button
+					type="button"
+					class:list={["flow-tab", { "is-active": i === 0 }]}
+					role="tab"
+					id={`flow-tab-${i}`}
+					aria-controls={`flow-panel-${i}`}
+					aria-selected={i === 0 ? "true" : "false"}
+					tabindex={i === 0 ? 0 : -1}
+					data-index={i}
+				>
+					<span class="flow-dot">{pad(i + 1)}</span>
+					<span class="flow-tab-title">{step.title}</span>
+					<span class="flow-tab-who">{step.who}</span>
+				</button>
+			))
+		}
+	</div>
+
+	<div class="flow-stage">
+		{
+			steps.map((step, i) => (
+				<div
+					class:list={["flow-panel", { "is-active": i === 0 }]}
+					role="tabpanel"
+					id={`flow-panel-${i}`}
+					aria-labelledby={`flow-tab-${i}`}
+					hidden={i !== 0}
+				>
+					<p class="flow-meta">
+						<span class="flow-step">Step {pad(i + 1)}</span>
+						<span class="flow-who">{step.who}</span>
+					</p>
+					<p class="flow-text">
+						<strong>{step.title}.</strong> {step.text}
+					</p>
+					<div class="flow-media">
+						<img src={step.src} alt={step.alt} loading={i === 0 ? "eager" : "lazy"} />
+					</div>
+				</div>
+			))
+		}
+	</div>
+
+	<div class="flow-controls">
+		<button type="button" class="flow-nav" data-dir="-1" aria-label="Previous step" disabled>←</button>
+		<span class="flow-count" aria-live="polite">1 / {steps.length}</span>
+		<button type="button" class="flow-nav" data-dir="1" aria-label="Next step">→</button>
+	</div>
+</div>
+
+<script>
+	function initFlow(flow: HTMLElement) {
+		const tabs = [...flow.querySelectorAll<HTMLButtonElement>(".flow-tab")];
+		const panels = [...flow.querySelectorAll<HTMLElement>(".flow-panel")];
+		const [prev, next] = flow.querySelectorAll<HTMLButtonElement>(".flow-nav");
+		const count = flow.querySelector<HTMLElement>(".flow-count");
+		let current = 0;
+
+		function go(index: number, focus = false) {
+			current = Math.max(0, Math.min(tabs.length - 1, index));
+			tabs.forEach((tab, i) => {
+				const active = i === current;
+				tab.classList.toggle("is-active", active);
+				tab.classList.toggle("is-done", i < current);
+				tab.setAttribute("aria-selected", String(active));
+				tab.tabIndex = active ? 0 : -1;
+			});
+			panels.forEach((panel, i) => {
+				panel.hidden = i !== current;
+				panel.classList.toggle("is-active", i === current);
+			});
+			flow.style.setProperty("--progress", String(current / (tabs.length - 1)));
+			prev.disabled = current === 0;
+			next.disabled = current === tabs.length - 1;
+			if (count) count.textContent = `${current + 1} / ${tabs.length}`;
+			if (focus) tabs[current].focus();
+		}
+
+		tabs.forEach((tab, i) => {
+			tab.addEventListener("click", () => go(i));
+			tab.addEventListener("keydown", (e) => {
+				if (e.key === "ArrowRight") go(current + 1, true);
+				else if (e.key === "ArrowLeft") go(current - 1, true);
+				else if (e.key === "Home") go(0, true);
+				else if (e.key === "End") go(tabs.length - 1, true);
+				else return;
+				e.preventDefault();
+			});
+		});
+		prev.addEventListener("click", () => go(current - 1));
+		next.addEventListener("click", () => go(current + 1));
+		panels.forEach((panel) =>
+			panel.querySelector(".flow-media")?.addEventListener("click", () => go(current + 1)),
+		);
+	}
+
+	document.querySelectorAll<HTMLElement>(".flow").forEach(initFlow);
+</script>
+
+<style>
+	.flow {
+		--progress: 0;
+		margin: var(--space-4) 0;
+	}
+
+	/* Track */
+	.flow-track {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(var(--count), 1fr);
+		margin-bottom: var(--space-3);
+	}
+
+	.flow-line {
+		position: absolute;
+		top: 1.125rem;
+		left: calc(100% / var(--count) / 2);
+		right: calc(100% / var(--count) / 2);
+		height: 2px;
+		background: var(--color-line);
+	}
+
+	.flow-line-fill {
+		display: block;
+		height: 100%;
+		width: calc(var(--progress) * 100%);
+		background: var(--color-accent);
+		transition: width 0.35s ease;
+	}
+
+	.flow-tab {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0;
+		border: 0;
+		background: none;
+		font-family: var(--font-sans);
+		color: var(--color-ink-faint);
+		cursor: pointer;
+	}
+
+	.flow-dot {
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		margin-bottom: 0.25rem;
+		border-radius: 999px;
+		border: 2px solid var(--color-line);
+		background: var(--color-bg);
+		font-size: 0.75rem;
+		font-weight: 600;
+		transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+	}
+
+	.flow-tab:hover .flow-dot {
+		border-color: var(--color-accent);
+	}
+
+	.flow-tab.is-done .flow-dot {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	.flow-tab.is-active .flow-dot {
+		border-color: var(--color-accent);
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+	}
+
+	.flow-tab-title {
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1.2;
+		text-align: center;
+	}
+
+	.flow-tab-who {
+		font-size: 0.6875rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.flow-tab.is-active .flow-tab-title {
+		color: var(--color-ink);
+	}
+
+	.flow-tab:focus-visible {
+		outline: none;
+	}
+
+	.flow-tab:focus-visible .flow-dot {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+	}
+
+	/* Panel */
+	.flow-stage {
+		padding: var(--space-2) var(--space-2) var(--space-3);
+		border: 1px solid var(--color-line);
+		border-radius: 3px;
+		background: var(--color-bg-raised);
+	}
+
+	.flow-panel.is-active {
+		animation: flow-in 0.3s ease;
+	}
+
+	.flow-panel[hidden] {
+		display: none;
+	}
+
+	:global(.case-copy) .flow-meta {
+		display: flex;
+		gap: 0.75rem;
+		margin: 0 0 0.25rem;
+		font-size: 0.75rem;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+	}
+
+	.flow-step {
+		color: var(--color-accent);
+	}
+
+	.flow-who {
+		color: var(--color-ink-faint);
+	}
+
+	:global(.case-copy) .flow-text {
+		margin: 0 0 var(--space-2);
+		min-height: 3.2em;
+	}
+
+	.flow-media {
+		--media-h: min(28rem, 110vw);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: var(--media-h);
+		overflow: hidden;
+		cursor: pointer;
+	}
+
+	.flow-media img {
+		display: block;
+		max-width: 100%;
+		max-height: var(--media-h);
+		width: auto;
+		height: auto;
+		object-fit: contain;
+		border-radius: 3px;
+	}
+
+	/* Controls */
+	.flow-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: var(--space-2);
+		margin-top: var(--space-2);
+	}
+
+	.flow-nav {
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 999px;
+		border: 1px solid var(--color-line);
+		background: var(--color-bg);
+		font-size: 1rem;
+		color: var(--color-ink);
+		cursor: pointer;
+		transition: border-color 0.2s ease, opacity 0.2s ease;
+	}
+
+	.flow-nav:hover:not(:disabled) {
+		border-color: var(--color-accent);
+	}
+
+	.flow-nav:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
+
+	.flow-count {
+		min-width: 3rem;
+		font-size: 0.875rem;
+		color: var(--color-ink-faint);
+		text-align: center;
+	}
+
+	@keyframes flow-in {
+		from {
+			opacity: 0;
+			transform: translateY(6px);
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.flow-tab-title,
+		.flow-tab-who {
+			display: none;
+		}
+
+		.flow-stage {
+			padding: var(--space-1) var(--space-1) var(--space-2);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.flow-panel.is-active {
+			animation: none;
+		}
+
+		.flow-line-fill {
+			transition: none;
+		}
+	}
+</style>

@@ -1,28 +1,157 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
+import BeforeAfter from "../../components/BeforeAfter.astro";
 ---
 
-<BaseLayout title="DataShare | Platform Redesign">
-	<section class="section">
-		<div class="container prose">
-			<p class="eyebrow">Platform Redesign</p>
-			<h1>DataShare</h1>
-			<p class="dek placeholder">
-				[PLACEHOLDER: full case study coming next &mdash; Problem, Process,
-				Key Decisions, and Outcome sections will go here.]
-			</p>
-		</div>
-	</section>
-</BaseLayout>
+<CaseStudyLayout
+	slug="datashare"
+	title="DataShare Santa Cruz County"
+	subtitle="Platform Redesign"
+	tags={["UX Research", "Information Architecture", "Usability Testing"]}
+	summary="Redesigned Santa Cruz County's public data hub into a clearer, community-centered experience for finding, interpreting, and acting on public health data."
+	role="Content Strategy, UX Research, UX Design"
+	timeline="April–October 2025 (7 months)"
+	tools={["Figma", "HTML", "Google Analytics"]}
+	skills={[
+		"User Research",
+		"Usability Testing",
+		"Qualitative Analysis",
+		"Information Architecture",
+		"Wireframing",
+		"Prototyping",
+	]}
+>
+	<Fragment slot="visual">
+		<img
+			src="/images/case-studies/datashare/macbook-mockup.png"
+			alt="The redesigned DataShare Santa Cruz County homepage, shown on a laptop screen"
+			width={1400}
+			height={900}
+		/>
+	</Fragment>
 
-<style>
-	h1 {
-		font-size: clamp(1.75rem, 1.4rem + 1.5vw, 2.5rem);
-		margin-top: var(--space-1);
-	}
+	<Fragment slot="overview">
+		<p>
+			DataShare Santa Cruz County is the county's public data hub — a platform that
+			centralizes health, demographic, and community indicators for residents,
+			nonprofits, educators, and policymakers. It matters because access to this data
+			shapes real decisions: where resources go, which communities get support, and
+			whether people can advocate for their own neighborhoods with real evidence behind
+			them. My goal was to redesign the platform into a clearer, more intuitive,
+			community-centered experience — one that helps users find, interpret, and act on
+			public health data with confidence.
+		</p>
+	</Fragment>
 
-	.dek {
-		font-size: 1.0625rem;
-		margin-top: var(--space-3);
-	}
-</style>
+	<Fragment slot="problem">
+		<p>
+			The original site contained valuable information but lacked clarity and structure.
+			Users struggled to locate indicators, navigate redundant pathways, and interpret
+			charts. Many took multiple routes to reach the same page — a clear sign the
+			information architecture didn't match how people actually think about the content.
+		</p>
+		<BeforeAfter
+			beforeSrc="/images/case-studies/datashare/original-full.jpg"
+			beforeAlt="The original DataShare homepage, full page"
+			afterSrc="/images/case-studies/datashare/staging-full.jpg"
+			afterAlt="The redesigned DataShare homepage on staging, full page"
+		/>
+	</Fragment>
+
+	<Fragment slot="process">
+		<details class="phase">
+			<summary>Discover</summary>
+			<div class="phase-body">
+				<p>
+					I audited the existing site and analyzed peer public-data platforms. This
+					surfaced overly technical terminology, dropdown menus that didn't reflect user
+					mental models, and a dense, text-heavy layout that overwhelmed new users.
+				</p>
+			</div>
+		</details>
+		<details class="phase">
+			<summary>Design</summary>
+			<div class="phase-body">
+				<p>
+					I restructured the site map around real community use cases instead of internal
+					terminology, simplifying labels and reducing menu depth. Low-fidelity wireframes
+					let me test navigation quickly; high-fidelity designs then introduced a
+					redesigned homepage with a Monthly Focus tile, consolidated dropdowns, and
+					clearer dashboard layouts.
+				</p>
+				<figure>
+					<img
+						src="/images/case-studies/datashare/new-dropdowns.gif"
+						alt="Demo of the redesigned DataShare navigation with consolidated dropdown menus"
+					/>
+					<figcaption>The redesigned navigation, consolidated into five goal-oriented categories</figcaption>
+				</figure>
+			</div>
+		</details>
+		<details class="phase">
+			<summary>Test</summary>
+			<div class="phase-body">
+				<p>
+					I ran moderated usability sessions with 10 participants — 6 returning users and
+					4 new users — comparing the original and redesigned site through think-aloud
+					tasks like finding demographic data or locating community initiatives.
+				</p>
+			</div>
+		</details>
+	</Fragment>
+
+	<Fragment slot="decisions">
+		<ul>
+			<li>
+				Navigation labels didn't match how people think — nested dropdowns using internal
+				terms like "Coalitions" confused users.
+				<blockquote>"I'm gonna be honest, I don't really know what coalitions mean."</blockquote>
+				 In response, I simplified labels and reduced menu depth around real community use
+				cases instead of internal terminology.
+			</li>
+			<li>
+				Accessibility gaps excluded real users — several indicators failed WCAG
+				color-contrast standards.
+				<blockquote>
+					"Is this whole bar here green? Or is the separation of colors? I can't see the
+					difference there, actually, at all."
+				</blockquote>
+				 I revised the color system before the design shipped to staging.
+			</li>
+			<li>
+				Simplifying an interface can remove functionality people depend on — returning
+				users had workflows, like the Data Spotlight feature and custom dashboard links,
+				that the initial redesign broke. I restored these shortcuts in clearer locations
+				rather than cutting them for the sake of simplicity.
+			</li>
+		</ul>
+	</Fragment>
+
+	<Fragment slot="outcome">
+		<p>
+			7 of 10 participants preferred the redesigned site — 5 of 6 returning users and 2 of
+			4 new users. I used these findings to revise the final design, restoring key
+			navigation shortcuts, fixing accessibility issues, and clarifying labels, before it
+			shipped to the staging site.
+		</p>
+	</Fragment>
+
+	<Fragment slot="reflection">
+		<p>
+			This project taught me that clean visuals don't guarantee usability, and that even
+			well-intentioned simplification can create new friction if it isn't grounded in real
+			user behavior. It reinforced my commitment to designing with users, not just for
+			them — and sharpened how I translate qualitative research into concrete design
+			decisions.
+		</p>
+	</Fragment>
+
+	<Fragment slot="whatsNext">
+		<ul>
+			<li>Refine search to return broader, more predictable results.</li>
+			<li>Reintroduce key features — Data Spotlight, custom dashboards — in clearer locations.</li>
+			<li>Run a second round of testing with color-blind and low-vision users.</li>
+			<li>Explore a lightweight onboarding flow for new users.</li>
+		</ul>
+	</Fragment>
+</CaseStudyLayout>
