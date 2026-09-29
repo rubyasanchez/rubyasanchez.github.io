@@ -272,8 +272,8 @@ const isStory = Astro.slots.has("default");
 
 	.case-visual-media :global(img) {
 		display: block;
-		max-width: 34rem;
-		max-height: 32rem;
+		max-width: min(100%, 56rem);
+		max-height: 40rem;
 		width: auto;
 		height: auto;
 		margin-inline: auto;

@@ -8,9 +8,11 @@ export type Project = {
 	tags: string[];
 	image?: string;
 	imageAlt?: string;
+	/** Unfinished: left off the site until it's ready */
+	hidden?: boolean;
 };
 
-export const projects: Project[] = [
+const allProjects: Project[] = [
 	{
 		slug: "datashare",
 		title: "DataShare",
@@ -46,5 +48,8 @@ export const projects: Project[] = [
 		impact:
 			"[PLACEHOLDER: quantified result, e.g. \"Directed X researchers across Y concurrent projects over Z terms\"]",
 		tags: ["Research Ops", "Leadership", "Literature Review"],
+		hidden: true,
 	},
 ];
+
+export const projects = allProjects.filter((project) => !project.hidden);

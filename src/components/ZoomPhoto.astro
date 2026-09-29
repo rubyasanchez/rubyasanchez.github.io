@@ -1,0 +1,89 @@
+---
+/**
+ * A photo that opens larger in the page's PhotoViewer when clicked.
+ * With `fill`, the photo covers whatever box its parent gives it (for collages);
+ * otherwise it keeps its natural shape.
+ */
+interface Props {
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+	/** Short, personal caption shown in the viewer (not the alt text). */
+	caption?: string;
+	fill?: boolean;
+	/** Where to anchor a cropped photo, as a CSS object-position (e.g. "center 25%"), so faces stay in frame. */
+	position?: string;
+	loading?: "eager" | "lazy";
+	class?: string;
+	style?: string;
+}
+
+const {
+	src,
+	alt,
+	width,
+	height,
+	caption,
+	fill = false,
+	position,
+	loading = "lazy",
+	class: className,
+	style,
+} = Astro.props;
+---
+
+<button
+	type="button"
+	class:list={["zoom-photo", { "is-fill": fill }, className]}
+	style={style}
+	data-caption={caption}
+	aria-label={`View larger: ${alt}`}
+>
+	<img
+		src={src}
+		alt={alt}
+		width={width}
+		height={height}
+		loading={loading}
+		style={position ? `object-position: ${position}` : undefined}
+	/>
+</button>
+
+<style>
+	.zoom-photo {
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 0;
+		border-radius: 4px;
+		overflow: hidden;
+		background: var(--color-bg-raised);
+		cursor: zoom-in;
+	}
+
+	.zoom-photo.is-fill {
+		height: 100%;
+	}
+
+	.zoom-photo img {
+		display: block;
+		width: 100%;
+		height: auto;
+		transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.zoom-photo.is-fill img {
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.zoom-photo:hover img {
+		transform: scale(1.03);
+	}
+
+	.zoom-photo:focus-visible {
+		outline: 3px solid var(--color-accent);
+		outline-offset: 3px;
+	}
+</style>

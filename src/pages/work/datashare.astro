@@ -1,157 +1,368 @@
 ---
 import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
-import BeforeAfter from "../../components/BeforeAfter.astro";
+import CaseSection from "../../components/CaseSection.astro";
+import Decision from "../../components/Decision.astro";
+
+const img = (name: string) => `/images/case-studies/datashare/${name}`;
 ---
 
 <CaseStudyLayout
 	slug="datashare"
 	title="DataShare Santa Cruz County"
 	subtitle="Platform Redesign"
-	tags={["UX Research", "Information Architecture", "Usability Testing"]}
-	summary="Redesigned Santa Cruz County's public data hub into a clearer, community-centered experience for finding, interpreting, and acting on public health data."
+	summary="Making Santa Cruz County's public health data easier to find, understand, and act on."
 	role="Content Strategy, UX Research, UX Design"
-	timeline="April–October 2025 (7 months)"
+	timeline="April–October 2025"
 	tools={["Figma", "HTML", "Google Analytics"]}
 	skills={[
-		"User Research",
-		"Usability Testing",
-		"Qualitative Analysis",
-		"Information Architecture",
+		"User research",
+		"Usability testing",
+		"Qualitative analysis",
+		"Information architecture",
 		"Wireframing",
 		"Prototyping",
 	]}
 >
 	<Fragment slot="visual">
 		<img
-			src="/images/case-studies/datashare/macbook-mockup.png"
+			src={img("macbook-mockup.png")}
 			alt="The redesigned DataShare Santa Cruz County homepage, shown on a laptop screen"
-			width={1400}
-			height={900}
+			width={2400}
+			height={1454}
 		/>
 	</Fragment>
 
-	<Fragment slot="overview">
+	<!-- 1 · The problem -->
+	<CaseSection eyebrow="The problem" title="Valuable public data that people couldn't find">
 		<p>
-			DataShare Santa Cruz County is the county's public data hub — a platform that
-			centralizes health, demographic, and community indicators for residents,
-			nonprofits, educators, and policymakers. It matters because access to this data
-			shapes real decisions: where resources go, which communities get support, and
-			whether people can advocate for their own neighborhoods with real evidence behind
-			them. My goal was to redesign the platform into a clearer, more intuitive,
-			community-centered experience — one that helps users find, interpret, and act on
-			public health data with confidence.
+			DataShare is the county's public data hub. Residents, nonprofits, educators, and
+			policymakers use its health, demographic, and community indicators to decide where
+			resources go and which communities get support.
 		</p>
-	</Fragment>
-
-	<Fragment slot="problem">
 		<p>
-			The original site contained valuable information but lacked clarity and structure.
-			Users struggled to locate indicators, navigate redundant pathways, and interpret
-			charts. Many took multiple routes to reach the same page — a clear sign the
-			information architecture didn't match how people actually think about the content.
+			The original site had the information but not the structure. People struggled to locate
+			indicators, took multiple routes to reach the same page, and had trouble interpreting
+			charts.
 		</p>
-		<BeforeAfter
-			beforeSrc="/images/case-studies/datashare/original-full.jpg"
-			beforeAlt="The original DataShare homepage, full page"
-			afterSrc="/images/case-studies/datashare/staging-full.jpg"
-			afterAlt="The redesigned DataShare homepage on staging, full page"
-		/>
-	</Fragment>
+		<p>
+			I was a UX Design Intern focused on content strategy, UX research, and design, working
+			with county stakeholders, another intern, and a project supervisor.
+		</p>
+		<div class="pages">
+			<figure>
+				<img
+					src={img("original-full.jpg")}
+					alt="The original DataShare homepage, full page: a long stack of banners, carousels, video tutorials, and link grids"
+					width={1512}
+					height={3482}
+					loading="lazy"
+				/>
+				<figcaption><strong>Before</strong>Original homepage</figcaption>
+			</figure>
+			<figure>
+				<img
+					src={img("staging-full.jpg")}
+					alt="The redesigned DataShare homepage, full page: a search-first hero, a Monthly Focus data tile, and partners"
+					width={1514}
+					height={1562}
+					loading="lazy"
+				/>
+				<figcaption><strong>After</strong>Redesigned homepage</figcaption>
+			</figure>
+		</div>
+		<p class="pages-note">Both full homepages, shown at the same width and scale.</p>
+		<p class="hmw">
+			How might we make DataShare easier to navigate for users with different needs, goals, and
+			levels of familiarity with public data?
+		</p>
+	</CaseSection>
 
-	<Fragment slot="process">
-		<details class="phase">
-			<summary>Discover</summary>
-			<div class="phase-body">
-				<p>
-					I audited the existing site and analyzed peer public-data platforms. This
-					surfaced overly technical terminology, dropdown menus that didn't reflect user
-					mental models, and a dense, text-heavy layout that overwhelmed new users.
-				</p>
-			</div>
-		</details>
-		<details class="phase">
-			<summary>Design</summary>
-			<div class="phase-body">
-				<p>
-					I restructured the site map around real community use cases instead of internal
-					terminology, simplifying labels and reducing menu depth. Low-fidelity wireframes
-					let me test navigation quickly; high-fidelity designs then introduced a
-					redesigned homepage with a Monthly Focus tile, consolidated dropdowns, and
-					clearer dashboard layouts.
-				</p>
-				<figure>
-					<img
-						src="/images/case-studies/datashare/new-dropdowns.gif"
-						alt="Demo of the redesigned DataShare navigation with consolidated dropdown menus"
-					/>
-					<figcaption>The redesigned navigation, consolidated into five goal-oriented categories</figcaption>
-				</figure>
-			</div>
-		</details>
-		<details class="phase">
-			<summary>Test</summary>
-			<div class="phase-body">
-				<p>
-					I ran moderated usability sessions with 10 participants — 6 returning users and
-					4 new users — comparing the original and redesigned site through think-aloud
-					tasks like finding demographic data or locating community initiatives.
-				</p>
-			</div>
-		</details>
-	</Fragment>
-
-	<Fragment slot="decisions">
-		<ul>
+	<!-- 2 · Process -->
+	<CaseSection eyebrow="Process" title="Audit, restructure, test">
+		<ol class="steps">
 			<li>
-				Navigation labels didn't match how people think — nested dropdowns using internal
-				terms like "Coalitions" confused users.
-				<blockquote>"I'm gonna be honest, I don't really know what coalitions mean."</blockquote>
-				 In response, I simplified labels and reduced menu depth around real community use
-				cases instead of internal terminology.
+				<span class="step-num">01</span>
+				<strong>Discover</strong>
+				Audited the site and peer public-data platforms: technical terminology, menus that
+				didn't match mental models, and dense, text-heavy layouts.
 			</li>
 			<li>
-				Accessibility gaps excluded real users — several indicators failed WCAG
-				color-contrast standards.
+				<span class="step-num">02</span>
+				<strong>Design</strong>
+				Rebuilt the site map around community use cases, simplified labels, and reduced menu
+				depth, then moved from wireframes to high fidelity.
+			</li>
+			<li>
+				<span class="step-num">03</span>
+				<strong>Test</strong>
+				Ran moderated think-aloud sessions with 10 participants, 6 returning and 4 new,
+				comparing the original and redesigned site.
+			</li>
+		</ol>
+		<figure>
+			<img
+				src={img("new-dropdowns.gif")}
+				alt="Demo of the redesigned DataShare navigation with consolidated dropdown menus"
+				width={1470}
+				height={756}
+				loading="lazy"
+			/>
+			<figcaption>The redesigned navigation, consolidated into five goal-oriented categories</figcaption>
+		</figure>
+	</CaseSection>
+
+	<!-- 3 · What testing revealed -->
+	<CaseSection eyebrow="What testing revealed" title="People couldn't read the labels, or the colors">
+		<ol class="findings">
+			<li>
+				<p class="finding-head">Navigation labels didn't match how people think.</p>
+				<blockquote>“I'm gonna be honest, I don't really know what coalitions mean.”</blockquote>
+				<p class="finding-change">
+					Nested dropdowns used internal terms like “Coalitions.” I simplified labels and
+					reduced menu depth around real community use cases.
+				</p>
+			</li>
+			<li>
+				<p class="finding-head">Accessibility gaps excluded real users.</p>
 				<blockquote>
-					"Is this whole bar here green? Or is the separation of colors? I can't see the
-					difference there, actually, at all."
+					“Is this whole bar here green? Or is the separation of colors? I can't see the
+					difference there, actually, at all.”
 				</blockquote>
-				 I revised the color system before the design shipped to staging.
+				<blockquote>
+					“Some of the text is really small… this is well below, like, ADA standards for font
+					size.”
+				</blockquote>
+				<p class="finding-change">
+					Several indicators failed WCAG color-contrast standards, and body text was too small
+					for low-vision users. Not everything failed: the same colorblind participant could
+					tell pie-chart slices apart because of their white borders and labels, so I kept
+					those cues and revised the color system around them before launch.
+				</p>
 			</li>
-			<li>
-				Simplifying an interface can remove functionality people depend on — returning
-				users had workflows, like the Data Spotlight feature and custom dashboard links,
-				that the initial redesign broke. I restored these shortcuts in clearer locations
-				rather than cutting them for the sake of simplicity.
-			</li>
-		</ul>
-	</Fragment>
+		</ol>
+	</CaseSection>
 
-	<Fragment slot="outcome">
+	<!-- 4 · Decision -->
+	<Decision
+		number={1}
+		title="Simplify, or keep what returning users rely on?"
+		options={[
+			{
+				label: "Keep the shortcuts cut",
+				detail: "A cleaner interface, but it breaks workflows returning users depend on.",
+			},
+			{
+				label: "Restore them in clearer locations",
+				detail: "Keeps the simpler structure without taking tools away.",
+				chosen: true,
+			},
+		]}
+	>
 		<p>
-			7 of 10 participants preferred the redesigned site — 5 of 6 returning users and 2 of
-			4 new users. I used these findings to revise the final design, restoring key
-			navigation shortcuts, fixing accessibility issues, and clarifying labels, before it
-			shipped to the staging site.
+			Returning users had workflows, like the Data Spotlight feature and custom dashboard links,
+			that the initial redesign broke. Simplifying an interface can remove functionality people
+			depend on, so I restored these shortcuts in clearer locations instead of cutting them.
 		</p>
-	</Fragment>
+	</Decision>
 
-	<Fragment slot="reflection">
+	<!-- 5 · Outcome -->
+	<CaseSection eyebrow="Outcome" title="Most testers preferred the redesign">
+		<div class="stat-row">
+			<div class="stat">
+				<p class="stat-value">70%</p>
+				<p class="stat-label">of participants preferred the redesigned site</p>
+			</div>
+			<div class="stat">
+				<p class="stat-value">83%</p>
+				<p class="stat-label">of returning users preferred it</p>
+			</div>
+		</div>
+		<p class="source-line">From 10 moderated sessions: 6 returning users and 4 new users.</p>
+		<blockquote class="outcome-quote">
+			“I like the [redesign] better… I'm not overwhelmed by what I'm looking at.”
+			<cite>Returning user</cite>
+		</blockquote>
 		<p>
-			This project taught me that clean visuals don't guarantee usability, and that even
-			well-intentioned simplification can create new friction if it isn't grounded in real
-			user behavior. It reinforced my commitment to designing with users, not just for
-			them — and sharpened how I translate qualitative research into concrete design
-			decisions.
+			I used these findings to revise the final design, restoring
+			key navigation shortcuts, fixing accessibility issues, and clarifying labels. The
+			redesign, which puts finding data first, simplifies the homepage hierarchy, and surfaces
+			commonly used resources earlier, launched on the live DataShare site and is in use today.
 		</p>
-	</Fragment>
+	</CaseSection>
 
-	<Fragment slot="whatsNext">
-		<ul>
-			<li>Refine search to return broader, more predictable results.</li>
-			<li>Reintroduce key features — Data Spotlight, custom dashboards — in clearer locations.</li>
-			<li>Run a second round of testing with color-blind and low-vision users.</li>
-			<li>Explore a lightweight onboarding flow for new users.</li>
-		</ul>
-	</Fragment>
+	<!-- 6 · Reflection -->
+	<CaseSection eyebrow="Reflection" title="Simple isn't the same as usable">
+		<div class="landing">
+			<div>
+				<h3>What I learned</h3>
+				<p>
+					Clean visuals don't guarantee usability, and even well-intentioned simplification can
+					create new friction if it isn't grounded in real user behavior. My assumptions about
+					what felt intuitive didn't match what users needed, and testing pushed me to design
+					from evidence instead. It also meant balancing user needs, accessibility,
+					organizational goals, and technical constraints rather than optimizing for any one
+					of them.
+				</p>
+			</div>
+			<div>
+				<h3>What I'd do next</h3>
+				<ul>
+					<li>Refine search to return broader, more predictable results.</li>
+					<li>Run a second round of testing with color-blind and low-vision users.</li>
+					<li>Explore a lightweight onboarding flow for new users.</li>
+				</ul>
+			</div>
+		</div>
+	</CaseSection>
 </CaseStudyLayout>
+
+<style>
+	/* ---------- Problem: before / after at the same scale ---------- */
+	.pages {
+		display: flex;
+		justify-content: center;
+		align-items: flex-start;
+		gap: var(--space-4);
+		margin-top: var(--space-4);
+	}
+
+	.pages figure {
+		width: min(15rem, 45%);
+		margin: 0;
+	}
+
+	.pages img {
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 12px 32px -12px rgb(28 27 25 / 0.18);
+	}
+
+	.pages figcaption {
+		text-align: left;
+		font-size: var(--text-sm);
+	}
+
+	.pages figcaption strong {
+		display: block;
+		font-size: var(--text-label);
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-accent);
+	}
+
+	.pages-note,
+	.source-line {
+		font-size: var(--text-label);
+		color: var(--color-ink-faint);
+	}
+
+	.pages-note {
+		margin-top: var(--space-3);
+		text-align: center;
+	}
+
+	.hmw {
+		margin-top: var(--space-4);
+		padding-block: var(--space-3);
+		border-block: 1px solid var(--color-line);
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		font-style: italic;
+		line-height: 1.3;
+		text-align: center;
+		text-wrap: balance;
+		color: var(--color-ink);
+	}
+
+	.outcome-quote cite {
+		display: block;
+		margin-top: var(--space-1);
+		font-family: inherit;
+		font-size: var(--text-sm);
+		font-style: normal;
+		color: var(--color-ink-faint);
+	}
+
+	/* ---------- Process ---------- */
+	.steps {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-3);
+	}
+
+	.steps li {
+		padding: var(--space-2) 0 0;
+		border-top: 2px solid var(--color-accent);
+		font-size: var(--text-sm);
+		line-height: 1.5;
+	}
+
+	.steps li::before {
+		content: none;
+	}
+
+	.steps strong {
+		display: block;
+		margin-bottom: 0.25rem;
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		font-weight: 500;
+	}
+
+	.step-num {
+		font-size: var(--text-label);
+		font-weight: 600;
+		color: var(--color-accent);
+	}
+
+	/* ---------- Findings ---------- */
+	.findings {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+
+	.findings li {
+		padding: var(--space-3) 0 0;
+		border-top: 1px solid var(--color-line);
+	}
+
+	.findings li::before {
+		content: none;
+	}
+
+	.finding-head {
+		font-weight: 600;
+		color: var(--color-ink);
+	}
+
+	/* All quotes on the page share one style */
+	:global(.case-copy) blockquote {
+		margin: var(--space-2) 0;
+		padding-left: var(--space-2);
+		border-left: 3px solid var(--color-accent);
+		font-family: var(--font-serif);
+		font-size: var(--text-xl);
+		line-height: 1.3;
+	}
+
+	/* ---------- Reflection ---------- */
+	.landing {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-4);
+	}
+
+	.landing h3 {
+		font-size: var(--text-lg);
+		margin-bottom: var(--space-1);
+	}
+
+	@media (max-width: 40rem) {
+		.steps {
+			grid-template-columns: 1fr;
+		}
+
+		.pages {
+			gap: var(--space-2);
+		}
+	}
+</style>

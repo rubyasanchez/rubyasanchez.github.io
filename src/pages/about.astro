@@ -1,132 +1,717 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CorkboardCollage from "../components/CorkboardCollage.astro";
-import DeskIllustration from "../components/DeskIllustration.astro";
+import ZoomPhoto from "../components/ZoomPhoto.astro";
+import PhotoViewer from "../components/PhotoViewer.astro";
 
-const approach = [
-	{
-		title: "Research before design",
-		body: "Pair qualitative and quantitative methods before committing to a direction.",
-	},
-	{
-		title: "Systems over screens",
-		body: "When the problem lives in a workflow, fix the workflow — not just the interface.",
-	},
-	{
-		title: "Access is not optional",
-		body: "Accessibility and inclusive design get evaluated with the same rigor as everything else.",
-	},
-	{
-		title: "AI held to the same bar",
-		body: "Structured, tested, and accountable to real users — not just clever.",
-	},
+// `position` anchors a cropped photo (CSS object-position) so faces and people stay in frame.
+const p = (name: string, width: number, height: number, alt: string, position?: string) => ({
+	src: `/images/about/life/${name}.jpg`,
+	alt,
+	width,
+	height,
+	position,
+});
+
+const intro = p("grad-twirl", 1323, 2000, "Ruby twirling in a white dress and UC Santa Cruz graduation stole in a green meadow");
+
+// Swim: an editorial photo story that moves from athlete, to teammate, to captain.
+const swim = {
+	deck: p("meet-deck", 1206, 801, "Ruby on the pool deck at a meet in a yellow SLUGS cap, goggles, and a UCSC suit"),
+	team: p("team-full", 2000, 1500, "The whole UCSC Swim & Dive team in gold sweatshirts, throwing up hand signs on a pool deck"),
+	hug: p("teammates-hug", 1333, 2000, "Ruby and a teammate in yellow SLUGS caps hugging and laughing at a meet", "center 25%"),
+	cheering: p("cheering", 1192, 1478, "Ruby in a team jacket cupping hands and cheering from the pool deck with teammates"),
+	seniorDay: p("senior-day", 1500, 2000, "Ruby on Senior Day holding a yellow poster reading Captain Ruby, covered in handwritten notes, standing between two people", "center 35%"),
+	// Everyday moments and milestones, shown as one row at a shared height.
+	moments: [
+		p("underwater", 1400, 1050, "Three teammates in caps and goggles making peace signs underwater"),
+		p("team-hawaiian", 1050, 1400, "Eight teammates in matching Hawaiian shirts and face glitter huddled on a pool deck", "center 52%"),
+		p("team-hoodies-lift", 2000, 1333, "Ruby and teammates in team jackets laughing as they hold a fourth teammate sideways", "center 20%"),
+		p("award", 1206, 1590, "Ruby in a floral dress holding a glass award at an evening event", "center 22%"),
+	],
+};
+
+// Movement: two justified rows, every photo the same height at its own shape.
+const moving = [
+	[
+		p("cycling-selfie", 1200, 1600, "Ruby taking a selfie mid-ride in a cycling helmet and mirrored sunglasses", "center 25%"),
+		p("race-day", 1095, 743, "Ruby crossing the finish line of a 5K with arms raised", "60% center"),
+		p("cycling-crew", 2000, 1500, "Ruby and two friends posing with their road bikes"),
+		p("open-water", 1200, 1600, "Two swimmers in caps wading into a mountain lake under a big sky", "center 70%"),
+	],
+	[
+		p("cycling-path-selfie", 2000, 1500, "Ruby riding a bike path and smiling at the camera"),
+		p("riding-together", 1200, 1600, "Two cyclists riding up a coastal road lined with eucalyptus trees"),
+		p("race-coast", 1050, 1400, "Ruby smiling with eyes closed after a race, wearing a bib that says Let's Go Ruby, with the ocean behind"),
+		p("group-ride", 360, 480, "A group of cyclists riding single file along a bayside path"),
+	],
 ];
+
+// Santa Cruz → Berkeley: the past on the left, carrying more weight; now on the right.
+const santaCruz = {
+	lead: p("grad-walk", 1326, 2000, "Ruby and a friend in student-athlete graduation stoles walking along a wooded path"),
+	more: [
+		p("grad-field", 2000, 1326, "Ruby and two friends in graduation stoles sitting in golden grass"),
+		p("graduation", 1061, 1600, "Ruby at graduation wearing leis and a student-athlete stole, standing between two coaches"),
+		p("grad-portrait", 1400, 933, "Ruby smiling in a grassy field, wearing a UC Santa Cruz student-athlete graduation stole"),
+	],
+};
+const berkeley = {
+	lead: p("berkeley-steps", 2000, 1000, "A large group of classmates posing together on the steps of a campus building"),
+	more: [
+		p("cal-game", 480, 360, "Ruby and a friend in leis at a Cal football game at night"),
+		p("berkeley-picnic", 2000, 1333, "Ruby and classmates sharing lunch at a picnic table under a yellow umbrella"),
+	],
+};
+
+// Small things: a looser grid with a short caption living among the photos.
+const food = {
+	rolls: p("cinnamon-rolls", 1500, 2000, "A pan of freshly baked cinnamon rolls"),
+	cookies: p("cookies", 1500, 2000, "Chocolate chunk cookies with flaky salt on a baking sheet"),
+	cake: p("lemon-cake", 1500, 2000, "A frosted layer cake topped with lemon slices"),
+	latte: p("latte-art", 1500, 2000, "Two lattes, one topped with tiny cookies and one with rainbow latte art"),
+	buns: p("minion-buns", 1500, 2000, "Steamed buns decorated as cartoon characters"),
+};
+const sunsets = {
+	bluff: p("bluff-sunset", 1500, 2000, "A pink and orange sunset over the ocean from a grassy bluff"),
+	cypress: p("coast-sunset", 1600, 1200, "A cypress tree on a rocky outcrop above the ocean at sunset"),
+	tidepools: p("tidepools", 1500, 2000, "Tide pools on a rocky shore at golden hour"),
+	street: p("street-sunset", 1500, 2000, "A purple and pink sunset over a quiet neighborhood street"),
+	coastline: p("coastline", 1600, 1200, "Waves breaking along a green coastal bluff under a clear sky"),
+	pool: p("pool-sunrise", 1500, 2000, "An outdoor pool at sunset with the orange sky reflected in the water"),
+};
 ---
 
 <BaseLayout title="About">
-	<h1 class="sr-only">About Ruby Sanchez</h1>
-	<section class="section desk-section">
-		<div class="container">
-			<DeskIllustration />
-		</div>
-	</section>
-
-	<section class="section board-section">
-		<div class="container">
-			<CorkboardCollage />
-		</div>
-	</section>
-
-	<section class="section">
-		<div class="container prose">
-			<div class="bio">
-				<p class="reveal" style="--i:0">
-					I got into UX through Cognitive Science — through being endlessly curious about
-					why people do what they do online, and what that says about how a system is
-					built. That curiosity turned into a career path I didn't fully expect: first as
-					a researcher pulling apart why people kept getting lost on a public data
-					platform, then redesigning how an entire research lab onboards and
-					communicates, and now as a graduate student at Berkeley split between UX design
-					and product management, because "just design" or "just strategy" never felt
-					like the whole picture on its own.
-				</p>
-				<p class="reveal" style="--i:1">
-					I'm especially drawn to public health, education, and social computing — places
-					where getting the design wrong has real consequences for who gets heard and who
-					gets left out. The parts of a system I care most about are usually the ones
-					nobody notices when they're working: the label that finally makes sense, the
-					workflow that stops losing people halfway through, the AI feature that earns
-					trust instead of demanding it.
-				</p>
-				<p class="reveal" style="--i:2">
-					Outside of research and design, I'm the captain of the UC Santa Cruz Swim &amp;
-					Dive team — a role I stepped into knowing a lot more about swimming than about
-					leading 70 people through a season. It taught me that most of leadership is
-					just clear communication and knowing when to listen, which turns out to be
-					exactly what cross-functional design work asks of you too.
-				</p>
+	<div class="about">
+		<!-- 1 · Introduction: one large image beside the text -->
+		<section class="section intro">
+			<div class="container intro-grid">
+				<div class="intro-text">
+					<p class="eyebrow">About</p>
+					<h1>Hi, I'm Ruby.</h1>
+					<p class="lede">
+						I'm a designer, researcher, and endlessly curious person interested in how people think,
+						work, and interact with technology.
+					</p>
+					<p class="lede-2">My work shows how I design. This is a little more about who I am.</p>
+				</div>
+				<div class="intro-photo">
+					<ZoomPhoto {...intro} fill loading="eager" caption="Graduation day" />
+				</div>
 			</div>
-		</div>
+		</section>
 
-		<div class="container prose">
-			<h2 class="reveal" style="--i:0">How I approach problems</h2>
-			<div class="approach-list">
-				{
-					approach.map((a, i) => (
-						<div class="approach-item reveal" style={`--i:${i + 1}`}>
-							<p class="approach-title">{a.title}</p>
-							<p class="approach-body">{a.body}</p>
+		<!-- 2 · Swim + leadership: the story beside a team collage, then what it added up to -->
+		<section class="section swim">
+			<div class="container">
+				<div class="swim-top">
+					<div class="swim-text">
+						<p class="eyebrow">Swim &amp; Dive</p>
+						<h2>Four years in the pool, two years leading the team.</h2>
+						<p>
+							I spent all four years at UCSC on the Swim &amp; Dive team and served as captain for my
+							final two. I went into the role thinking leadership meant knowing what to say and
+							stepping up in the big moments. Instead, I learned that most leadership happens in the
+							small ones.
+						</p>
+						<p>
+							It was checking in on a teammate after a hard practice, noticing when someone wasn't
+							feeling like themselves, communicating clearly, and showing up consistently. Leading a
+							team of 70 taught me that you don't need to have every answer. You need to pay
+							attention to people and understand what they need from you.
+						</p>
+						<p class="swim-quote">
+							Leadership isn't one big heroic act. It's the little things you choose to do every day.
+						</p>
+					</div>
+					<!-- Athlete, team, teammate, and captain in one collage -->
+					<div class="swim-collage">
+						<div class="c-deck"><ZoomPhoto {...swim.deck} fill caption="Meet day" /></div>
+						<div class="c-cheer"><ZoomPhoto {...swim.cheering} fill caption="From the deck" /></div>
+						<div class="c-team"><ZoomPhoto {...swim.team} fill caption="The whole team" /></div>
+						<div class="c-hug"><ZoomPhoto {...swim.hug} fill caption="Teammates" /></div>
+					</div>
+				</div>
+
+				<!-- Senior Day beside the small moments that led up to it -->
+				<ul class="swim-close">
+					<li class="swim-senior"><ZoomPhoto {...swim.seniorDay} fill caption="Senior Day" /></li>
+					{
+						swim.moments.map((photo) => (
+							<li><ZoomPhoto {...photo} fill caption="Swim & Dive" /></li>
+						))
+					}
+				</ul>
+			</div>
+		</section>
+
+		<!-- 3 · Movement: a lighter, horizontal photo sequence -->
+		<section class="section moving">
+			<div class="container">
+				<div class="moving-text">
+					<h2>Always moving.</h2>
+					<p>
+						I spent most of my life as a swimmer, but lately I've been finding new ways to challenge
+						myself outside the pool. Running and cycling have become a way to explore, compete with
+						myself, and occasionally convince myself that signing up for another race is a good idea.
+					</p>
+				</div>
+				<div class="moving-rows">
+					{
+						moving.map((row) => (
+							<ul class="moving-row">
+								{row.map((photo) => (
+									<li style={`--ratio: ${photo.width / photo.height}`}>
+										<ZoomPhoto {...photo} fill caption="Always moving" />
+									</li>
+								))}
+							</ul>
+						))
+					}
+				</div>
+			</div>
+		</section>
+
+		<!-- 4 · Santa Cruz → Berkeley: two places side by side, read as a progression -->
+		<section class="section places">
+			<div class="container">
+				<div class="places-text">
+					<h2>Santa Cruz <span class="arrow" aria-hidden="true">→</span><span class="sr-only">to</span> Berkeley</h2>
+					<p>
+						UCSC is where I found Cognitive Science, UX, research, and many of the people and
+						experiences that shaped me. Now at Berkeley, I'm getting to push further into product,
+						design, and the questions I want to spend my career exploring.
+					</p>
+				</div>
+				<div class="places-grid">
+					<figure class="place place-then">
+						<figcaption><strong>Santa Cruz</strong> B.S. Cognitive Science, 2026</figcaption>
+						<div class="place-photos">
+							<div class="place-lead"><ZoomPhoto {...santaCruz.lead} fill caption="Santa Cruz" /></div>
+							{santaCruz.more.map((photo) => (
+								<div><ZoomPhoto {...photo} fill caption="Santa Cruz" /></div>
+							))}
 						</div>
-					))
-				}
+					</figure>
+					<p class="places-arrow" aria-hidden="true">→</p>
+					<figure class="place place-now">
+						<figcaption><strong>Berkeley</strong> MIMS, expected 2028</figcaption>
+						<div class="place-photos">
+							<div class="place-lead"><ZoomPhoto {...berkeley.lead} fill caption="Berkeley" /></div>
+							{berkeley.more.map((photo) => (
+								<div><ZoomPhoto {...photo} fill caption="Berkeley" /></div>
+							))}
+						</div>
+					</figure>
+				</div>
 			</div>
-		</div>
-	</section>
+		</section>
+
+		<!-- 5 · Small things: a looser editorial grid with captions among the photos -->
+		<section class="section small">
+			<div class="container">
+				<h2>Small things I love</h2>
+
+				<div class="small-grid food-grid">
+					<div class="small-note">
+						<p class="small-title">Usually cooking something</p>
+						<p>I love cooking, baking, and trying new food.</p>
+					</div>
+					<div class="f-latte"><ZoomPhoto {...food.latte} fill caption="Usually cooking something" /></div>
+					<div class="f-rolls"><ZoomPhoto {...food.rolls} fill caption="Usually cooking something" /></div>
+					<div class="f-cookies"><ZoomPhoto {...food.cookies} fill caption="Usually cooking something" /></div>
+					<div class="f-cake"><ZoomPhoto {...food.cake} fill caption="Usually cooking something" /></div>
+					<div class="f-buns"><ZoomPhoto {...food.buns} fill caption="Usually cooking something" /></div>
+				</div>
+
+				<div class="small-grid sunset-grid">
+					<div class="small-note">
+						<p class="small-title">Chasing sunsets</p>
+						<p>If there's an ocean and a sunset nearby, I'm probably going to stop and take a picture.</p>
+					</div>
+					<div class="s-bluff"><ZoomPhoto {...sunsets.bluff} fill caption="Chasing sunsets" /></div>
+					<div class="s-cypress"><ZoomPhoto {...sunsets.cypress} fill caption="Chasing sunsets" /></div>
+					<div class="s-tidepools"><ZoomPhoto {...sunsets.tidepools} fill caption="Chasing sunsets" /></div>
+					<div class="s-street"><ZoomPhoto {...sunsets.street} fill caption="Chasing sunsets" /></div>
+					<div class="s-coastline"><ZoomPhoto {...sunsets.coastline} fill caption="Chasing sunsets" /></div>
+					<div class="s-pool"><ZoomPhoto {...sunsets.pool} fill caption="Chasing sunsets" /></div>
+				</div>
+			</div>
+		</section>
+	</div>
+
+	<PhotoViewer />
 </BaseLayout>
 
+
 <style>
-	.desk-section {
-		padding-bottom: var(--space-2);
+	.about h2 {
+		font-size: var(--text-xl);
+		line-height: 1.2;
 	}
 
-	.board-section {
-		padding-top: var(--space-2);
-		padding-bottom: var(--space-3);
+	.about p {
+		color: var(--color-ink-soft);
 	}
 
-	.bio p {
-		margin-top: var(--space-3);
+	/* ---------- 1 · Introduction ---------- */
+	.intro {
+		padding-top: var(--space-4);
 	}
 
-	.bio p:first-child {
-		margin-top: 0;
-	}
-
-	h2 {
-		font-size: 1.375rem;
-		margin-top: var(--space-5);
-	}
-
-	.approach-list {
-		margin-top: var(--space-3);
+	.intro-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-		gap: var(--space-3) var(--space-4);
+		grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
+		gap: var(--space-5);
+		align-items: center;
 	}
 
-	.approach-item {
-		padding-top: var(--space-2);
-		border-top: 1px solid var(--color-line);
+	.intro h1 {
+		margin-top: var(--space-1);
+		font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);
+		line-height: 1.1;
 	}
 
-	.approach-title {
-		font-weight: 600;
+	.lede {
+		margin-top: var(--space-3);
+		max-width: 38rem;
+		font-size: var(--text-lg);
+		line-height: 1.5;
+	}
+
+	.lede-2 {
+		margin-top: var(--space-2);
+		max-width: 38rem;
+	}
+
+	.intro-photo {
+		aspect-ratio: 3 / 4;
+	}
+
+	/* ---------- 2 · Swim + leadership ---------- */
+	.swim {
+		background: var(--color-bg-raised);
+	}
+
+	.swim-top {
+		display: grid;
+		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		gap: var(--space-4);
+		align-items: center;
+	}
+
+	.swim-text h2 {
+		margin-top: var(--space-1);
+	}
+
+	.swim-text p:not(.eyebrow) {
+		margin-top: var(--space-2);
+	}
+
+	/* Two wide photos stacked on the left, two tall ones on the right. */
+	.swim-collage {
+		display: grid;
+		grid-template-columns: 1fr 1fr 0.85fr;
+		grid-template-rows: repeat(3, 10.5rem);
+		grid-template-areas:
+			"deck deck cheer"
+			"team team cheer"
+			"team team hug";
+		gap: var(--space-1);
+	}
+
+	.c-deck {
+		grid-area: deck;
+	}
+
+	.c-cheer {
+		grid-area: cheer;
+	}
+
+	.c-team {
+		grid-area: team;
+	}
+
+	/* Zoom in on the team so faces are easier to see; the pool deck and ceiling are trimmed. */
+	.swim .c-team :global(.zoom-photo img),
+	.swim .c-team :global(.zoom-photo:hover img) {
+		transform: scale(1.3);
+		transform-origin: 50% 72%;
+	}
+
+	.c-hug {
+		grid-area: hug;
+	}
+
+	/* The last line of the story, set a step larger so it lands without becoming a heading. */
+	.about .swim-quote {
+		margin-top: var(--space-3);
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		line-height: 1.4;
 		color: var(--color-ink);
 	}
 
-	.approach-body {
+	/* Senior Day tall on the left, the small moments in a 2 × 2 grid beside it. */
+	.swim-close {
+		display: grid;
+		grid-template-columns: 1.3fr 1fr 1fr;
+		grid-template-rows: repeat(2, 11rem);
+		gap: var(--space-1);
+		margin-top: var(--space-4);
+	}
+
+	.swim-close li {
+		min-width: 0;
+	}
+
+	.swim-senior {
+		grid-row: span 2;
+	}
+
+	/* ---------- 3 · Movement ---------- */
+	.moving-text {
+		max-width: 36rem;
+	}
+
+	.moving-text p {
+		margin-top: var(--space-2);
+	}
+
+	.moving-rows {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	/* Each photo grows in proportion to its shape, so a row shares one height. */
+	.moving-row {
+		display: flex;
+		gap: var(--space-2);
+	}
+
+	.moving-row li {
+		flex: var(--ratio) 1 0;
+		aspect-ratio: var(--ratio);
+		min-width: 0;
+	}
+
+	/* ---------- 4 · Santa Cruz → Berkeley ---------- */
+	.places {
+		border-top: 1px solid var(--color-line);
+	}
+
+	.places-text {
+		max-width: 38rem;
+	}
+
+	.places-text p {
+		margin-top: var(--space-2);
+	}
+
+	.arrow,
+	.places-arrow {
+		color: var(--color-accent);
+	}
+
+	.places-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1.25fr) auto minmax(0, 1fr);
+		gap: var(--space-3);
+		align-items: center;
+		margin-top: var(--space-4);
+	}
+
+	.place {
+		margin: 0;
+	}
+
+	.place figcaption {
+		margin-bottom: var(--space-2);
+		padding-top: var(--space-1);
+		border-top: 2px solid var(--color-ink);
+		font-size: var(--text-sm);
+		color: var(--color-ink-faint);
+	}
+
+	.place-now figcaption {
+		border-top-color: var(--color-accent);
+	}
+
+	.place figcaption strong {
+		display: block;
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		font-weight: 500;
+		color: var(--color-ink);
+	}
+
+	.place-photos {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-1);
+	}
+
+	/* Lead photo on the left; one wide photo on top right, two small ones side by side below it. */
+	.place-then .place-photos {
+		grid-template-columns: 1.1fr 0.5fr 0.5fr;
+		grid-template-rows: repeat(2, 10rem);
+	}
+
+	.place-then .place-lead {
+		grid-row: span 2;
+	}
+
+	.place-then .place-photos > :nth-child(2) {
+		grid-column: span 2;
+	}
+
+	.place-now .place-photos {
+		grid-template-rows: 12rem 8rem;
+	}
+
+	.place-now .place-lead {
+		grid-column: span 2;
+	}
+
+	.places-arrow {
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+	}
+
+	/* ---------- 5 · Small things ---------- */
+	.small {
+		border-top: 1px solid var(--color-line);
+	}
+
+	.small-grid {
+		display: grid;
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+		grid-auto-rows: 12rem;
+		gap: var(--space-2);
+		margin-top: var(--space-4);
+	}
+
+	.small-note {
+		align-self: end;
+		padding-bottom: var(--space-1);
+	}
+
+	.small-note p:not(.small-title) {
 		margin-top: 0.25rem;
-		font-size: 0.9375rem;
-		color: var(--color-ink-soft);
+		font-size: var(--text-sm);
+		line-height: 1.5;
+	}
+
+	.about .small-title {
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		line-height: 1.2;
+		color: var(--color-ink);
+	}
+
+	/* Food: note top-left, two tall photos, three square ones. */
+	.food-grid {
+		grid-template-areas:
+			"note   rolls  cookies cake"
+			"latte  rolls  buns    cake";
+	}
+
+	.f-latte {
+		grid-area: latte;
+	}
+
+	.food-grid .small-note {
+		grid-area: note;
+	}
+
+	.f-rolls {
+		grid-area: rolls;
+	}
+
+	.f-cookies {
+		grid-area: cookies;
+	}
+
+	.f-cake {
+		grid-area: cake;
+	}
+
+	.f-buns {
+		grid-area: buns;
+	}
+
+	/* Sunsets: mirrored, with the note on the right and the cypress as the large photo. */
+	.sunset-grid {
+		grid-template-areas:
+			"bluff cypress cypress note"
+			"bluff cypress cypress tide"
+			"coast coast   street  pool";
+	}
+
+	.sunset-grid .small-note {
+		grid-area: note;
+	}
+
+	.s-bluff {
+		grid-area: bluff;
+	}
+
+	.s-cypress {
+		grid-area: cypress;
+	}
+
+	.s-tidepools {
+		grid-area: tide;
+	}
+
+	.s-street {
+		grid-area: street;
+	}
+
+	.s-coastline {
+		grid-area: coast;
+	}
+
+	.s-pool {
+		grid-area: pool;
+	}
+
+	/* ---------- Tablet ---------- */
+	@media (max-width: 60rem) {
+		.intro-grid {
+			grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
+			gap: var(--space-4);
+		}
+
+		.swim-top {
+			grid-template-columns: 1fr;
+			gap: var(--space-3);
+		}
+
+		.swim-text {
+			max-width: 38rem;
+		}
+
+		.swim-collage {
+			grid-template-rows: repeat(3, 11rem);
+		}
+
+		.places-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.places-arrow {
+			justify-self: center;
+			transform: rotate(90deg);
+			line-height: 1;
+		}
+	}
+
+	/* ---------- Phone ---------- */
+	@media (max-width: 40rem) {
+		.intro-grid {
+			grid-template-columns: 1fr;
+			gap: var(--space-3);
+		}
+
+		.intro-photo {
+			order: -1;
+			width: min(100%, 18rem);
+		}
+
+		/* Story first, then the collage in two columns so photos stay large. */
+		.swim-collage {
+			grid-template-columns: 1fr 1fr;
+			grid-template-rows: 11rem 13rem 11rem;
+			grid-template-areas:
+				"deck  deck"
+				"cheer hug"
+				"team  team";
+		}
+
+		/* Wide group shots run full width at their own shape, so nobody at the edges is cut off;
+		   the two tall photos pair up. Order: Senior Day, underwater, Hawaiian + award, the lift. */
+		.swim-close {
+			grid-template-columns: 1fr 1fr;
+			grid-template-rows: none;
+		}
+
+		.swim-senior {
+			grid-row: auto;
+			grid-column: span 2;
+			aspect-ratio: 1;
+		}
+
+		.swim-close li:nth-child(2) {
+			grid-column: span 2;
+			aspect-ratio: 4 / 3;
+		}
+
+		.swim-close li:nth-child(3),
+		.swim-close li:nth-child(5) {
+			aspect-ratio: 3 / 4;
+		}
+
+		.swim-close li:nth-child(4) {
+			order: 1;
+			grid-column: span 2;
+			aspect-ratio: 3 / 2;
+		}
+
+		/* Rows of four get too small on a phone; let them wrap into pairs. */
+		.moving-row {
+			flex-wrap: wrap;
+			gap: var(--space-1);
+		}
+
+		/* Square tiles crop both tall and wide photos gently, so groups and faces stay in frame. */
+		.moving-row li {
+			flex: 1 1 40%;
+			aspect-ratio: 1;
+		}
+
+		.moving-rows {
+			gap: var(--space-1);
+		}
+
+		.place-then .place-photos {
+			grid-template-rows: repeat(2, 8rem);
+		}
+
+		.place-now .place-photos {
+			grid-template-rows: 10rem 7rem;
+		}
+
+		/* The caption gets its own short row; photo rows keep a fixed height. */
+		.small-grid {
+			grid-template-columns: 1fr 1fr;
+			grid-template-rows: auto;
+			grid-auto-rows: 9rem;
+			gap: var(--space-1);
+		}
+
+		.food-grid {
+			grid-template-areas:
+				"note   note"
+				"rolls  cookies"
+				"rolls  cake"
+				"latte  cake"
+				"buns   buns";
+		}
+
+		.sunset-grid {
+			grid-template-areas:
+				"note    note"
+				"cypress cypress"
+				"bluff   tide"
+				"bluff   pool"
+				"street  coast";
+		}
+
+		.small-note {
+			align-self: start;
+		}
 	}
 </style>

@@ -4,39 +4,38 @@ import ProjectCard from "../components/ProjectCard.astro";
 import { projects } from "../data/projects";
 
 const heroHeadline =
-	"I work across UX research, design, and product management — focused on how design decisions shape access, understanding, and trust in complex information systems.";
+	"I turn research into product decisions, and product decisions into thoughtful experiences.";
 const heroHeadlineHtml = heroHeadline
 	.split(" ")
 	.map((word, i) => `<span class="reveal-word" style="--i:${i}">${word}</span>`)
 	.join(" ");
 ---
 
-<BaseLayout title="UX Design & Product Management">
-	<section class="hero section hero-spacing">
-		<div class="container">
-			<p class="eyebrow">UX Design &amp; Product Management</p>
-			<div class="hero-heading-row">
+<BaseLayout title="Product Design & UX Research">
+	<section class="hero section">
+		<div class="container hero-grid">
+			<div class="hero-text">
+				<p class="eyebrow hero-eyebrow"><span>Product Design</span> · <span>UX Research</span> · <span>Product Thinking</span></p>
 				<h1 class="hero-headline" set:html={heroHeadlineHtml} />
-				<div class="hero-photo-wrap">
-					<div class="hero-photo">
-						<img src="/images/headshot.jpg" alt="Portrait of Ruby Sanchez" width="600" height="600" />
-					</div>
-					<span class="photo-bubble" aria-hidden="true">Hi, I'm Ruby 👋</span>
-				</div>
+				<p class="hero-sub reveal" style="--i:0">
+					I work across design, research, and product to understand what people need, decide
+					what matters, and turn those insights into experiences that work.
+				</p>
 			</div>
-			<p class="hero-sub reveal" style="--i:0">
-				My work sits at the intersection of public health, education, and
-				social computing, where the systems people rely on are often the
-				hardest to navigate and the easiest to lose trust in.
-			</p>
+			<div class="hero-photo-wrap">
+				<div class="hero-photo">
+					<img src="/images/headshot.jpg" alt="Portrait of Ruby Sanchez" width="600" height="600" />
+				</div>
+				<span class="photo-bubble" aria-hidden="true">Hi, I'm Ruby 👋</span>
+			</div>
 			<p class="hero-meta reveal" style="--i:1">
-				M.S. Information Management &amp; Systems, UC Berkeley (Expected 2028)
+				Master of Information Management and Systems, UC Berkeley (Expected 2028)
 				&middot; B.S. Cognitive Science: AI/HCI, UC Santa Cruz (2026)
 			</p>
 		</div>
 	</section>
 
-	<section class="section featured-work-spacing">
+	<section class="section work-section">
 		<div class="container">
 			<div class="section-heading reveal">
 				<h2>Featured Work</h2>
@@ -50,32 +49,39 @@ const heroHeadlineHtml = heroHeadline
 </BaseLayout>
 
 <style>
-	.hero-spacing {
+	/* Text on the left, portrait on the right; the text column takes the room, so the
+	   headline runs 3–4 lines instead of wrapping into a narrow column. */
+	.hero {
 		padding-top: var(--space-5);
-		padding-bottom: var(--space-5);
+		padding-bottom: var(--space-4);
 	}
 
-	.featured-work-spacing {
-		padding-top: var(--space-6);
-		padding-bottom: var(--space-6);
-	}
-
-	.hero-heading-row {
-		display: flex;
+	.hero-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
 		align-items: center;
-		justify-content: space-between;
-		gap: var(--space-4);
-		margin-top: var(--space-2);
+		column-gap: var(--space-5);
 	}
 
-	.hero-heading-row h1 {
-		flex: 0 1 34rem;
-		margin-top: 0;
+	.hero-text {
+		max-width: 42rem;
+	}
+
+	/* Keep each phrase whole when the label wraps on narrow screens. */
+	.hero-eyebrow span {
+		white-space: nowrap;
 	}
 
 	.hero h1 {
-		font-size: clamp(1.75rem, 1.3rem + 2vw, 2.75rem);
-		line-height: 1.25;
+		margin-top: var(--space-2);
+		font-size: clamp(2rem, 1.4rem + 2.2vw, 3rem);
+		line-height: 1.15;
+		text-wrap: pretty;
+	}
+
+	.work-section {
+		padding-top: var(--space-4);
+		padding-bottom: var(--space-6);
 	}
 
 	.hero-photo-wrap {
@@ -84,8 +90,8 @@ const heroHeadlineHtml = heroHeadline
 	}
 
 	.hero-photo {
-		width: 23rem;
-		height: 23rem;
+		width: clamp(15rem, 22vw, 20rem);
+		height: clamp(15rem, 22vw, 20rem);
 		border-radius: 50%;
 		overflow: hidden;
 		border: 1px solid var(--color-line);
@@ -141,24 +147,31 @@ const heroHeadlineHtml = heroHeadline
 	}
 
 	.hero-sub {
-		font-size: 1.125rem;
-		color: var(--color-ink-soft);
+		max-width: 36rem;
 		margin-top: var(--space-3);
-		max-width: 40rem;
+		font-size: var(--text-lg);
+		line-height: 1.5;
+		color: var(--color-ink-soft);
 	}
 
 	.hero-meta {
-		font-size: 0.9375rem;
-		color: var(--color-ink-faint);
-		margin-top: var(--space-3);
-		padding-top: var(--space-3);
+		grid-column: 1 / -1;
+		margin-top: var(--space-4);
+		padding-top: var(--space-2);
 		border-top: 1px solid var(--color-line);
+		font-size: var(--text-label);
+		color: var(--color-ink-faint);
 	}
 
-	@media (max-width: 720px) {
-		.hero-heading-row {
-			flex-direction: column-reverse;
-			align-items: flex-start;
+	/* Tablet and down: stack intentionally, portrait first as a smaller avatar. */
+	@media (max-width: 56rem) {
+		.hero-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-photo-wrap {
+			order: -1;
+			margin-bottom: var(--space-3);
 		}
 
 		.hero-photo {
@@ -168,13 +181,11 @@ const heroHeadlineHtml = heroHeadline
 	}
 
 	@media (max-width: 640px) {
-		.hero-spacing {
+		.hero {
 			padding-top: var(--space-4);
-			padding-bottom: var(--space-4);
 		}
 
-		.featured-work-spacing {
-			padding-top: var(--space-5);
+		.work-section {
 			padding-bottom: var(--space-5);
 		}
 	}

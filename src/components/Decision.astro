@@ -19,7 +19,7 @@ const { number, title, options } = Astro.props;
 	<p class="eyebrow section-eyebrow">Decision {String(number).padStart(2, "0")}</p>
 	<h2>{title}</h2>
 	<div class="case-copy">
-		<ol class="choices" aria-label="Approaches we considered">
+		<ol class="choices" style={`--cols: ${options.length}`} aria-label="Approaches considered">
 			{
 				options.map((option) => (
 					<li class:list={["choice", { "is-chosen": option.chosen }]}>
@@ -70,7 +70,7 @@ const { number, title, options } = Astro.props;
 
 	.choices {
 		display: grid;
-		grid-template-columns: repeat(3, 1fr);
+		grid-template-columns: repeat(var(--cols, 3), 1fr);
 		gap: var(--space-3);
 	}
 
