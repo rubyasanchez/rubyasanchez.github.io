@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import LatestWorkout from "../components/LatestWorkout.astro";
 
 const life = (name: string) => `/images/about/life/${name}.jpg`;
 
 // Always moving: three drifting columns. Each column's photos appear twice so the loop is seamless;
-// the copies are hidden from screen readers.
+// the copies are hidden from screen readers. They load eagerly, since lazy loading leaves gaps in moving columns.
 const columns = [
 	{
 		speed: 46,
@@ -74,17 +75,21 @@ const peeks = {
 			<div class="wrap swim-grid">
 				<div>
 					<p class="label">Swim &amp; Dive</p>
-					<h2>Four years in the pool, two years leading the team.</h2>
+					<h2>A lot of time in the pool.</h2>
 					<p class="body">
 						I spent all four years at UCSC on the Swim &amp; Dive team and served as captain for my final
-						two. I went into the role thinking leadership meant knowing what to say and stepping up in the
-						big moments. Instead, I learned that most leadership happens in the small ones.
+						two. Some of my favorite college memories came from this team, but it also taught me a lot
+						about how I want to show up for other people.
 					</p>
 					<p class="body">
-						It was checking in on a teammate after a hard practice, noticing when someone wasn't feeling
-						like themselves, communicating clearly, and showing up consistently. Leading a team of 70
-						taught me that you don't need to have every answer. You need to pay attention to people and
-						understand what they need from you.
+						Leading a team of 70 taught me to pay attention. To notice when someone was having an off day,
+						know when to listen instead of solve, communicate when things got messy, and show up
+						consistently.
+					</p>
+					<p class="body">
+						I carry a lot of that with me now. Whether I’m working on a project, leading a team, or just
+						being a teammate, I try to be someone who listens closely, brings people in, and can be counted
+						on.
 					</p>
 					<p class="quote">
 						Leadership isn’t one big heroic act. It’s the little things you choose to do every day.
@@ -94,22 +99,19 @@ const peeks = {
 					<span class="star" aria-hidden="true" style="--l: 49%; --t: 0%; --s: 1.7rem; --c: var(--color-butter); --r: 12deg"></span>
 					<span class="star" aria-hidden="true" style="--l: 94%; --t: 50%; --s: 1.3rem; --c: var(--color-accent); --r: -15deg"></span>
 					<span class="star" aria-hidden="true" style="--l: 0%; --t: 70%; --s: 1.5rem; --c: var(--color-bg); --r: 20deg"></span>
-					<button type="button" class="snap" data-zoom style="--l: 4%; --t: 14%; --w: 46%; --r: -3deg; --tape: var(--color-accent); --tape-r: 4deg; --ar: 3 / 4; --pos: center 35%">
+					<button type="button" class="snap" data-zoom style="--l: 2%; --t: 14%; --w: 42%; --r: -3deg; --tape: var(--color-accent); --tape-r: 4deg; --ar: 3 / 4; --pos: center 35%">
 						<img src={life("senior-day")} alt="Ruby on Senior Day holding a yellow poster reading Captain Ruby" loading="lazy" />
-						<span class="cap">senior day</span>
 					</button>
-					<button type="button" class="snap" data-zoom style="--l: 54%; --t: 2%; --w: 44%; --r: 4deg; --tape: var(--color-butter); --tape-r: -3deg; --ar: 4 / 3">
-						<img src={life("team-full")} alt="The whole UCSC Swim & Dive team in gold sweatshirts on a pool deck" loading="lazy" />
-						<span class="cap">the whole team</span>
+					<button type="button" class="snap" data-zoom style="--l: 49%; --t: 1%; --w: 51%; --r: 4deg; --tape: var(--color-butter); --tape-r: -3deg; --ar: 4 / 3; --zoom: 1.35; --pos: center 72%">
+						<span class="crop"><img src={life("team-full")} alt="The whole UCSC Swim & Dive team in gold sweatshirts on a pool deck" loading="lazy" /></span>
 					</button>
 					<button type="button" class="snap" data-zoom style="--l: 58%; --t: 56%; --w: 36%; --r: -5deg; --tape: var(--color-bg); --tape-r: 3deg; --ar: 1 / 1; --pos: center 25%">
 						<img src={life("teammates-hug")} alt="Ruby and a teammate in yellow caps hugging at a meet" loading="lazy" />
-						<span class="cap">teammates</span>
 					</button>
-					<p class="note-hand" aria-hidden="true" style="--l: 22%; --t: 3%; --r: -4deg">a team of 70</p>
-					<svg class="arrow-hand" style="--l: 43%; --t: 5%; --w: 9%" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 22 C 12 15, 22 14, 34 18 M27 12 L35 18 L28 25"></path></svg>
-					<p class="note-hand" aria-hidden="true" style="--l: 6%; --t: 92%; --r: -3deg">captain, two years</p>
-					<svg class="arrow-hand" style="--l: 36%; --t: 84%; --w: 8%" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C 14 24, 18 14, 22 5 M15 9 L22 3 L27 11"></path></svg>
+					<p class="note-hand" aria-hidden="true" style="--l: 17%; --t: 3%; --r: -4deg">a team of 70</p>
+					<svg class="arrow-hand" style="--l: 41%; --t: 5%; --w: 9%" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 22 C 12 15, 22 14, 34 18 M27 12 L35 18 L28 25"></path></svg>
+					<p class="note-hand" aria-hidden="true" style="--l: 6%; --t: 88%; --r: -3deg">captain, two years</p>
+					<svg class="arrow-hand" style="--l: 19%; --t: 77%; --w: 8%" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C 14 24, 18 14, 22 5 M15 9 L22 3 L27 11"></path></svg>
 				</div>
 			</div>
 		</section>
@@ -120,25 +122,35 @@ const peeks = {
 				<div>
 					<h2>Always moving.</h2>
 					<p class="body">
-						I spent most of my life as a swimmer, but lately I've been finding new ways to challenge myself
-						outside the pool. Running and cycling have become a way to explore, compete with myself, and
-						occasionally convince myself that signing up for another race is a good idea.
+						I spent most of my life as a swimmer, but lately I’ve been finding new ways to challenge myself
+						outside the pool. Running and cycling have become ways to explore, push myself, and see what I’m
+						capable of.
 					</p>
-					<button type="button" class="pause" id="pause" aria-pressed="false" aria-label="Pause the photos">❚❚</button>
+					<p class="body">
+						Somewhere along the way, I also became the person who loves looking back at the data almost as
+						much as the workout itself. I’m guilty of spending way too much time on Strava and obsessing over
+						my Garmin stats.
+					</p>
+					<div class="workout-slot">
+						<LatestWorkout />
+					</div>
 				</div>
-				<div class="cols" id="cols" role="group" aria-label="Running and cycling photos">
-					{
-						columns.map((col) => (
-							<div class:list={["col", { down: col.direction === "down" }]} style={`--t: ${col.speed}s`}>
-								{col.photos.map(([name, alt]) => (
-									<img src={life(name)} alt={alt} loading="lazy" />
-								))}
-								{col.photos.map(([name]) => (
-									<img src={life(name)} alt="" aria-hidden="true" loading="lazy" />
-								))}
-							</div>
-						))
-					}
+				<div class="cols-frame">
+					<button type="button" class="pause" id="pause" aria-pressed="false" aria-label="Pause the photos">❚❚</button>
+					<div class="cols" id="cols" role="group" aria-label="Running and cycling photos">
+						{
+							columns.map((col) => (
+								<div class:list={["col", { down: col.direction === "down" }]} style={`--t: ${col.speed}s`}>
+									{col.photos.map(([name, alt]) => (
+										<img src={life(name)} alt={alt} />
+									))}
+									{col.photos.map(([name]) => (
+										<img src={life(name)} alt="" aria-hidden="true" />
+									))}
+								</div>
+							))
+						}
+					</div>
 				</div>
 			</div>
 		</section>
@@ -199,7 +211,6 @@ const peeks = {
 	<dialog class="lightbox" id="lightbox" aria-label="Enlarged photo">
 		<button type="button" aria-label="Close">×</button>
 		<img alt="" />
-		<p></p>
 	</dialog>
 	<div class="floater" id="floater" aria-hidden="true"><img alt="" /></div>
 </BaseLayout>
@@ -208,13 +219,11 @@ const peeks = {
 	// Click a polaroid or snapshot to see it larger
 	const lightbox = document.getElementById("lightbox") as HTMLDialogElement;
 	const bigImg = lightbox.querySelector("img")!;
-	const bigCap = lightbox.querySelector("p")!;
 	document.querySelectorAll<HTMLElement>("[data-zoom]").forEach((card) =>
 		card.addEventListener("click", () => {
 			const img = card.querySelector("img")!;
 			bigImg.src = img.src;
 			bigImg.alt = img.alt;
-			bigCap.textContent = card.querySelector(".cap")?.textContent ?? "";
 			lightbox.showModal();
 		}),
 	);
@@ -482,7 +491,7 @@ const peeks = {
 		left: var(--l);
 		top: var(--t);
 		width: var(--w);
-		padding: 0.5rem 0.5rem 2.2rem;
+		padding: 0.5rem 0.5rem 1.75rem;
 		border: 0;
 		border-radius: 0.3rem;
 		background: #fff;
@@ -504,16 +513,16 @@ const peeks = {
 		border-radius: 0.1rem;
 	}
 
-	.cap {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0.35rem;
-		text-align: center;
-		font-family: var(--hand);
-		font-size: 1.3rem;
-		line-height: 1.2;
-		color: var(--color-ink);
+	/* Zooms into a photo without spilling past its frame */
+	.crop {
+		display: block;
+		overflow: hidden;
+		border-radius: 0.1rem;
+	}
+
+	.crop img {
+		scale: var(--zoom, 1);
+		transform-origin: var(--pos, center);
 	}
 
 	.note-hand {
@@ -555,13 +564,21 @@ const peeks = {
 		align-items: center;
 	}
 
+	/* Sits in the corner of the photo window */
+	.cols-frame {
+		position: relative;
+	}
+
 	.pause {
+		position: absolute;
+		right: 0.75rem;
+		bottom: 0.75rem;
+		z-index: 2;
 		width: 2.5rem;
 		height: 2.5rem;
-		margin-top: var(--space-3);
 		border: 1.5px solid var(--color-ink);
 		border-radius: 50%;
-		background: none;
+		background: var(--color-bg);
 		font-size: 0.8rem;
 		color: var(--color-ink);
 		transition:
@@ -572,6 +589,10 @@ const peeks = {
 	.pause:hover {
 		background: var(--color-ink);
 		color: var(--color-bg);
+	}
+
+	.workout-slot {
+		margin-top: var(--space-3);
 	}
 
 	/* A rounded window: photos slide in and out behind its edges */
@@ -818,16 +839,6 @@ const peeks = {
 		width: 100%;
 		max-height: 72vh;
 		object-fit: contain;
-	}
-
-	.lightbox p {
-		position: absolute;
-		left: 0;
-		right: 0;
-		bottom: 0.7rem;
-		text-align: center;
-		font-family: var(--hand);
-		font-size: 1.7rem;
 	}
 
 	.lightbox button {

@@ -1,0 +1,232 @@
+---
+// A taped scrap of paper that reads like a tiny workout log: Ruby's latest Strava activity
+// (refreshed by the daily build), or a static version when there's no data.
+import { getLatestWorkout } from "../data/strava";
+
+// Swap the URL here to change where the card links
+const STRAVA_URL = "https://strava.app.link/N6A0EJ2dB6b";
+
+const workout = await getLatestWorkout();
+
+// Hand-drawn loop for the fallback; a heartbeat line for workouts without GPS (gym, pool),
+// so the card never draws a route that didn't happen
+const doodle = {
+	d: "M8 58 C 20 44, 8 26, 28 18 S 50 32, 62 22 S 82 4, 98 12 S 118 36, 104 52 S 80 62, 70 50",
+	start: [8, 58],
+	end: [70, 50],
+};
+const pulse = {
+	d: "M4 38 H 40 L 48 20 L 58 56 L 66 30 L 72 38 H 112",
+	start: [4, 38],
+	end: [112, 38],
+};
+const route = workout ? (workout.route ?? pulse) : doodle;
+
+const label = workout
+	? `Latest workout: ${workout.name}, ${workout.date}. ${workout.stats.map((s) => `${s.value} ${s.unit}`).join(", ")}. Follow along on Strava (opens in a new tab)`
+	: "Running, cycling, and swimming. Follow along on Strava (opens in a new tab)";
+---
+
+<a class="workout" href={STRAVA_URL} target="_blank" rel="noopener noreferrer" aria-label={label}>
+	<span class="top">
+		{
+			workout ? (
+				<span class="text">
+					<span class="eyebrow">
+						Latest · {workout.date}
+					</span>
+					<span class="name">{workout.name}</span>
+				</span>
+			) : (
+				<span class="sports">
+					<span><span aria-hidden="true">🏃</span> Running</span>
+					<span><span aria-hidden="true">🚴</span> Cycling</span>
+					<span><span aria-hidden="true">🏊</span> Swimming</span>
+				</span>
+			)
+		}
+		<svg class="route" viewBox="0 0 120 70" aria-hidden="true">
+			<path class="route-line" pathLength="1" d={route.d}></path>
+			<circle cx={route.start[0]} cy={route.start[1]} r="3.2" class="route-start"></circle>
+			<circle cx={route.end[0]} cy={route.end[1]} r="3.2" class="route-end"></circle>
+		</svg>
+	</span>
+	{
+		workout && (
+			<span class="stats">
+				{workout.stats.map((s) => (
+					<span class="stat">
+						<span class="value">{s.value}</span>
+						<span class="unit">{s.unit}</span>
+					</span>
+				))}
+			</span>
+		)
+	}
+	<span class="cta">Follow along on Strava <span class="arrow" aria-hidden="true">→</span></span>
+</a>
+
+<style>
+	.workout {
+		position: relative;
+		display: grid;
+		gap: 0.85rem;
+		width: min(100%, 21rem);
+		padding: 1.1rem 1.25rem 1rem;
+		border-radius: 0.3rem;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgb(34 26 31 / 0.08),
+			0 16px 32px -20px rgb(34 26 31 / 0.4);
+		color: var(--color-ink);
+		text-decoration: none;
+		transform: rotate(-1deg);
+	}
+
+	/* Washi tape, matching the snapshots */
+	.workout::before {
+		content: "";
+		position: absolute;
+		top: -0.7rem;
+		left: 50%;
+		width: 4.25rem;
+		height: 1.35rem;
+		transform: translateX(-50%) rotate(-3deg);
+		background: var(--color-sky);
+		opacity: 0.75;
+		clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%);
+	}
+
+	.workout:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 4px;
+	}
+
+	.top {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.text {
+		display: grid;
+		gap: 0.3rem;
+		min-width: 0;
+	}
+
+	.eyebrow {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--color-ink-soft);
+	}
+
+	.name {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		font-family: var(--font-serif);
+		font-size: var(--text-lg);
+		line-height: 1.2;
+	}
+
+	.sports {
+		display: grid;
+		gap: 0.3rem;
+		font-size: var(--text-sm);
+	}
+
+	.sports > span {
+		display: flex;
+		gap: 0.55rem;
+	}
+
+	.route {
+		width: 7rem;
+		flex-shrink: 0;
+		overflow: visible;
+	}
+
+	.route-line {
+		fill: none;
+		stroke: var(--color-accent);
+		stroke-width: 2.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-dasharray: 1;
+		stroke-dashoffset: 0;
+	}
+
+	.route-start {
+		fill: #fff;
+		stroke: var(--color-accent);
+		stroke-width: 2;
+	}
+
+	.route-end {
+		fill: var(--color-accent);
+	}
+
+	.stats {
+		display: flex;
+		gap: 1.5rem;
+	}
+
+	.stat {
+		display: grid;
+	}
+
+	.value {
+		font-weight: 600;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.unit {
+		font-size: var(--text-label);
+		color: var(--color-ink-faint);
+	}
+
+	.cta {
+		padding-top: 0.7rem;
+		border-top: 1px dashed var(--color-line);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-accent);
+	}
+
+	.arrow {
+		display: inline-block;
+		transition: translate 0.4s var(--ease-fluid);
+	}
+
+	/* On hover the route redraws itself, like replaying the workout */
+	.workout:hover .route-line,
+	.workout:focus-visible .route-line {
+		animation: route-draw 1.4s var(--ease-fluid);
+	}
+
+	.workout:hover .arrow,
+	.workout:focus-visible .arrow {
+		translate: 0.25rem 0;
+	}
+
+	@keyframes route-draw {
+		from {
+			stroke-dashoffset: 1;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.workout:hover .route-line,
+		.workout:focus-visible .route-line {
+			animation: none;
+		}
+
+		.arrow {
+			transition: none;
+		}
+	}
+</style>
