@@ -1,717 +1,914 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import ZoomPhoto from "../components/ZoomPhoto.astro";
-import PhotoViewer from "../components/PhotoViewer.astro";
 
-// `position` anchors a cropped photo (CSS object-position) so faces and people stay in frame.
-const p = (name: string, width: number, height: number, alt: string, position?: string) => ({
-	src: `/images/about/life/${name}.jpg`,
-	alt,
-	width,
-	height,
-	position,
-});
+const life = (name: string) => `/images/about/life/${name}.jpg`;
 
-const intro = p("grad-twirl", 1323, 2000, "Ruby twirling in a white dress and UC Santa Cruz graduation stole in a green meadow");
-
-// Swim: an editorial photo story that moves from athlete, to teammate, to captain.
-const swim = {
-	deck: p("meet-deck", 1206, 801, "Ruby on the pool deck at a meet in a yellow SLUGS cap, goggles, and a UCSC suit"),
-	team: p("team-full", 2000, 1500, "The whole UCSC Swim & Dive team in gold sweatshirts, throwing up hand signs on a pool deck"),
-	hug: p("teammates-hug", 1333, 2000, "Ruby and a teammate in yellow SLUGS caps hugging and laughing at a meet", "center 25%"),
-	cheering: p("cheering", 1192, 1478, "Ruby in a team jacket cupping hands and cheering from the pool deck with teammates"),
-	seniorDay: p("senior-day", 1500, 2000, "Ruby on Senior Day holding a yellow poster reading Captain Ruby, covered in handwritten notes, standing between two people", "center 35%"),
-	// Everyday moments and milestones, shown as one row at a shared height.
-	moments: [
-		p("underwater", 1400, 1050, "Three teammates in caps and goggles making peace signs underwater"),
-		p("team-hawaiian", 1050, 1400, "Eight teammates in matching Hawaiian shirts and face glitter huddled on a pool deck", "center 52%"),
-		p("team-hoodies-lift", 2000, 1333, "Ruby and teammates in team jackets laughing as they hold a fourth teammate sideways", "center 20%"),
-		p("award", 1206, 1590, "Ruby in a floral dress holding a glass award at an evening event", "center 22%"),
-	],
-};
-
-// Movement: two justified rows, every photo the same height at its own shape.
-const moving = [
-	[
-		p("cycling-selfie", 1200, 1600, "Ruby taking a selfie mid-ride in a cycling helmet and mirrored sunglasses", "center 25%"),
-		p("race-day", 1095, 743, "Ruby crossing the finish line of a 5K with arms raised", "60% center"),
-		p("cycling-crew", 2000, 1500, "Ruby and two friends posing with their road bikes"),
-		p("open-water", 1200, 1600, "Two swimmers in caps wading into a mountain lake under a big sky", "center 70%"),
-	],
-	[
-		p("cycling-path-selfie", 2000, 1500, "Ruby riding a bike path and smiling at the camera"),
-		p("riding-together", 1200, 1600, "Two cyclists riding up a coastal road lined with eucalyptus trees"),
-		p("race-coast", 1050, 1400, "Ruby smiling with eyes closed after a race, wearing a bib that says Let's Go Ruby, with the ocean behind"),
-		p("group-ride", 360, 480, "A group of cyclists riding single file along a bayside path"),
-	],
+// Always moving: three drifting columns. Each column's photos appear twice so the loop is seamless;
+// the copies are hidden from screen readers.
+const columns = [
+	{
+		speed: 46,
+		direction: "up",
+		photos: [
+			["race-day", "Ruby crossing a 5K finish line with arms raised"],
+			["riding-together", "Two cyclists riding up a coastal road lined with eucalyptus trees"],
+			["group-ride", "A group of cyclists riding single file along a bayside path"],
+		],
+	},
+	{
+		speed: 58,
+		direction: "down",
+		photos: [
+			["cycling-crew", "Ruby and two friends posing with their road bikes"],
+			["race-coast", "Ruby smiling after a race, wearing a bib, with the ocean behind"],
+			["cycling-selfie", "Ruby taking a selfie mid-ride in a cycling helmet and mirrored sunglasses"],
+		],
+	},
+	{
+		speed: 52,
+		direction: "up",
+		photos: [
+			["open-water", "Two swimmers wading into a mountain lake under a big sky"],
+			["cycling-path-selfie", "Ruby riding a bike path and smiling at the camera"],
+			["race-day", "Ruby crossing a 5K finish line with arms raised"],
+		],
+	},
 ];
 
-// Santa Cruz → Berkeley: the past on the left, carrying more weight; now on the right.
-const santaCruz = {
-	lead: p("grad-walk", 1326, 2000, "Ruby and a friend in student-athlete graduation stoles walking along a wooded path"),
-	more: [
-		p("grad-field", 2000, 1326, "Ruby and two friends in graduation stoles sitting in golden grass"),
-		p("graduation", 1061, 1600, "Ruby at graduation wearing leis and a student-athlete stole, standing between two coaches"),
-		p("grad-portrait", 1400, 933, "Ruby smiling in a grassy field, wearing a UC Santa Cruz student-athlete graduation stole"),
-	],
-};
-const berkeley = {
-	lead: p("berkeley-steps", 2000, 1000, "A large group of classmates posing together on the steps of a campus building"),
-	more: [
-		p("cal-game", 480, 360, "Ruby and a friend in leis at a Cal football game at night"),
-		p("berkeley-picnic", 2000, 1333, "Ruby and classmates sharing lunch at a picnic table under a yellow umbrella"),
-	],
-};
-
-// Small things: a looser grid with a short caption living among the photos.
-const food = {
-	rolls: p("cinnamon-rolls", 1500, 2000, "A pan of freshly baked cinnamon rolls"),
-	cookies: p("cookies", 1500, 2000, "Chocolate chunk cookies with flaky salt on a baking sheet"),
-	cake: p("lemon-cake", 1500, 2000, "A frosted layer cake topped with lemon slices"),
-	latte: p("latte-art", 1500, 2000, "Two lattes, one topped with tiny cookies and one with rainbow latte art"),
-	buns: p("minion-buns", 1500, 2000, "Steamed buns decorated as cartoon characters"),
-};
-const sunsets = {
-	bluff: p("bluff-sunset", 1500, 2000, "A pink and orange sunset over the ocean from a grassy bluff"),
-	cypress: p("coast-sunset", 1600, 1200, "A cypress tree on a rocky outcrop above the ocean at sunset"),
-	tidepools: p("tidepools", 1500, 2000, "Tide pools on a rocky shore at golden hour"),
-	street: p("street-sunset", 1500, 2000, "A purple and pink sunset over a quiet neighborhood street"),
-	coastline: p("coastline", 1600, 1200, "Waves breaking along a green coastal bluff under a clear sky"),
-	pool: p("pool-sunrise", 1500, 2000, "An outdoor pool at sunset with the orange sky reflected in the water"),
+// Small things: the pink words each peek a photo
+const peeks = {
+	rolls: { src: life("cinnamon-rolls"), tilt: "-4deg" },
+	cookies: { src: life("cookies"), tilt: "3deg" },
+	cake: { src: life("lemon-cake"), tilt: "-2deg" },
+	sunset: { src: life("coast-sunset"), tilt: "4deg" },
 };
 ---
 
 <BaseLayout title="About">
 	<div class="about">
-		<!-- 1 · Introduction: one large image beside the text -->
-		<section class="section intro">
-			<div class="container intro-grid">
-				<div class="intro-text">
-					<p class="eyebrow">About</p>
-					<h1>Hi, I'm Ruby.</h1>
+		<!-- 1 · Intro: cream with pink polka dots, two taped polaroids beside the text -->
+		<section class="intro dots" style="--base: var(--color-bg); --dot: #f9dce5">
+			<div class="wrap intro-grid">
+				<div>
+					<p class="label">About</p>
+					<h1>Hi, I’m Ruby.</h1>
 					<p class="lede">
-						I'm a designer, researcher, and endlessly curious person interested in how people think,
+						I’m a designer, researcher, and endlessly curious person interested in how people think,
 						work, and interact with technology.
 					</p>
 					<p class="lede-2">My work shows how I design. This is a little more about who I am.</p>
 				</div>
-				<div class="intro-photo">
-					<ZoomPhoto {...intro} fill loading="eager" caption="Graduation day" />
+				<div class="pair">
+					<button type="button" class="polaroid pair-back" style="--r: -6deg; --tape: var(--color-sky); --tape-r: 4deg" data-zoom>
+						<img src="/images/headshot.jpg" alt="Portrait of Ruby at golden hour by the ocean" width="1536" height="1536" style="object-position: center 30%" />
+					</button>
+					<button type="button" class="polaroid pair-front" style="--r: 5deg; --tape: var(--color-butter); --tape-r: -5deg" data-zoom>
+						<img src={life("windy-coast")} alt="Ruby laughing with windblown hair on a coastal bluff" width="1024" height="768" style="object-position: center 35%" />
+					</button>
 				</div>
 			</div>
 		</section>
 
-		<!-- 2 · Swim + leadership: the story beside a team collage, then what it added up to -->
-		<section class="section swim">
-			<div class="container">
-				<div class="swim-top">
-					<div class="swim-text">
-						<p class="eyebrow">Swim &amp; Dive</p>
-						<h2>Four years in the pool, two years leading the team.</h2>
-						<p>
-							I spent all four years at UCSC on the Swim &amp; Dive team and served as captain for my
-							final two. I went into the role thinking leadership meant knowing what to say and
-							stepping up in the big moments. Instead, I learned that most leadership happens in the
-							small ones.
-						</p>
-						<p>
-							It was checking in on a teammate after a hard practice, noticing when someone wasn't
-							feeling like themselves, communicating clearly, and showing up consistently. Leading a
-							team of 70 taught me that you don't need to have every answer. You need to pay
-							attention to people and understand what they need from you.
-						</p>
-						<p class="swim-quote">
-							Leadership isn't one big heroic act. It's the little things you choose to do every day.
-						</p>
-					</div>
-					<!-- Athlete, team, teammate, and captain in one collage -->
-					<div class="swim-collage">
-						<div class="c-deck"><ZoomPhoto {...swim.deck} fill caption="Meet day" /></div>
-						<div class="c-cheer"><ZoomPhoto {...swim.cheering} fill caption="From the deck" /></div>
-						<div class="c-team"><ZoomPhoto {...swim.team} fill caption="The whole team" /></div>
-						<div class="c-hug"><ZoomPhoto {...swim.hug} fill caption="Teammates" /></div>
-					</div>
+		<!-- 2 · Swim & Dive: sky, a scrapbook of taped snapshots with handwritten notes -->
+		<section class="swim" style="--base: var(--color-sky)">
+			<div class="wrap swim-grid">
+				<div>
+					<p class="label">Swim &amp; Dive</p>
+					<h2>Four years in the pool, two years leading the team.</h2>
+					<p class="body">
+						I spent all four years at UCSC on the Swim &amp; Dive team and served as captain for my final
+						two. I went into the role thinking leadership meant knowing what to say and stepping up in the
+						big moments. Instead, I learned that most leadership happens in the small ones.
+					</p>
+					<p class="body">
+						It was checking in on a teammate after a hard practice, noticing when someone wasn't feeling
+						like themselves, communicating clearly, and showing up consistently. Leading a team of 70
+						taught me that you don't need to have every answer. You need to pay attention to people and
+						understand what they need from you.
+					</p>
+					<p class="quote">
+						Leadership isn’t one big heroic act. It’s the little things you choose to do every day.
+					</p>
 				</div>
-
-				<!-- Senior Day beside the small moments that led up to it -->
-				<ul class="swim-close">
-					<li class="swim-senior"><ZoomPhoto {...swim.seniorDay} fill caption="Senior Day" /></li>
-					{
-						swim.moments.map((photo) => (
-							<li><ZoomPhoto {...photo} fill caption="Swim & Dive" /></li>
-						))
-					}
-				</ul>
+				<div class="board">
+					<span class="star" aria-hidden="true" style="--l: 49%; --t: 0%; --s: 1.7rem; --c: var(--color-butter); --r: 12deg"></span>
+					<span class="star" aria-hidden="true" style="--l: 94%; --t: 50%; --s: 1.3rem; --c: var(--color-accent); --r: -15deg"></span>
+					<span class="star" aria-hidden="true" style="--l: 0%; --t: 70%; --s: 1.5rem; --c: var(--color-bg); --r: 20deg"></span>
+					<button type="button" class="snap" data-zoom style="--l: 4%; --t: 14%; --w: 46%; --r: -3deg; --tape: var(--color-accent); --tape-r: 4deg; --ar: 3 / 4; --pos: center 35%">
+						<img src={life("senior-day")} alt="Ruby on Senior Day holding a yellow poster reading Captain Ruby" loading="lazy" />
+						<span class="cap">senior day</span>
+					</button>
+					<button type="button" class="snap" data-zoom style="--l: 54%; --t: 2%; --w: 44%; --r: 4deg; --tape: var(--color-butter); --tape-r: -3deg; --ar: 4 / 3">
+						<img src={life("team-full")} alt="The whole UCSC Swim & Dive team in gold sweatshirts on a pool deck" loading="lazy" />
+						<span class="cap">the whole team</span>
+					</button>
+					<button type="button" class="snap" data-zoom style="--l: 58%; --t: 56%; --w: 36%; --r: -5deg; --tape: var(--color-bg); --tape-r: 3deg; --ar: 1 / 1; --pos: center 25%">
+						<img src={life("teammates-hug")} alt="Ruby and a teammate in yellow caps hugging at a meet" loading="lazy" />
+						<span class="cap">teammates</span>
+					</button>
+					<p class="note-hand" aria-hidden="true" style="--l: 22%; --t: 3%; --r: -4deg">a team of 70</p>
+					<svg class="arrow-hand" style="--l: 43%; --t: 5%; --w: 9%" viewBox="0 0 40 40" aria-hidden="true"><path d="M3 22 C 12 15, 22 14, 34 18 M27 12 L35 18 L28 25"></path></svg>
+					<p class="note-hand" aria-hidden="true" style="--l: 6%; --t: 92%; --r: -3deg">captain, two years</p>
+					<svg class="arrow-hand" style="--l: 36%; --t: 84%; --w: 8%" viewBox="0 0 40 40" aria-hidden="true"><path d="M8 34 C 14 24, 18 14, 22 5 M15 9 L22 3 L27 11"></path></svg>
+				</div>
 			</div>
 		</section>
 
-		<!-- 3 · Movement: a lighter, horizontal photo sequence -->
-		<section class="section moving">
-			<div class="container">
-				<div class="moving-text">
+		<!-- 3 · Always moving: cream with soft sky stripes, three drifting photo columns -->
+		<section class="moving stripes" style="--base: var(--color-bg); --dot: rgb(168 209 238 / 0.45)">
+			<div class="wrap moving-grid">
+				<div>
 					<h2>Always moving.</h2>
-					<p>
-						I spent most of my life as a swimmer, but lately I've been finding new ways to challenge
-						myself outside the pool. Running and cycling have become a way to explore, compete with
-						myself, and occasionally convince myself that signing up for another race is a good idea.
+					<p class="body">
+						I spent most of my life as a swimmer, but lately I've been finding new ways to challenge myself
+						outside the pool. Running and cycling have become a way to explore, compete with myself, and
+						occasionally convince myself that signing up for another race is a good idea.
 					</p>
+					<button type="button" class="pause" id="pause" aria-pressed="false" aria-label="Pause the photos">❚❚</button>
 				</div>
-				<div class="moving-rows">
+				<div class="cols" id="cols" role="group" aria-label="Running and cycling photos">
 					{
-						moving.map((row) => (
-							<ul class="moving-row">
-								{row.map((photo) => (
-									<li style={`--ratio: ${photo.width / photo.height}`}>
-										<ZoomPhoto {...photo} fill caption="Always moving" />
-									</li>
+						columns.map((col) => (
+							<div class:list={["col", { down: col.direction === "down" }]} style={`--t: ${col.speed}s`}>
+								{col.photos.map(([name, alt]) => (
+									<img src={life(name)} alt={alt} loading="lazy" />
 								))}
-							</ul>
+								{col.photos.map(([name]) => (
+									<img src={life(name)} alt="" aria-hidden="true" loading="lazy" />
+								))}
+							</div>
 						))
 					}
 				</div>
 			</div>
 		</section>
 
-		<!-- 4 · Santa Cruz → Berkeley: two places side by side, read as a progression -->
-		<section class="section places">
-			<div class="container">
-				<div class="places-text">
-					<h2>Santa Cruz <span class="arrow" aria-hidden="true">→</span><span class="sr-only">to</span> Berkeley</h2>
-					<p>
-						UCSC is where I found Cognitive Science, UX, research, and many of the people and
-						experiences that shaped me. Now at Berkeley, I'm getting to push further into product,
-						design, and the questions I want to spend my career exploring.
-					</p>
-				</div>
-				<div class="places-grid">
-					<figure class="place place-then">
-						<figcaption><strong>Santa Cruz</strong> B.S. Cognitive Science, 2026</figcaption>
-						<div class="place-photos">
-							<div class="place-lead"><ZoomPhoto {...santaCruz.lead} fill caption="Santa Cruz" /></div>
-							{santaCruz.more.map((photo) => (
-								<div><ZoomPhoto {...photo} fill caption="Santa Cruz" /></div>
-							))}
+		<!-- 4 · Santa Cruz → Berkeley: butter, lace-framed keepsakes with handwritten words -->
+		<section class="journey" style="--base: #fcefc9">
+			<div class="wrap">
+				<h2>Santa Cruz <span>→</span> Berkeley</h2>
+				<p class="body">
+					UCSC is where I found Cognitive Science, UX, research, and many of the people and experiences that
+					shaped me. Now at Berkeley, I'm getting to push further into product, design, and the questions I
+					want to spend my career exploring.
+				</p>
+				<div class="keepsakes">
+					<span class="star" aria-hidden="true" style="--l: -3%; --t: -6%; --s: 1.4rem; --c: var(--color-sky); --r: -12deg"></span>
+					<span class="star" aria-hidden="true" style="--l: 97%; --t: 78%; --s: 1.6rem; --c: var(--color-butter); --r: 18deg"></span>
+					<figure class="keepsake">
+						<span class="word big">santa cruz</span>
+						<div class="lace" style="--rot: -3deg">
+							<img src={life("grad-flowers")} alt="Ruby in her UC Santa Cruz graduation gown and student-athlete stole, holding a large bouquet" loading="lazy" />
 						</div>
+						<figcaption class="word sub">b.s. cognitive science, 2026</figcaption>
 					</figure>
-					<p class="places-arrow" aria-hidden="true">→</p>
-					<figure class="place place-now">
-						<figcaption><strong>Berkeley</strong> MIMS, expected 2028</figcaption>
-						<div class="place-photos">
-							<div class="place-lead"><ZoomPhoto {...berkeley.lead} fill caption="Berkeley" /></div>
-							{berkeley.more.map((photo) => (
-								<div><ZoomPhoto {...photo} fill caption="Berkeley" /></div>
-							))}
+					<span class="word to" aria-hidden="true">to →</span>
+					<figure class="keepsake">
+						<span class="word big">berkeley</span>
+						<div class="lace" style="--rot: 3deg">
+							<img src={life("berkeley-steps")} alt="Ruby and classmates posing on the steps of a Berkeley building" loading="lazy" />
 						</div>
+						<figcaption class="word sub">mims, expected 2028</figcaption>
 					</figure>
 				</div>
 			</div>
 		</section>
 
-		<!-- 5 · Small things: a looser editorial grid with captions among the photos -->
-		<section class="section small">
-			<div class="container">
-				<h2>Small things I love</h2>
-
-				<div class="small-grid food-grid">
-					<div class="small-note">
-						<p class="small-title">Usually cooking something</p>
-						<p>I love cooking, baking, and trying new food.</p>
-					</div>
-					<div class="f-latte"><ZoomPhoto {...food.latte} fill caption="Usually cooking something" /></div>
-					<div class="f-rolls"><ZoomPhoto {...food.rolls} fill caption="Usually cooking something" /></div>
-					<div class="f-cookies"><ZoomPhoto {...food.cookies} fill caption="Usually cooking something" /></div>
-					<div class="f-cake"><ZoomPhoto {...food.cake} fill caption="Usually cooking something" /></div>
-					<div class="f-buns"><ZoomPhoto {...food.buns} fill caption="Usually cooking something" /></div>
-				</div>
-
-				<div class="small-grid sunset-grid">
-					<div class="small-note">
-						<p class="small-title">Chasing sunsets</p>
-						<p>If there's an ocean and a sunset nearby, I'm probably going to stop and take a picture.</p>
-					</div>
-					<div class="s-bluff"><ZoomPhoto {...sunsets.bluff} fill caption="Chasing sunsets" /></div>
-					<div class="s-cypress"><ZoomPhoto {...sunsets.cypress} fill caption="Chasing sunsets" /></div>
-					<div class="s-tidepools"><ZoomPhoto {...sunsets.tidepools} fill caption="Chasing sunsets" /></div>
-					<div class="s-street"><ZoomPhoto {...sunsets.street} fill caption="Chasing sunsets" /></div>
-					<div class="s-coastline"><ZoomPhoto {...sunsets.coastline} fill caption="Chasing sunsets" /></div>
-					<div class="s-pool"><ZoomPhoto {...sunsets.pool} fill caption="Chasing sunsets" /></div>
+		<!-- 5 · Small things: pink with cream polka dots, a taped note where the pink words peek photos -->
+		<section class="small dots" style="--base: #f9dce5; --dot: #fff8f1">
+			<div class="wrap">
+				<div class="card">
+					<span class="star" aria-hidden="true" style="--l: 96%; --t: -6%; --s: 1.8rem; --c: var(--color-butter); --r: 14deg"></span>
+					<span class="star" aria-hidden="true" style="--l: -2%; --t: 86%; --s: 1.4rem; --c: var(--color-sky); --r: -10deg"></span>
+					<h2>Small things I love</h2>
+					<p class="words">
+						I love cooking, baking, and trying new food, usually{" "}
+						<button type="button" class="peek" data-img={peeks.rolls.src} data-tilt={peeks.rolls.tilt}>cinnamon rolls</button>,{" "}
+						<button type="button" class="peek" data-img={peeks.cookies.src} data-tilt={peeks.cookies.tilt}>cookies</button>, or a{" "}
+						<button type="button" class="peek" data-img={peeks.cake.src} data-tilt={peeks.cake.tilt}>lemon cake</button>. And if
+						there’s an ocean and a sunset nearby, I’m probably going to stop and take{" "}
+						<button type="button" class="peek" data-img={peeks.sunset.src} data-tilt={peeks.sunset.tilt}>a picture</button>.
+					</p>
+					<p class="tip"><span class="tip-hover">hover</span><span class="tip-tap">tap</span> the pink words ✦</p>
+					<div class="tapped" id="tapped" aria-live="polite"></div>
 				</div>
 			</div>
 		</section>
 	</div>
 
-	<PhotoViewer />
+	<dialog class="lightbox" id="lightbox" aria-label="Enlarged photo">
+		<button type="button" aria-label="Close">×</button>
+		<img alt="" />
+		<p></p>
+	</dialog>
+	<div class="floater" id="floater" aria-hidden="true"><img alt="" /></div>
 </BaseLayout>
 
+<script>
+	// Click a polaroid or snapshot to see it larger
+	const lightbox = document.getElementById("lightbox") as HTMLDialogElement;
+	const bigImg = lightbox.querySelector("img")!;
+	const bigCap = lightbox.querySelector("p")!;
+	document.querySelectorAll<HTMLElement>("[data-zoom]").forEach((card) =>
+		card.addEventListener("click", () => {
+			const img = card.querySelector("img")!;
+			bigImg.src = img.src;
+			bigImg.alt = img.alt;
+			bigCap.textContent = card.querySelector(".cap")?.textContent ?? "";
+			lightbox.showModal();
+		}),
+	);
+	lightbox.addEventListener("click", () => lightbox.close());
+
+	// Always moving: the columns drift in CSS; hovering or the button pauses them
+	const cols = document.getElementById("cols")!;
+	const pause = document.getElementById("pause")!;
+	pause.addEventListener("click", () => {
+		const paused = cols.classList.toggle("is-paused");
+		pause.setAttribute("aria-pressed", String(paused));
+		pause.textContent = paused ? "▶" : "❚❚";
+		pause.setAttribute("aria-label", paused ? "Play the photos" : "Pause the photos");
+	});
+
+	// Small things: on a mouse, a photo follows the cursor over each pink word;
+	// on touch, tapping a word adds (or removes) its photo below the sentence
+	const floater = document.getElementById("floater")!;
+	const floatImg = floater.querySelector("img")!;
+	const tapped = document.getElementById("tapped")!;
+	const fine = matchMedia("(hover: hover) and (pointer: fine)").matches;
+	document.querySelectorAll<HTMLButtonElement>(".peek").forEach((word) => {
+		if (fine) {
+			word.addEventListener("pointerenter", () => {
+				floatImg.src = word.dataset.img!;
+				floater.style.setProperty("--tilt", word.dataset.tilt!);
+				floater.classList.add("is-on");
+			});
+			word.addEventListener("pointermove", (e) => {
+				floater.style.left = `${e.clientX}px`;
+				floater.style.top = `${e.clientY}px`;
+			});
+			word.addEventListener("pointerleave", () => floater.classList.remove("is-on"));
+			return;
+		}
+		word.addEventListener("click", () => {
+			const src = word.dataset.img!;
+			const existing = [...tapped.querySelectorAll("img")].find((i) => i.getAttribute("src") === src);
+			if (existing) return existing.remove();
+			const img = document.createElement("img");
+			img.src = src;
+			img.alt = word.textContent ?? "";
+			tapped.append(img);
+		});
+	});
+</script>
 
 <style>
-	.about h2 {
-		font-size: var(--text-xl);
-		line-height: 1.2;
+	.about {
+		--hand: "Caveat", "Bradley Hand", cursive;
+		position: relative;
 	}
 
-	.about p {
+	/* Paper grain over the page, so the photos and tape feel physical */
+	.about::after {
+		content: "";
+		position: fixed;
+		inset: 0;
+		z-index: 60;
+		pointer-events: none;
+		opacity: 0.09;
+		mix-blend-mode: multiply;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	}
+
+	section {
+		position: relative;
+		padding-block: var(--space-5);
+		background-color: var(--base);
+	}
+
+	/* Big, soft polka dots */
+	.dots {
+		background-image:
+			radial-gradient(circle, color-mix(in srgb, var(--dot) 50%, transparent) 0 1.5rem, transparent 1.54rem),
+			radial-gradient(circle, color-mix(in srgb, var(--dot) 50%, transparent) 0 1.5rem, transparent 1.54rem);
+		background-size: 8rem 8rem;
+		background-position:
+			0 0,
+			4rem 4rem;
+	}
+
+	/* Soft vertical stripes */
+	.stripes {
+		background-image: repeating-linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--dot) 40%, transparent) 0 1.1rem,
+			transparent 1.1rem 2.2rem
+		);
+	}
+
+	.wrap {
+		max-width: var(--wide-width);
+		margin-inline: auto;
+		padding-inline: var(--space-3);
+	}
+
+	h2 {
+		font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem);
+		line-height: 1.12;
+		text-wrap: balance;
+	}
+
+	.label {
+		font-size: var(--text-label);
+		font-weight: 600;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
 		color: var(--color-ink-soft);
 	}
 
-	/* ---------- 1 · Introduction ---------- */
-	.intro {
-		padding-top: var(--space-4);
+	.body {
+		margin-top: var(--space-2);
+		color: var(--color-ink-soft);
 	}
 
+	button {
+		font: inherit;
+		cursor: pointer;
+	}
+
+	/* Star stickers, a few per section */
+	.star {
+		position: absolute;
+		left: var(--l);
+		top: var(--t);
+		width: var(--s, 1.6rem);
+		aspect-ratio: 1;
+		background: var(--c, var(--color-accent));
+		clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+		transform: rotate(var(--r, 0deg));
+		pointer-events: none;
+		z-index: 7;
+	}
+
+	/* Washi tape, shared by the polaroids and snapshots */
+	.polaroid::before,
+	.snap::before {
+		content: "";
+		position: absolute;
+		top: -0.7rem;
+		left: 50%;
+		width: 4.25rem;
+		height: 1.35rem;
+		transform: translateX(-50%) rotate(var(--tape-r, -4deg));
+		background: var(--tape, var(--color-accent));
+		opacity: 0.75;
+		clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%);
+	}
+
+	/* ---------- 1 · Intro ---------- */
 	.intro-grid {
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) minmax(16rem, 24rem);
-		gap: var(--space-5);
-		align-items: center;
-	}
-
-	.intro h1 {
-		margin-top: var(--space-1);
-		font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);
-		line-height: 1.1;
-	}
-
-	.lede {
-		margin-top: var(--space-3);
-		max-width: 38rem;
-		font-size: var(--text-lg);
-		line-height: 1.5;
-	}
-
-	.lede-2 {
-		margin-top: var(--space-2);
-		max-width: 38rem;
-	}
-
-	.intro-photo {
-		aspect-ratio: 3 / 4;
-	}
-
-	/* ---------- 2 · Swim + leadership ---------- */
-	.swim {
-		background: var(--color-bg-raised);
-	}
-
-	.swim-top {
-		display: grid;
-		grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+		grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
 		gap: var(--space-4);
 		align-items: center;
 	}
 
-	.swim-text h2 {
-		margin-top: var(--space-1);
+	.intro .label {
+		margin-bottom: 0.75rem;
 	}
 
-	.swim-text p:not(.eyebrow) {
-		margin-top: var(--space-2);
+	.intro h1 {
+		font-size: clamp(2.75rem, 1.6rem + 4.4vw, 5rem);
+		line-height: 1.05;
+		letter-spacing: -0.015em;
 	}
 
-	/* Two wide photos stacked on the left, two tall ones on the right. */
-	.swim-collage {
+	.lede {
+		max-width: 44rem;
+		margin-top: 1.75rem;
+		font-family: var(--font-serif);
+		font-size: clamp(1.2rem, 1rem + 0.8vw, 1.65rem);
+		line-height: 1.5;
+		color: var(--color-ink-soft);
+		text-wrap: pretty;
+	}
+
+	.lede-2 {
+		margin-top: 1.25rem;
+		color: var(--color-ink-soft);
+	}
+
+	.pair {
+		position: relative;
+		aspect-ratio: 1 / 1.05;
+	}
+
+	.polaroid {
+		position: absolute;
+		width: 54%;
+		padding: 0.6rem 0.6rem 1.75rem;
+		border: 0;
+		border-radius: 0.3rem;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgb(34 26 31 / 0.1),
+			0 18px 36px -18px rgb(34 26 31 / 0.5);
+		transform: rotate(var(--r, 0deg));
+		transition:
+			transform 0.6s var(--ease-fluid),
+			box-shadow 0.6s var(--ease-fluid);
+		cursor: zoom-in;
+	}
+
+	.pair-back {
+		left: 0;
+		top: 0;
+	}
+
+	.pair-front {
+		right: 0;
+		bottom: 0;
+	}
+
+	.polaroid img {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 0.1rem;
+	}
+
+	.polaroid:hover,
+	.polaroid:focus-visible,
+	.snap:hover,
+	.snap:focus-visible {
+		z-index: 9;
+		transform: rotate(0deg) translateY(-0.6rem) scale(1.05);
+		box-shadow:
+			0 2px 4px rgb(34 26 31 / 0.1),
+			0 36px 60px -24px rgb(34 26 31 / 0.55);
+	}
+
+	/* ---------- 2 · Swim & Dive ---------- */
+	.swim-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr 0.85fr;
-		grid-template-rows: repeat(3, 10.5rem);
-		grid-template-areas:
-			"deck deck cheer"
-			"team team cheer"
-			"team team hug";
-		gap: var(--space-1);
+		grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+		gap: var(--space-4);
+		align-items: center;
 	}
 
-	.c-deck {
-		grid-area: deck;
+	.swim h2 {
+		margin-top: 0.5rem;
 	}
 
-	.c-cheer {
-		grid-area: cheer;
+	.swim .body {
+		color: var(--color-ink);
 	}
 
-	.c-team {
-		grid-area: team;
-	}
-
-	/* Zoom in on the team so faces are easier to see; the pool deck and ceiling are trimmed. */
-	.swim .c-team :global(.zoom-photo img),
-	.swim .c-team :global(.zoom-photo:hover img) {
-		transform: scale(1.3);
-		transform-origin: 50% 72%;
-	}
-
-	.c-hug {
-		grid-area: hug;
-	}
-
-	/* The last line of the story, set a step larger so it lands without becoming a heading. */
-	.about .swim-quote {
+	.quote {
 		margin-top: var(--space-3);
 		font-family: var(--font-serif);
-		font-size: var(--text-lg);
-		line-height: 1.4;
-		color: var(--color-ink);
+		font-size: 1.35rem;
+		font-style: italic;
+		line-height: 1.35;
 	}
 
-	/* Senior Day tall on the left, the small moments in a 2 × 2 grid beside it. */
-	.swim-close {
-		display: grid;
-		grid-template-columns: 1.3fr 1fr 1fr;
-		grid-template-rows: repeat(2, 11rem);
-		gap: var(--space-1);
-		margin-top: var(--space-4);
+	.board {
+		position: relative;
+		aspect-ratio: 1 / 0.98;
 	}
 
-	.swim-close li {
-		min-width: 0;
+	.snap {
+		position: absolute;
+		left: var(--l);
+		top: var(--t);
+		width: var(--w);
+		padding: 0.5rem 0.5rem 2.2rem;
+		border: 0;
+		border-radius: 0.3rem;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgb(34 26 31 / 0.12),
+			0 18px 36px -18px rgb(34 26 31 / 0.55);
+		transform: rotate(var(--r, 0deg));
+		transition:
+			transform 0.6s var(--ease-fluid),
+			box-shadow 0.6s var(--ease-fluid);
+		cursor: zoom-in;
 	}
 
-	.swim-senior {
-		grid-row: span 2;
+	.snap img {
+		width: 100%;
+		aspect-ratio: var(--ar, 4 / 5);
+		object-fit: cover;
+		object-position: var(--pos, center);
+		border-radius: 0.1rem;
 	}
 
-	/* ---------- 3 · Movement ---------- */
-	.moving-text {
-		max-width: 36rem;
-	}
-
-	.moving-text p {
-		margin-top: var(--space-2);
-	}
-
-	.moving-rows {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-		margin-top: var(--space-4);
-	}
-
-	/* Each photo grows in proportion to its shape, so a row shares one height. */
-	.moving-row {
-		display: flex;
-		gap: var(--space-2);
-	}
-
-	.moving-row li {
-		flex: var(--ratio) 1 0;
-		aspect-ratio: var(--ratio);
-		min-width: 0;
-	}
-
-	/* ---------- 4 · Santa Cruz → Berkeley ---------- */
-	.places {
-		border-top: 1px solid var(--color-line);
-	}
-
-	.places-text {
-		max-width: 38rem;
-	}
-
-	.places-text p {
-		margin-top: var(--space-2);
-	}
-
-	.arrow,
-	.places-arrow {
-		color: var(--color-accent);
-	}
-
-	.places-grid {
-		display: grid;
-		grid-template-columns: minmax(0, 1.25fr) auto minmax(0, 1fr);
-		gap: var(--space-3);
-		align-items: center;
-		margin-top: var(--space-4);
-	}
-
-	.place {
-		margin: 0;
-	}
-
-	.place figcaption {
-		margin-bottom: var(--space-2);
-		padding-top: var(--space-1);
-		border-top: 2px solid var(--color-ink);
-		font-size: var(--text-sm);
-		color: var(--color-ink-faint);
-	}
-
-	.place-now figcaption {
-		border-top-color: var(--color-accent);
-	}
-
-	.place figcaption strong {
-		display: block;
-		font-family: var(--font-serif);
-		font-size: var(--text-lg);
-		font-weight: 500;
-		color: var(--color-ink);
-	}
-
-	.place-photos {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: var(--space-1);
-	}
-
-	/* Lead photo on the left; one wide photo on top right, two small ones side by side below it. */
-	.place-then .place-photos {
-		grid-template-columns: 1.1fr 0.5fr 0.5fr;
-		grid-template-rows: repeat(2, 10rem);
-	}
-
-	.place-then .place-lead {
-		grid-row: span 2;
-	}
-
-	.place-then .place-photos > :nth-child(2) {
-		grid-column: span 2;
-	}
-
-	.place-now .place-photos {
-		grid-template-rows: 12rem 8rem;
-	}
-
-	.place-now .place-lead {
-		grid-column: span 2;
-	}
-
-	.places-arrow {
-		font-family: var(--font-serif);
-		font-size: var(--text-2xl);
-	}
-
-	/* ---------- 5 · Small things ---------- */
-	.small {
-		border-top: 1px solid var(--color-line);
-	}
-
-	.small-grid {
-		display: grid;
-		grid-template-columns: repeat(4, minmax(0, 1fr));
-		grid-auto-rows: 12rem;
-		gap: var(--space-2);
-		margin-top: var(--space-4);
-	}
-
-	.small-note {
-		align-self: end;
-		padding-bottom: var(--space-1);
-	}
-
-	.small-note p:not(.small-title) {
-		margin-top: 0.25rem;
-		font-size: var(--text-sm);
-		line-height: 1.5;
-	}
-
-	.about .small-title {
-		font-family: var(--font-serif);
-		font-size: var(--text-lg);
+	.cap {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0.35rem;
+		text-align: center;
+		font-family: var(--hand);
+		font-size: 1.3rem;
 		line-height: 1.2;
 		color: var(--color-ink);
 	}
 
-	/* Food: note top-left, two tall photos, three square ones. */
-	.food-grid {
-		grid-template-areas:
-			"note   rolls  cookies cake"
-			"latte  rolls  buns    cake";
+	.note-hand {
+		position: absolute;
+		left: var(--l);
+		top: var(--t);
+		z-index: 8;
+		font-family: var(--hand);
+		font-size: 1.55rem;
+		line-height: 1.1;
+		color: var(--color-accent);
+		transform: rotate(var(--r, -3deg));
+		pointer-events: none;
 	}
 
-	.f-latte {
-		grid-area: latte;
+	.arrow-hand {
+		position: absolute;
+		left: var(--l);
+		top: var(--t);
+		z-index: 8;
+		width: var(--w);
+		overflow: visible;
+		pointer-events: none;
 	}
 
-	.food-grid .small-note {
-		grid-area: note;
+	.arrow-hand path {
+		fill: none;
+		stroke: var(--color-accent);
+		stroke-width: 2.2;
+		stroke-linecap: round;
+		stroke-linejoin: round;
 	}
 
-	.f-rolls {
-		grid-area: rolls;
+	/* ---------- 3 · Always moving ---------- */
+	.moving-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+		gap: var(--space-4);
+		align-items: center;
 	}
 
-	.f-cookies {
-		grid-area: cookies;
+	.pause {
+		width: 2.5rem;
+		height: 2.5rem;
+		margin-top: var(--space-3);
+		border: 1.5px solid var(--color-ink);
+		border-radius: 50%;
+		background: none;
+		font-size: 0.8rem;
+		color: var(--color-ink);
+		transition:
+			background 0.3s var(--ease-fluid),
+			color 0.3s var(--ease-fluid);
 	}
 
-	.f-cake {
-		grid-area: cake;
+	.pause:hover {
+		background: var(--color-ink);
+		color: var(--color-bg);
 	}
 
-	.f-buns {
-		grid-area: buns;
+	/* A rounded window: photos slide in and out behind its edges */
+	.cols {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.75rem;
+		aspect-ratio: 1;
+		overflow: hidden;
+		border-radius: 1rem;
 	}
 
-	/* Sunsets: mirrored, with the note on the right and the cypress as the large photo. */
-	.sunset-grid {
-		grid-template-areas:
-			"bluff cypress cypress note"
-			"bluff cypress cypress tide"
-			"coast coast   street  pool";
+	.col {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		animation: col-up var(--t) linear infinite;
 	}
 
-	.sunset-grid .small-note {
-		grid-area: note;
+	.col.down {
+		animation-name: col-down;
 	}
 
-	.s-bluff {
-		grid-area: bluff;
+	.col img {
+		width: 100%;
+		aspect-ratio: 3 / 4;
+		object-fit: cover;
+		border-radius: 0.75rem;
 	}
 
-	.s-cypress {
-		grid-area: cypress;
+	.cols:hover .col,
+	.cols.is-paused .col {
+		animation-play-state: paused;
 	}
 
-	.s-tidepools {
-		grid-area: tide;
+	@keyframes col-up {
+		to {
+			transform: translateY(calc(-50% - 0.375rem));
+		}
 	}
 
-	.s-street {
-		grid-area: street;
+	@keyframes col-down {
+		from {
+			transform: translateY(calc(-50% - 0.375rem));
+		}
+		to {
+			transform: translateY(0);
+		}
 	}
 
-	.s-coastline {
-		grid-area: coast;
+	/* ---------- 4 · Santa Cruz → Berkeley ---------- */
+	.journey h2 span {
+		color: var(--color-accent);
 	}
 
-	.s-pool {
-		grid-area: pool;
+	.journey .body {
+		max-width: 40rem;
 	}
 
-	/* ---------- Tablet ---------- */
-	@media (max-width: 60rem) {
-		.intro-grid {
-			grid-template-columns: minmax(0, 1fr) minmax(12rem, 18rem);
-			gap: var(--space-4);
+	.keepsakes {
+		position: relative;
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: var(--space-3);
+		max-width: 52rem;
+		margin: var(--space-4) auto 0;
+	}
+
+	.keepsake {
+		display: grid;
+		justify-items: center;
+		gap: var(--space-1);
+		margin: 0;
+	}
+
+	/* Lace: circles tiled around the edge leave a scalloped, holey border */
+	.lace {
+		--r: 7px;
+		width: min(100%, 18rem);
+		padding: calc(2.4 * var(--r));
+		background: #fff;
+		-webkit-mask:
+			linear-gradient(#000 0 0) content-box,
+			radial-gradient(var(--r), #000 96%, #0000) 0 0 / calc(2 * var(--r)) calc(2 * var(--r)) round;
+		mask:
+			linear-gradient(#000 0 0) content-box,
+			radial-gradient(var(--r), #000 96%, #0000) 0 0 / calc(2 * var(--r)) calc(2 * var(--r)) round;
+		filter: drop-shadow(0 14px 18px rgb(34 26 31 / 0.18));
+		transform: rotate(var(--rot, 0deg));
+		transition: transform 0.6s var(--ease-fluid);
+	}
+
+	.keepsake:hover .lace {
+		transform: rotate(0deg) translateY(-0.4rem);
+	}
+
+	.lace img {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+	}
+
+	.word {
+		font-family: var(--hand);
+		line-height: 1.1;
+	}
+
+	.word.big,
+	.word.to {
+		font-size: 2.1rem;
+		color: var(--color-accent);
+	}
+
+	.word.sub {
+		font-size: 1.3rem;
+		color: var(--color-ink-soft);
+	}
+
+	/* ---------- 5 · Small things ---------- */
+	.card {
+		position: relative;
+		max-width: 50rem;
+		margin-inline: auto;
+		padding: 2.5rem 2.75rem 2rem;
+		border-radius: 0.3rem;
+		background: var(--color-bg);
+		box-shadow:
+			0 1px 2px rgb(34 26 31 / 0.08),
+			0 24px 48px -24px rgb(34 26 31 / 0.4);
+		transform: rotate(-0.8deg);
+	}
+
+	.card::before,
+	.card::after {
+		content: "";
+		position: absolute;
+		top: -0.7rem;
+		width: 5rem;
+		height: 1.4rem;
+		opacity: 0.7;
+		clip-path: polygon(3% 0, 97% 4%, 100% 50%, 96% 100%, 2% 96%, 0 50%);
+	}
+
+	.card::before {
+		left: 1.5rem;
+		background: var(--color-accent);
+		transform: rotate(-8deg);
+	}
+
+	.card::after {
+		right: 1.5rem;
+		background: var(--color-sky);
+		transform: rotate(7deg);
+	}
+
+	.words {
+		max-width: 46rem;
+		margin-top: var(--space-3);
+		font-family: var(--font-serif);
+		font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.35rem);
+		line-height: 1.35;
+	}
+
+	.peek {
+		padding: 0;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-style: italic;
+		color: var(--color-accent);
+		text-decoration: underline wavy 1px;
+		text-underline-offset: 0.18em;
+		cursor: default;
+	}
+
+	.tip {
+		margin-top: var(--space-2);
+		font-family: var(--hand);
+		font-size: 1.4rem;
+		color: var(--color-ink-soft);
+	}
+
+	.tip-tap {
+		display: none;
+	}
+
+	@media (hover: none) {
+		.tip-hover {
+			display: none;
 		}
 
-		.swim-top {
+		.tip-tap {
+			display: inline;
+		}
+
+		.peek {
+			cursor: pointer;
+		}
+	}
+
+	.tapped {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+		margin-top: var(--space-2);
+	}
+
+	.tapped :global(img) {
+		width: 7.5rem;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 0.5rem;
+	}
+
+	/* ---------- Photo overlays ---------- */
+	.lightbox {
+		width: min(34rem, calc(100% - 2rem));
+		padding: 0.9rem 0.9rem 3.2rem;
+		border: 0;
+		border-radius: 0.4rem;
+		background: #fff;
+		box-shadow: 0 40px 80px -30px rgb(34 26 31 / 0.6);
+		overflow: visible;
+	}
+
+	.lightbox[open] {
+		animation: pop 0.5s var(--ease-fluid) both;
+	}
+
+	.lightbox::backdrop {
+		background: rgb(34 26 31 / 0.5);
+		backdrop-filter: blur(4px);
+	}
+
+	@keyframes pop {
+		from {
+			opacity: 0;
+			transform: translateY(1.5rem) rotate(-2deg) scale(0.92);
+		}
+	}
+
+	.lightbox img {
+		width: 100%;
+		max-height: 72vh;
+		object-fit: contain;
+	}
+
+	.lightbox p {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0.7rem;
+		text-align: center;
+		font-family: var(--hand);
+		font-size: 1.7rem;
+	}
+
+	.lightbox button {
+		position: absolute;
+		top: -1rem;
+		right: -1rem;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 0;
+		border-radius: 50%;
+		background: var(--color-ink);
+		font-size: 1.4rem;
+		line-height: 1;
+		color: var(--color-bg);
+	}
+
+	.floater {
+		position: fixed;
+		left: 0;
+		top: 0;
+		z-index: 30;
+		width: 13rem;
+		padding: 0.5rem;
+		border-radius: 0.35rem;
+		background: #fff;
+		box-shadow: 0 24px 48px -20px rgb(34 26 31 / 0.5);
+		pointer-events: none;
+		opacity: 0;
+		transform: translate(-50%, calc(-100% - 1.25rem)) rotate(var(--tilt, -3deg)) scale(0.85);
+		transition:
+			opacity 0.25s var(--ease-fluid),
+			transform 0.4s var(--ease-fluid);
+	}
+
+	.floater.is-on {
+		opacity: 1;
+		transform: translate(-50%, calc(-100% - 1.25rem)) rotate(var(--tilt, -3deg)) scale(1);
+	}
+
+	.floater img {
+		width: 100%;
+		aspect-ratio: 4 / 5;
+		object-fit: cover;
+		border-radius: 0.15rem;
+	}
+
+	/* ---------- Tablet and down ---------- */
+	@media (max-width: 56rem) {
+		.intro-grid,
+		.swim-grid,
+		.moving-grid {
 			grid-template-columns: 1fr;
-			gap: var(--space-3);
 		}
 
-		.swim-text {
-			max-width: 38rem;
+		.pair {
+			width: min(100%, 26rem);
+			margin-inline: auto;
 		}
 
-		.swim-collage {
-			grid-template-rows: repeat(3, 11rem);
+		.board {
+			width: min(100%, 32rem);
+			margin-inline: auto;
 		}
 
-		.places-grid {
+		.keepsakes {
 			grid-template-columns: 1fr;
 		}
 
-		.places-arrow {
+		.word.to {
 			justify-self: center;
 			transform: rotate(90deg);
-			line-height: 1;
+		}
+
+		.card {
+			padding: 2rem 1.5rem 1.5rem;
 		}
 	}
 
-	/* ---------- Phone ---------- */
-	@media (max-width: 40rem) {
-		.intro-grid {
-			grid-template-columns: 1fr;
-			gap: var(--space-3);
-		}
-
-		.intro-photo {
-			order: -1;
-			width: min(100%, 18rem);
-		}
-
-		/* Story first, then the collage in two columns so photos stay large. */
-		.swim-collage {
-			grid-template-columns: 1fr 1fr;
-			grid-template-rows: 11rem 13rem 11rem;
-			grid-template-areas:
-				"deck  deck"
-				"cheer hug"
-				"team  team";
-		}
-
-		/* Wide group shots run full width at their own shape, so nobody at the edges is cut off;
-		   the two tall photos pair up. Order: Senior Day, underwater, Hawaiian + award, the lift. */
-		.swim-close {
-			grid-template-columns: 1fr 1fr;
-			grid-template-rows: none;
-		}
-
-		.swim-senior {
-			grid-row: auto;
-			grid-column: span 2;
-			aspect-ratio: 1;
-		}
-
-		.swim-close li:nth-child(2) {
-			grid-column: span 2;
-			aspect-ratio: 4 / 3;
-		}
-
-		.swim-close li:nth-child(3),
-		.swim-close li:nth-child(5) {
-			aspect-ratio: 3 / 4;
-		}
-
-		.swim-close li:nth-child(4) {
-			order: 1;
-			grid-column: span 2;
-			aspect-ratio: 3 / 2;
-		}
-
-		/* Rows of four get too small on a phone; let them wrap into pairs. */
-		.moving-row {
-			flex-wrap: wrap;
-			gap: var(--space-1);
-		}
-
-		/* Square tiles crop both tall and wide photos gently, so groups and faces stay in frame. */
-		.moving-row li {
-			flex: 1 1 40%;
-			aspect-ratio: 1;
-		}
-
-		.moving-rows {
-			gap: var(--space-1);
-		}
-
-		.place-then .place-photos {
-			grid-template-rows: repeat(2, 8rem);
-		}
-
-		.place-now .place-photos {
-			grid-template-rows: 10rem 7rem;
-		}
-
-		/* The caption gets its own short row; photo rows keep a fixed height. */
-		.small-grid {
-			grid-template-columns: 1fr 1fr;
-			grid-template-rows: auto;
-			grid-auto-rows: 9rem;
-			gap: var(--space-1);
-		}
-
-		.food-grid {
-			grid-template-areas:
-				"note   note"
-				"rolls  cookies"
-				"rolls  cake"
-				"latte  cake"
-				"buns   buns";
-		}
-
-		.sunset-grid {
-			grid-template-areas:
-				"note    note"
-				"cypress cypress"
-				"bluff   tide"
-				"bluff   pool"
-				"street  coast";
-		}
-
-		.small-note {
-			align-self: start;
+	@media (prefers-reduced-motion: reduce) {
+		.col {
+			animation: none;
 		}
 	}
 </style>

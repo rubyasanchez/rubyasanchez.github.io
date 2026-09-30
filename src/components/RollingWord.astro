@@ -1,0 +1,88 @@
+---
+// A phrase that rises into place through a clipped edge, then hands off to the next.
+// It runs through the list once and settles back on the first phrase, so the hero
+// ends still. Screen readers get the full list from the parent heading instead.
+interface Props {
+	words: string[];
+	interval?: number;
+}
+
+const { words, interval = 2200 } = Astro.props;
+---
+
+<span class="roll" data-words={JSON.stringify(words)} data-interval={interval} aria-hidden="true">
+	<span>{words[0]}</span>
+</span>
+
+<script>
+	document.querySelectorAll<HTMLElement>(".roll[data-words]").forEach((box) => {
+		const words: string[] = JSON.parse(box.dataset.words ?? "[]");
+		const interval = Number(box.dataset.interval);
+		if (words.length < 2 || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+		// One full pass, ending back on the first phrase
+		const sequence = [...words.slice(1), words[0]];
+		let step = 0;
+		let visible = true;
+		new IntersectionObserver(([entry]) => (visible = entry.isIntersecting)).observe(box);
+
+		const advance = () => {
+			if (step >= sequence.length) return;
+			if (!visible || document.hidden) return void setTimeout(advance, interval);
+
+			const current = box.lastElementChild as HTMLElement;
+			const next = document.createElement("span");
+			next.textContent = sequence[step++];
+			next.classList.add("is-below");
+			box.style.width = `${box.getBoundingClientRect().width}px`;
+			box.append(next);
+			const width = next.getBoundingClientRect().width;
+
+			requestAnimationFrame(() => {
+				current.classList.add("is-above");
+				next.classList.remove("is-below");
+				box.style.width = `${width}px`;
+			});
+			setTimeout(() => {
+				current.remove();
+				box.style.width = "";
+			}, 750);
+			setTimeout(advance, interval);
+		};
+
+		// Give the entrance time to clear before the first change
+		const entering = document.getElementById("entrance");
+		setTimeout(advance, entering ? interval + 2400 : interval);
+	});
+</script>
+
+<style>
+	/* overflow: clip (not hidden) keeps the phrase on the sentence's baseline;
+	   the padding leaves room for descenders and the negative margin cancels it out */
+	.roll {
+		display: inline-grid;
+		vertical-align: baseline;
+		overflow: clip;
+		padding-block: 0.06em 0.18em;
+		margin-block: -0.06em -0.18em;
+		transition: width 0.6s var(--ease-fluid);
+	}
+
+	.roll > :global(span) {
+		grid-area: 1 / 1;
+		justify-self: start;
+		white-space: nowrap;
+		transition:
+			transform 0.7s var(--ease-fluid),
+			opacity 0.5s var(--ease-fluid);
+	}
+
+	.roll > :global(span.is-below) {
+		transform: translateY(105%);
+	}
+
+	.roll > :global(span.is-above) {
+		transform: translateY(-105%);
+		opacity: 0;
+	}
+</style>

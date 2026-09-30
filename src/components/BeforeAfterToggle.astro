@@ -1,0 +1,141 @@
+---
+// A two-option switch above one screenshot. Choosing the second version makes it rise over
+// the first on a curved edge. The switch flips once on its own when it scrolls into view,
+// so the change is visible without any input.
+type Shot = { src: string; alt: string; width: number; height: number; label: string };
+
+interface Props {
+	before: Shot;
+	after: Shot;
+}
+
+const { before, after } = Astro.props;
+---
+
+<div class="bat" data-bat data-state="before">
+	<div class="bat-switch" role="group" aria-label="Show a version">
+		<span class="bat-pill" aria-hidden="true"></span>
+		<button type="button" data-v="before" aria-pressed="true">{before.label}</button>
+		<button type="button" data-v="after" aria-pressed="false">{after.label}</button>
+	</div>
+
+	<div class="bat-frame" style={`aspect-ratio: ${before.width} / ${before.height}`}>
+		<img src={before.src} alt={before.alt} width={before.width} height={before.height} loading="lazy" />
+		<img
+			class="bat-after"
+			src={after.src}
+			alt={after.alt}
+			width={after.width}
+			height={after.height}
+			loading="lazy"
+		/>
+	</div>
+</div>
+
+<script>
+	document.querySelectorAll<HTMLElement>("[data-bat]").forEach((root) => {
+		const buttons = [...root.querySelectorAll<HTMLButtonElement>("[data-v]")];
+		let touched = false;
+
+		const show = (v: string) => {
+			root.dataset.state = v;
+			buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.v === v)));
+		};
+
+		buttons.forEach((b) =>
+			b.addEventListener("click", () => {
+				touched = true;
+				show(b.dataset.v!);
+			}),
+		);
+
+		new IntersectionObserver(
+			([entry], observer) => {
+				if (!entry.isIntersecting) return;
+				observer.disconnect();
+				setTimeout(() => !touched && show("after"), 900);
+			},
+			{ threshold: 0.5 },
+		).observe(root.querySelector(".bat-frame")!);
+	});
+</script>
+
+<style>
+	.bat {
+		display: grid;
+		gap: var(--space-2);
+	}
+
+	.bat-switch {
+		justify-self: start;
+		position: relative;
+		display: inline-grid;
+		grid-template-columns: 1fr 1fr;
+		padding: 0.25rem;
+		border-radius: 999px;
+		background: rgb(34 26 31 / 0.08);
+	}
+
+	.bat-switch button {
+		position: relative;
+		z-index: 1;
+		padding: 0.45rem 1.1rem;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-ink-soft);
+		cursor: pointer;
+		transition: color 0.35s var(--ease-fluid);
+	}
+
+	.bat-switch button[aria-pressed="true"] {
+		color: var(--color-accent-ink);
+	}
+
+	/* The pill slides under whichever option is on: ink for the original, pink for the redesign */
+	.bat-pill {
+		position: absolute;
+		inset: 0.25rem auto 0.25rem 0.25rem;
+		width: calc(50% - 0.25rem);
+		border-radius: 999px;
+		background: var(--color-ink);
+		transition:
+			transform 0.5s var(--ease-fluid),
+			background 0.5s var(--ease-fluid);
+	}
+
+	[data-state="after"] .bat-pill {
+		transform: translateX(100%);
+		background: var(--color-accent);
+	}
+
+	.bat-frame {
+		position: relative;
+		overflow: hidden;
+		border-radius: 0.75rem;
+		background: #fff;
+		box-shadow:
+			0 1px 2px rgb(34 26 31 / 0.08),
+			0 28px 56px -28px rgb(34 26 31 / 0.45);
+	}
+
+	.bat-frame img {
+		position: absolute;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+	}
+
+	.bat-after {
+		clip-path: ellipse(150% 0% at 50% 100%);
+		transition: clip-path 0.9s var(--ease-fluid);
+	}
+
+	[data-state="after"] .bat-after {
+		clip-path: ellipse(150% 150% at 50% 100%);
+	}
+</style>

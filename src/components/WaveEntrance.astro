@@ -1,0 +1,188 @@
+---
+// First-visit entrance: Ruby's name types out on a sky field, then the field drains
+// down the page with a wave crest on its leading edge. Plays once per browser session,
+// skips on any input, and never renders without JS or with reduced motion.
+const name = "Ruby Sanchez";
+---
+
+<div class="entrance" id="entrance" aria-hidden="true">
+	<div class="wave wave-back"></div>
+	<div class="wave wave-front">
+		<p class="entrance-name">
+			<span class="ghost">{name}</span><span class="typed"></span>
+		</p>
+	</div>
+</div>
+
+<script is:inline define:vars={{ name }}>
+	(() => {
+		const el = document.getElementById("entrance");
+		let seen = false;
+		try {
+			seen = sessionStorage.getItem("rs-entered") === "1";
+			sessionStorage.setItem("rs-entered", "1");
+		} catch {}
+		if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+			el.remove();
+			return;
+		}
+
+		const typed = el.querySelector(".typed");
+		const timers = [];
+		const later = (fn, ms) => timers.push(setTimeout(fn, ms));
+		const events = ["pointerdown", "keydown", "wheel", "touchstart"];
+
+		const finish = () => {
+			timers.forEach(clearTimeout);
+			events.forEach((e) => removeEventListener(e, skip));
+			el.remove();
+		};
+		const skip = () => {
+			timers.forEach(clearTimeout);
+			el.classList.add("is-skipped");
+			later(finish, 260);
+		};
+		events.forEach((e) => addEventListener(e, skip, { passive: true, once: true }));
+
+		let i = 0;
+		const type = () => {
+			typed.textContent = name.slice(0, ++i);
+			if (i < name.length) return later(type, 55);
+			later(() => {
+				el.classList.add("is-draining");
+				later(finish, 1650);
+			}, 150);
+		};
+		later(type, 200);
+	})();
+</script>
+
+<style>
+	.entrance {
+		display: none;
+	}
+
+	:global(html.js) .entrance {
+		display: block;
+		position: fixed;
+		inset: 0;
+		z-index: 100;
+		pointer-events: none;
+		transition: opacity 0.25s var(--ease-fluid);
+	}
+
+	.entrance.is-skipped {
+		opacity: 0;
+	}
+
+	.wave {
+		position: absolute;
+		inset: 0 0 -1px;
+		display: grid;
+		place-items: center;
+		background: var(--wave-color);
+	}
+
+	.wave-front {
+		--wave-color: var(--color-sky);
+		z-index: 2;
+	}
+
+	.wave-back {
+		--wave-color: color-mix(in srgb, var(--color-sky) 45%, var(--color-bg));
+		z-index: 1;
+	}
+
+	/* The crest rides on the field's top edge once it starts to drain */
+	.wave::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		bottom: calc(100% - 1px);
+		width: 200%;
+		height: clamp(2.5rem, 6vw, 5rem);
+		background: var(--wave-color);
+		-webkit-mask: var(--crest) repeat-x 0 100% / 50% 100%;
+		mask: var(--crest) repeat-x 0 100% / 50% 100%;
+		--crest: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpath d='M0 12 C 20 2, 30 2, 50 12 S 80 22, 100 12 V20 H0 Z'/%3E%3C/svg%3E");
+	}
+
+	.is-draining .wave-front {
+		animation: drain 1.25s var(--ease-tide) both;
+	}
+
+	.is-draining .wave-back {
+		animation: drain 1.25s var(--ease-tide) 0.14s both;
+	}
+
+	.is-draining .wave::before {
+		animation: crest 1.4s linear both;
+	}
+
+	.is-draining .wave-back::before {
+		animation-direction: reverse;
+	}
+
+	.is-draining .entrance-name {
+		animation: name-out 0.35s var(--ease-fluid) both;
+	}
+
+	@keyframes drain {
+		to {
+			transform: translateY(calc(100% + 6vw));
+		}
+	}
+
+	@keyframes crest {
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes name-out {
+		to {
+			opacity: 0;
+		}
+	}
+
+	/* The full name reserves the space, so typing grows left to right without shifting */
+	.entrance-name {
+		position: relative;
+		white-space: nowrap;
+		font-family: var(--font-serif);
+		font-size: clamp(2.5rem, 1.5rem + 5vw, 5.5rem);
+		font-weight: 400;
+		letter-spacing: -0.015em;
+		color: var(--color-ink);
+	}
+
+	.ghost {
+		visibility: hidden;
+	}
+
+	.typed {
+		position: absolute;
+		inset: 0 auto auto 0;
+	}
+
+	.typed::after {
+		content: "";
+		display: inline-block;
+		width: 0.05em;
+		height: 0.85em;
+		margin-left: 0.05em;
+		vertical-align: -0.06em;
+		background: currentColor;
+		animation: caret 0.9s steps(1) infinite;
+	}
+
+	.is-draining .typed::after {
+		visibility: hidden;
+	}
+
+	@keyframes caret {
+		50% {
+			opacity: 0;
+		}
+	}
+</style>
