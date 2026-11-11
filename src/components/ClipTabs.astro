@@ -1,0 +1,251 @@
+---
+// A screen-recording player in a browser frame. With more than one clip it shows tabs and
+// plays only one at a time: switching restarts the chosen clip, and a finished clip hands
+// off to the next until the visitor picks a tab themselves.
+type Clip = {
+	label: string;
+	src: string;
+	poster: string;
+	alt: string;
+	caption: string;
+};
+
+interface Props {
+	clips: Clip[];
+	width: number;
+	height: number;
+}
+
+const { clips, width, height } = Astro.props;
+---
+
+<figure class="ct bleed" data-ct>
+	<div class="ct-bar">
+		<span class="ct-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+		<span class="ct-url">datasharescc.org</span>
+		{
+			clips.length > 1 && (
+				<div class="ct-tabs" role="group" aria-label="Choose a recording">
+					{clips.map((clip, i) => (
+						<button type="button" data-i={i} aria-pressed={i === 0 ? "true" : "false"}>
+							{clip.label}
+						</button>
+					))}
+				</div>
+			)
+		}
+	</div>
+	<div class="ct-screen">
+		{
+			clips.map((clip, i) => (
+				<video
+					src={clip.src}
+					poster={clip.poster}
+					width={width}
+					height={height}
+					muted
+					playsinline
+					preload="none"
+					aria-label={clip.alt}
+					data-i={i}
+					hidden={i !== 0}
+				/>
+			))
+		}
+		<span class="ct-progress" aria-hidden="true"></span>
+	</div>
+	<figcaption aria-live="polite">
+		{clips.map((clip, i) => <span data-i={i} hidden={i !== 0}>{clip.caption}</span>)}
+	</figcaption>
+</figure>
+
+<script>
+	const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+	document.querySelectorAll<HTMLElement>("[data-ct]").forEach((root) => {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>(".ct-tabs button")];
+		const videos = [...root.querySelectorAll<HTMLVideoElement>(".ct-screen video")];
+		const captions = [...root.querySelectorAll<HTMLElement>("figcaption [data-i]")];
+		const progress = root.querySelector<HTMLElement>(".ct-progress")!;
+		let current = 0;
+		let autoAdvance = videos.length > 1;
+		let visible = false;
+
+		// Visitors who prefer less motion get the poster and native controls instead of autoplay.
+		if (reduceMotion) videos.forEach((v) => (v.controls = true));
+
+		const start = (video: HTMLVideoElement) => {
+			if (reduceMotion || !visible) return;
+			video.preload = "auto";
+			video.play().catch(() => (video.controls = true));
+		};
+
+		const show = (i: number) => {
+			videos[current].pause();
+			current = i;
+			tabs.forEach((t, n) => t.setAttribute("aria-pressed", String(n === i)));
+			videos.forEach((v, n) => (v.hidden = n !== i));
+			captions.forEach((c, n) => (c.hidden = n !== i));
+			videos[i].currentTime = 0;
+			start(videos[i]);
+		};
+
+		videos.forEach((video, i) => {
+			video.addEventListener("timeupdate", () => {
+				if (i === current && video.duration)
+					progress.style.transform = `scaleX(${video.currentTime / video.duration})`;
+			});
+			video.addEventListener("ended", () => {
+				if (i !== current) return;
+				if (autoAdvance) show((current + 1) % videos.length);
+				else {
+					video.currentTime = 0;
+					start(video);
+				}
+			});
+		});
+
+		tabs.forEach((t) =>
+			t.addEventListener("click", () => {
+				autoAdvance = false;
+				show(Number(t.dataset.i));
+			}),
+		);
+
+		// Play only while the player is on screen.
+		new IntersectionObserver(
+			([entry]) => {
+				visible = entry.isIntersecting;
+				if (visible) start(videos[current]);
+				else videos[current].pause();
+			},
+			{ threshold: 0.4 },
+		).observe(root);
+	});
+</script>
+
+<style>
+	/* Wider than the reading column so the recording stays legible, centered on the page. */
+	:global(.case-copy) .ct.bleed {
+		--bleed-w: min(56rem, 100vw - 2 * var(--space-3));
+		margin-block: var(--space-3);
+	}
+
+	.ct-bar {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding: 0.625rem 0.875rem;
+		border: 1px solid var(--color-line);
+		border-bottom: 0;
+		border-radius: 10px 10px 0 0;
+		background: var(--color-bg-raised);
+	}
+
+	.ct-dots {
+		display: flex;
+		gap: 0.375rem;
+	}
+
+	.ct-dots i {
+		width: 0.625rem;
+		height: 0.625rem;
+		border-radius: 50%;
+		background: var(--color-line);
+	}
+
+	.ct-url {
+		flex: 1;
+		min-width: 0;
+		font-size: var(--text-sm);
+		color: var(--color-ink-faint);
+	}
+
+	.ct-tabs {
+		display: flex;
+		padding: 0.1875rem;
+		border: 1px solid var(--color-line);
+		border-radius: 999px;
+		background: var(--color-bg);
+	}
+
+	.ct-tabs button {
+		padding: 0.375rem 1.125rem;
+		border: 0;
+		border-radius: 999px;
+		background: none;
+		font: inherit;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-ink-soft);
+		cursor: pointer;
+		transition:
+			background 0.25s var(--ease-fluid),
+			color 0.25s var(--ease-fluid);
+	}
+
+	.ct-tabs button[aria-pressed="true"] {
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+	}
+
+	.ct-tabs button:focus {
+		outline: none;
+	}
+
+	.ct-tabs button:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	.ct-screen {
+		position: relative;
+		overflow: hidden;
+		border: 1px solid var(--color-line);
+		border-radius: 0 0 10px 10px;
+		background: #fff;
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 18px 40px -18px rgb(28 27 25 / 0.25);
+	}
+
+	.ct-screen video {
+		display: block;
+		width: 100%;
+		height: auto;
+		aspect-ratio: 16 / 10;
+		background: #fff;
+	}
+
+	.ct-screen video[hidden] {
+		display: none;
+	}
+
+	/* A thin bar along the bottom of the screen shows how far through the clip it is. */
+	.ct-progress {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: 3px;
+		background: var(--color-accent);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.25s linear;
+	}
+
+	.ct figcaption {
+		margin-top: var(--space-1);
+		font-size: var(--text-sm);
+		color: var(--color-ink-faint);
+		text-align: center;
+	}
+
+	@media (max-width: 40rem) {
+		.ct-url {
+			display: none;
+		}
+
+		.ct-bar {
+			justify-content: space-between;
+		}
+	}
+</style>

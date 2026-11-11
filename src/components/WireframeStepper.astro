@@ -1,0 +1,336 @@
+---
+// Steps through a design's iterations in one fixed frame. Each step crossfades in with a
+// short note, so visitors can see what was tried, what carried forward, and what got built.
+type Step = {
+	label: string;
+	title: string;
+	note: string;
+	src: string;
+	alt: string;
+	width: number;
+	height: number;
+};
+
+interface Props {
+	steps: Step[];
+}
+
+const { steps } = Astro.props;
+---
+
+<figure class="ws bleed" data-ws data-start style={`--count: ${steps.length}`}>
+	<ol class="ws-rail" role="tablist" aria-label="Iterations">
+		{
+			steps.map((step, i) => (
+				<li>
+					<button
+						type="button"
+						role="tab"
+						id={`ws-tab-${i}`}
+						aria-selected={i === 0 ? "true" : "false"}
+						tabindex={i === 0 ? 0 : -1}
+						data-i={i}
+					>
+						<span class="ws-dot" aria-hidden="true">{i + 1}</span>
+						{step.label}
+					</button>
+				</li>
+			))
+		}
+	</ol>
+
+	<div class="ws-caption" aria-live="polite">
+		{
+			steps.map((step, i) => (
+				<p data-i={i} hidden={i !== 0}>
+					<strong>{step.title}.</strong> {step.note}
+				</p>
+			))
+		}
+	</div>
+
+	<div class="ws-stage" role="tabpanel">
+		<div class="ws-screens">
+		{
+			steps.map((step, i) => (
+				<img
+					src={step.src}
+					alt={step.alt}
+					width={step.width}
+					height={step.height}
+					loading={i === 0 ? "eager" : "lazy"}
+					data-i={i}
+					class:list={{ "is-active": i === 0 }}
+				/>
+			))
+		}
+		</div>
+		<button type="button" class="ws-arrow ws-prev" aria-label="Previous iteration" data-dir="-1">&larr;</button>
+		<button type="button" class="ws-arrow ws-next" aria-label="Next iteration" data-dir="1">&rarr;</button>
+	</div>
+
+</figure>
+
+<script>
+	document.querySelectorAll<HTMLElement>("[data-ws]").forEach((root) => {
+		const tabs = [...root.querySelectorAll<HTMLButtonElement>(".ws-rail button")];
+		const images = [...root.querySelectorAll<HTMLImageElement>(".ws-stage img")];
+		const notes = [...root.querySelectorAll<HTMLElement>(".ws-caption p")];
+		const last = tabs.length - 1;
+		let current = 0;
+
+		const show = (i: number, focus = false) => {
+			current = Math.max(0, Math.min(last, i));
+			root.toggleAttribute("data-start", current === 0);
+			root.toggleAttribute("data-end", current === last);
+			root.style.setProperty("--progress", String(current / last));
+			tabs.forEach((t, n) => {
+				t.setAttribute("aria-selected", String(n === current));
+				t.tabIndex = n === current ? 0 : -1;
+				t.classList.toggle("is-done", n < current);
+			});
+			images.forEach((img, n) => img.classList.toggle("is-active", n === current));
+			notes.forEach((p, n) => (p.hidden = n !== current));
+			if (focus) tabs[current].focus();
+		};
+
+		tabs.forEach((t) => t.addEventListener("click", () => show(Number(t.dataset.i))));
+
+		root.querySelectorAll<HTMLButtonElement>(".ws-arrow").forEach((b) =>
+			b.addEventListener("click", () => show(current + Number(b.dataset.dir))),
+		);
+
+		root.querySelector(".ws-rail")!.addEventListener("keydown", (e) => {
+			const key = (e as KeyboardEvent).key;
+			if (key === "ArrowRight") show(current + 1, true);
+			else if (key === "ArrowLeft") show(current - 1, true);
+			else return;
+			e.preventDefault();
+		});
+
+		show(0);
+	});
+</script>
+
+<style>
+	.ws {
+		margin-block: var(--space-4);
+	}
+
+	/* ---------- Rail ---------- */
+	.ws-rail {
+		position: relative;
+		display: grid;
+		grid-template-columns: repeat(var(--count), 1fr);
+		margin: 0 0 var(--space-2);
+		padding: 0;
+	}
+
+	/* The track runs between the first and last dots; the fill grows with each step. */
+	.ws-rail::before,
+	.ws-rail::after {
+		content: "";
+		position: absolute;
+		top: 1rem;
+		left: calc(50% / var(--count));
+		height: 2px;
+		background: var(--color-line);
+	}
+
+	.ws-rail::before {
+		right: calc(50% / var(--count));
+	}
+
+	.ws-rail::after {
+		width: calc((100% - 100% / var(--count)) * var(--progress, 0));
+		background: var(--color-accent);
+		transition: width 0.5s var(--ease-fluid);
+	}
+
+	.ws-rail li {
+		position: relative;
+		z-index: 1;
+		padding: 0;
+		text-align: center;
+	}
+
+	.ws-rail li::before {
+		content: none;
+	}
+
+	.ws-rail button {
+		display: inline-flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0;
+		border: 0;
+		background: none;
+		font: inherit;
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: var(--color-ink-faint);
+		cursor: pointer;
+		transition: color 0.25s var(--ease-fluid);
+	}
+
+	.ws-dot {
+		display: grid;
+		place-items: center;
+		width: 2rem;
+		height: 2rem;
+		border: 2px solid var(--color-line);
+		border-radius: 50%;
+		background: var(--color-bg);
+		font-size: var(--text-sm);
+		transition:
+			background 0.25s var(--ease-fluid),
+			border-color 0.25s var(--ease-fluid),
+			color 0.25s var(--ease-fluid),
+			transform 0.25s var(--ease-fluid);
+	}
+
+	.ws-rail button.is-done .ws-dot {
+		border-color: var(--color-accent);
+		color: var(--color-accent);
+	}
+
+	.ws-rail button[aria-selected="true"] {
+		color: var(--color-ink);
+	}
+
+	.ws-rail button[aria-selected="true"] .ws-dot {
+		border-color: var(--color-accent);
+		background: var(--color-accent);
+		color: var(--color-accent-ink);
+		transform: scale(1.1);
+	}
+
+	.ws-rail button:focus {
+		outline: none;
+	}
+
+	.ws-rail button:hover {
+		color: var(--color-ink);
+	}
+
+	.ws-rail button:focus-visible .ws-dot,
+	.ws-arrow:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	/* ---------- Stage ---------- */
+	/* Every screen is the same 3:2 canvas, so the stage never changes size. Its width is
+	   capped by the viewport height so the steps, the note, and the screen fit on one screen. */
+	.ws-stage {
+		position: relative;
+		width: min(100%, calc((100svh - 17rem) * 1.5 + 7rem), 56rem);
+		margin-inline: auto;
+		padding-inline: 3.5rem;
+	}
+
+	.ws-screens {
+		position: relative;
+		display: grid;
+		aspect-ratio: 3 / 2;
+		overflow: hidden;
+		border: 1px solid var(--color-line);
+		border-radius: 10px;
+		background: #fff;
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 18px 40px -18px rgb(28 27 25 / 0.28);
+	}
+
+	.ws .ws-screens img {
+		grid-area: 1 / 1;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: top;
+		border: 0;
+		border-radius: 0;
+		opacity: 0;
+		transform: translateX(1.5%);
+		transition:
+			opacity 0.45s var(--ease-fluid),
+			transform 0.6s var(--ease-fluid);
+	}
+
+	.ws .ws-screens img.is-active {
+		opacity: 1;
+		transform: none;
+	}
+
+	.ws-arrow {
+		position: absolute;
+		top: 50%;
+		display: grid;
+		place-items: center;
+		width: 2.75rem;
+		height: 2.75rem;
+		border: 1px solid var(--color-line);
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 4px 14px -6px rgb(0 0 0 / 0.3);
+		font-size: var(--text-lg);
+		color: var(--color-ink);
+		cursor: pointer;
+		transform: translateY(-50%);
+		transition: opacity 0.25s var(--ease-fluid);
+	}
+
+	.ws-prev {
+		left: 0;
+	}
+
+	.ws-next {
+		right: 0;
+	}
+
+	.ws[data-start] .ws-prev {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.ws[data-end] .ws-next {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	/* ---------- Caption: sits between the steps and the screen so it stays in view ---------- */
+	.ws-caption {
+		max-width: 44rem;
+		min-height: 3.25em;
+		margin: 0 auto var(--space-2);
+		font-size: var(--text-body);
+		line-height: 1.5;
+		text-align: center;
+		color: var(--color-ink-soft);
+	}
+
+	.ws-caption strong {
+		color: var(--color-ink);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ws .ws-screens img,
+		.ws-rail::after {
+			transition: none;
+		}
+	}
+
+	@media (max-width: 40rem) {
+		.ws-rail button {
+			font-size: var(--text-label);
+		}
+
+		.ws-stage {
+			padding-inline: 0;
+		}
+
+		/* The numbered rail is the control on phones; arrows would cover the screenshot. */
+		.ws-arrow {
+			display: none;
+		}
+	}
+</style>

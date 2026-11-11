@@ -12,6 +12,7 @@ interface Props {
 	team?: string;
 	timeline?: string;
 	tools?: string[];
+	methods?: string[];
 	skills?: string[];
 	tldr?: {
 		problem: string;
@@ -20,16 +21,18 @@ interface Props {
 	};
 }
 
-const { slug, title, subtitle, tags, summary, role, team, timeline, tools, skills, tldr } = Astro.props;
+const { slug, title, subtitle, tags, summary, role, team, timeline, tools, methods, skills, tldr } = Astro.props;
 
 const currentIndex = projects.findIndex((p) => p.slug === slug);
 const nextProject = projects[(currentIndex + 1) % projects.length];
 
-const hasMeta = Boolean(role || team || timeline || tools?.length || skills?.length);
+const hasMeta = Boolean(role || team || timeline || tools?.length || methods?.length || skills?.length);
 const hasOverview = Astro.slots.has("overview");
 const hasReflection = Astro.slots.has("reflection");
 const hasWhatsNext = Astro.slots.has("whatsNext");
 const hasVisual = Astro.slots.has("visual");
+// A page can replace the standard header and lead visual with its own hero.
+const hasHero = Astro.slots.has("hero");
 // Pages that pass a default slot tell their own story with CaseSection/DeepDive;
 // the rest fall back to the fixed Problem / Process / Decisions / Outcome template.
 const isStory = Astro.slots.has("default");
@@ -37,94 +40,114 @@ const isStory = Astro.slots.has("default");
 
 <BaseLayout title={`${title} | ${subtitle}`} description={summary}>
 	<article>
-		<header class="case-header section">
-			<div class="container prose">
-				<a class="back-link reveal" href="/work">&larr; Case Studies</a>
-				<p class="eyebrow reveal" style="--i:1">{subtitle}</p>
-				<h1 class="reveal" style="--i:2">{title}</h1>
-				{tags?.length && <p class="case-tags reveal" style="--i:3">{tags.join(" · ")}</p>}
-				<p class="case-summary reveal" style="--i:4">{summary}</p>
+		{
+			hasHero ? (
+				<header class="case-header case-hero section">
+					<div class="container">
+						<a class="back-link reveal" href="/work">&larr; Case Studies</a>
+						<slot name="hero" />
+					</div>
+				</header>
+			) : (
+				<Fragment>
+					<header class="case-header section">
+						<div class="container prose">
+							<a class="back-link reveal" href="/work">&larr; Case Studies</a>
+							<p class="eyebrow reveal" style="--i:1">{subtitle}</p>
+							<h1 class="reveal" style="--i:2">{title}</h1>
+							{tags?.length && <p class="case-tags reveal" style="--i:3">{tags.join(" · ")}</p>}
+							<p class="case-summary reveal" style="--i:4">{summary}</p>
 
-				{
-					tldr && (
-						<dl class="tldr reveal" style="--i:5" aria-label="Case study at a glance">
-							<div>
-								<dt>The problem</dt>
-								<dd>{tldr.problem}</dd>
-							</div>
-							<div>
-								<dt>What I did</dt>
-								<dd>{tldr.did}</dd>
-							</div>
-							<div>
-								<dt>The outcome</dt>
-								<dd>{tldr.outcome}</dd>
-							</div>
-						</dl>
-					)
-				}
+							{
+								tldr && (
+									<dl class="tldr reveal" style="--i:5" aria-label="Case study at a glance">
+										<div>
+											<dt>The problem</dt>
+											<dd>{tldr.problem}</dd>
+										</div>
+										<div>
+											<dt>What I did</dt>
+											<dd>{tldr.did}</dd>
+										</div>
+										<div>
+											<dt>The outcome</dt>
+											<dd>{tldr.outcome}</dd>
+										</div>
+									</dl>
+								)
+							}
 
-				{
-					hasMeta && (
-						<dl class="case-meta reveal" style="--i:6">
-							{role && (
-								<div class="meta-item">
-									<dt>Role</dt>
-									<dd>{role}</dd>
-								</div>
-							)}
-							{team && (
-								<div class="meta-item">
-									<dt>Team</dt>
-									<dd>{team}</dd>
-								</div>
-							)}
-							{timeline && (
-								<div class="meta-item">
-									<dt>Timeline</dt>
-									<dd>{timeline}</dd>
-								</div>
-							)}
-							{tools?.length && (
-								<div class="meta-item">
-									<dt>Tools</dt>
-									<dd>{tools.join(", ")}</dd>
-								</div>
-							)}
-							{skills?.length && (
-								<div class="meta-item">
-									<dt>Skills</dt>
-									<dd>{skills.join(", ")}</dd>
-								</div>
-							)}
-						</dl>
-					)
-				}
+							{
+								hasMeta && (
+									<dl class="case-meta reveal" style="--i:6">
+										{role && (
+											<div class="meta-item">
+												<dt>Role</dt>
+												<dd>{role}</dd>
+											</div>
+										)}
+										{team && (
+											<div class="meta-item">
+												<dt>Team</dt>
+												<dd>{team}</dd>
+											</div>
+										)}
+										{timeline && (
+											<div class="meta-item">
+												<dt>Timeline</dt>
+												<dd>{timeline}</dd>
+											</div>
+										)}
+										{tools?.length && (
+											<div class="meta-item">
+												<dt>Tools</dt>
+												<dd>{tools.join(", ")}</dd>
+											</div>
+										)}
+										{methods?.length && (
+											<div class="meta-item">
+												<dt>Methods</dt>
+												<dd>{methods.join(", ")}</dd>
+											</div>
+										)}
+										{skills?.length && (
+											<div class="meta-item">
+												<dt>Skills</dt>
+												<dd>{skills.join(", ")}</dd>
+											</div>
+										)}
+									</dl>
+								)
+							}
 
-				{
-					hasOverview && (
-						<div class="case-copy case-overview reveal" style="--i:6">
-							<slot name="overview" />
+							{
+								hasOverview && (
+									<div class="case-copy case-overview reveal" style="--i:6">
+										<slot name="overview" />
+									</div>
+								)
+							}
+
 						</div>
-					)
-				}
+					</header>
 
-			</div>
-		</header>
+					<div class="container">
+						{
+							hasVisual ? (
+								<div class="case-visual-media reveal">
+									<slot name="visual" />
+								</div>
+							) : (
+								<div class="case-visual reveal">
+									<p class="placeholder">[PLACEHOLDER: project screenshots, mockups, or process artifacts]</p>
+								</div>
+							)
+						}
+					</div>
 
-		<div class="container">
-			{
-				hasVisual ? (
-					<div class="case-visual-media reveal">
-						<slot name="visual" />
-					</div>
-				) : (
-					<div class="case-visual reveal">
-						<p class="placeholder">[PLACEHOLDER: project screenshots, mockups, or process artifacts]</p>
-					</div>
-				)
-			}
-		</div>
+				</Fragment>
+			)
+		}
 
 		<div class="container">
 			<div class="case-body">

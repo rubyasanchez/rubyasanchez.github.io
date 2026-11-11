@@ -1,367 +1,783 @@
 ---
 import CaseStudyLayout from "../../layouts/CaseStudyLayout.astro";
 import CaseSection from "../../components/CaseSection.astro";
-import Decision from "../../components/Decision.astro";
+import WireframeStepper from "../../components/WireframeStepper.astro";
+import ClipTabs from "../../components/ClipTabs.astro";
 
 const img = (name: string) => `/images/case-studies/datashare/${name}`;
+const video = (name: string) => img(`video/${name}`);
+const wire = (name: string) => img(`wireframes/${name}.jpg`);
+
+// Every number on the page uses the same metric row, so a skim picks up each section's results.
+type Metric = { value: string; label: string };
+
+const problemMetrics: Metric[] = [
+	{ value: "475+", label: "community indicators on the platform" },
+	{ value: "2", label: "search bars competing on the homepage" },
+	{ value: "2 of 4", label: "UX criteria failed in my audit" },
+];
+
+const heroMetrics: Metric[] = [
+	{ value: "40% → 80%", label: "task completion in usability testing" },
+	{ value: "7/10", label: "participants preferred the redesign" },
+	{ value: "Live", label: "launched on the public DataShare site" },
+];
+
+const fullPages = [
+	{
+		id: "before",
+		label: "Original",
+		preview: img("hero-original.jpg"),
+		previewAlt:
+			"The original DataShare homepage: a photo collage, a 2024 Community Health Assessment banner, and a large photo with an intro paragraph and shortcut links",
+		full: img("original-homepage.jpg"),
+		fullAlt:
+			"The original DataShare homepage, full length: a photo collage, a health assessment banner, a hero with shortcut links, report and video carousels, contribute links, partner logos, and a topic footer",
+		width: 2238,
+		height: 5152,
+	},
+	{
+		id: "after",
+		label: "Redesign",
+		preview: img("hero-redesign.jpg"),
+		previewAlt:
+			"The redesigned DataShare homepage: a search-first hero with shortcut links, then a Monthly Focus data tile with a live number and map",
+		full: img("staging-full.jpg"),
+		fullAlt:
+			"The redesigned DataShare homepage, full length: a search-first hero, shortcut links, a Monthly Focus data tile, and partners",
+		width: 1514,
+		height: 1562,
+	},
+];
+
+const facts = [
+	{ label: "Role", value: "UX Design Intern" },
+	{ label: "Team", value: "Project Manager, 1 Co-Intern, and Engineering Team" },
+	{ label: "Timeline", value: "Apr–Dec 2025 · Part-time field study" },
+	{
+		label: "Methods",
+		value: "UX Audit, Competitive Analysis, Information Architecture, Prototyping, Usability Testing",
+	},
+];
+
+const testingMetrics: Metric[] = [
+	{ value: "7/10", label: "participants preferred the redesign" },
+	{ value: "5/6", label: "returning users preferred the redesign" },
+	{ value: "40% → 80%", label: "task completion, original site to redesign" },
+];
 ---
 
 <CaseStudyLayout
 	slug="datashare"
 	title="DataShare Santa Cruz County"
-	subtitle="Platform Redesign"
-	summary="Making Santa Cruz County's public health data easier to find, understand, and act on."
-	role="Content Strategy, UX Research, UX Design"
-	timeline="April–October 2025"
-	tools={["Figma", "HTML", "Google Analytics"]}
-	skills={[
-		"User research",
-		"Usability testing",
-		"Qualitative analysis",
-		"Information architecture",
-		"Wireframing",
-		"Prototyping",
-	]}
+	subtitle="UX Design Internship"
+	summary="Making community data easier to find."
 >
-	<Fragment slot="visual">
-		<img
-			src={img("macbook-mockup.png")}
-			alt="The redesigned DataShare Santa Cruz County homepage, shown on a laptop screen"
-			width={2400}
-			height={1454}
-		/>
+	<Fragment slot="hero">
+		<div class="hero">
+			<p class="hero-eyebrow reveal" style="--i:1">UX Design Internship · DataShare Santa Cruz County</p>
+			<h1 class="hero-title reveal" style="--i:2">
+				Making community data <span class="hero-mark">easier to find.</span>
+			</h1>
+			<p class="hero-lede reveal" style="--i:3">
+				DataShare held 475+ community indicators, but people couldn't find them. I redesigned the
+				homepage and navigation for first-time and returning users, tested it against the original,
+				and shipped it.
+			</p>
+			<dl class="metrics hero-metrics reveal" style="--i:4">
+				{
+					heroMetrics.map((m) => (
+						<div>
+							<dt>{m.value}</dt>
+							<dd>{m.label}</dd>
+						</div>
+					))
+				}
+			</dl>
+			<dl class="hero-facts reveal" style="--i:5">
+				{
+					facts.map((f) => (
+						<div>
+							<dt>{f.label}</dt>
+							<dd>{f.value}</dd>
+						</div>
+					))
+				}
+			</dl>
+		</div>
+		<div class="hero-pair reveal" style="--i:6">
+			{
+				fullPages.map((page) => (
+					<figure>
+						<figcaption>
+							<span class:list={["hero-chip", `is-${page.id}`]}>{page.label}</span>
+						</figcaption>
+						<button
+							type="button"
+							class="hero-open"
+							data-open={`full-${page.id}`}
+							aria-label={`View the full ${page.label.toLowerCase()} homepage`}
+						>
+							<img src={page.preview} alt={page.previewAlt} width={3028} height={2200} />
+							<span class="hero-open-cue" aria-hidden="true">
+								View full page
+								<svg viewBox="0 0 16 16" width="14" height="14"><path d="M6 3h7v7M13 3 4 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" /></svg>
+							</span>
+						</button>
+					</figure>
+				))
+			}
+		</div>
+
+		{
+			fullPages.map((page) => (
+				<dialog class="full-page" id={`full-${page.id}`} aria-label={`Full ${page.label.toLowerCase()} homepage`}>
+					<div class="full-page-bar">
+						<span class:list={["hero-chip", `is-${page.id}`]}>{page.label}</span>
+						<span class="full-page-hint">Scroll to see the whole page</span>
+						<button type="button" class="full-page-close" aria-label="Close">
+							<svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 3l10 10M13 3 3 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+						</button>
+					</div>
+					<div class="full-page-scroll">
+						<img src={page.full} alt={page.fullAlt} width={page.width} height={page.height} loading="lazy" />
+					</div>
+				</dialog>
+			))
+		}
 	</Fragment>
 
 	<!-- 1 · The problem -->
-	<CaseSection eyebrow="The problem" title="Valuable public data that people couldn't find">
+	<CaseSection eyebrow="01 · The problem" title="The data was there. People couldn't find it.">
 		<p>
-			DataShare is the county's public data hub. Residents, nonprofits, educators, and
-			policymakers use its health, demographic, and community indicators to decide where
-			resources go and which communities get support.
+			DataShare's homepage prioritized photos and events over data, so users didn't know where to
+			begin.
 		</p>
+		<dl class="metrics">
+			{
+				problemMetrics.map((m) => (
+					<div>
+						<dt>{m.value}</dt>
+						<dd>{m.label}</dd>
+					</div>
+				))
+			}
+		</dl>
 		<p>
-			The original site had the information but not the structure. People struggled to locate
-			indicators, took multiple routes to reach the same page, and had trouble interpreting
-			charts.
+			I conducted a UX audit and competitive analysis of other public data platforms. Three
+			problems stood out:
 		</p>
-		<p>
-			I was a UX Design Intern focused on content strategy, UX research, and design, working
-			with county stakeholders, another intern, and a project supervisor.
-		</p>
-		<div class="pages">
-			<figure>
-				<img
-					src={img("original-full.jpg")}
-					alt="The original DataShare homepage, full page: a long stack of banners, carousels, video tutorials, and link grids"
-					width={1512}
-					height={3482}
-					loading="lazy"
-				/>
-				<figcaption><strong>Before</strong>Original homepage</figcaption>
-			</figure>
-			<figure>
-				<img
-					src={img("staging-full.jpg")}
-					alt="The redesigned DataShare homepage, full page: a search-first hero, a Monthly Focus data tile, and partners"
-					width={1514}
-					height={1562}
-					loading="lazy"
-				/>
-				<figcaption><strong>After</strong>Redesigned homepage</figcaption>
-			</figure>
-		</div>
-		<p class="pages-note">Both full homepages, shown at the same width and scale.</p>
-		<p class="hmw">
-			How might we make DataShare easier to navigate for users with different needs, goals, and
-			levels of familiarity with public data?
-		</p>
-	</CaseSection>
-
-	<!-- 2 · Process -->
-	<CaseSection eyebrow="Process" title="Audit, restructure, test">
-		<ol class="steps">
+		<ol class="points">
 			<li>
-				<span class="step-num">01</span>
-				<strong>Discover</strong>
-				Audited the site and peer public-data platforms: technical terminology, menus that
-				didn't match mental models, and dense, text-heavy layouts.
+				<strong>Confusing labels</strong>
+				Similar menu items, such as “Data” and “Data Spotlight,” made it unclear where to find
+				information.
 			</li>
 			<li>
-				<span class="step-num">02</span>
-				<strong>Design</strong>
-				Rebuilt the site map around community use cases, simplified labels, and reduced menu
-				depth, then moved from wireframes to high fidelity.
+				<strong>Competing content</strong>
+				Dense homepage content hid the platform's primary purpose.
 			</li>
 			<li>
-				<span class="step-num">03</span>
-				<strong>Test</strong>
-				Ran moderated think-aloud sessions with 10 participants, 6 returning and 4 new,
-				comparing the original and redesigned site.
-			</li>
-		</ol>
-		<figure>
-			<img
-				src={img("new-dropdowns.gif")}
-				alt="Demo of the redesigned DataShare navigation with consolidated dropdown menus"
-				width={1470}
-				height={756}
-				loading="lazy"
-			/>
-			<figcaption>The redesigned navigation, consolidated into five goal-oriented categories</figcaption>
-		</figure>
-	</CaseSection>
-
-	<!-- 3 · What testing revealed -->
-	<CaseSection eyebrow="What testing revealed" title="People couldn't read the labels, or the colors">
-		<ol class="findings">
-			<li>
-				<p class="finding-head">Navigation labels didn't match how people think.</p>
-				<blockquote>“I'm gonna be honest, I don't really know what coalitions mean.”</blockquote>
-				<p class="finding-change">
-					Nested dropdowns used internal terms like “Coalitions.” I simplified labels and
-					reduced menu depth around real community use cases.
-				</p>
-			</li>
-			<li>
-				<p class="finding-head">Accessibility gaps excluded real users.</p>
-				<blockquote>
-					“Is this whole bar here green? Or is the separation of colors? I can't see the
-					difference there, actually, at all.”
-				</blockquote>
-				<blockquote>
-					“Some of the text is really small… this is well below, like, ADA standards for font
-					size.”
-				</blockquote>
-				<p class="finding-change">
-					Several indicators failed WCAG color-contrast standards, and body text was too small
-					for low-vision users. Not everything failed: the same colorblind participant could
-					tell pie-chart slices apart because of their white borders and labels, so I kept
-					those cues and revised the color system around them before launch.
-				</p>
+				<strong>Fragmented navigation</strong>
+				Multiple routes and labels led to the same destinations, creating unnecessary complexity.
 			</li>
 		</ol>
 	</CaseSection>
 
-	<!-- 4 · Decision -->
-	<Decision
-		number={1}
-		title="Simplify, or keep what returning users rely on?"
-		options={[
-			{
-				label: "Keep the shortcuts cut",
-				detail: "A cleaner interface, but it breaks workflows returning users depend on.",
-			},
-			{
-				label: "Restore them in clearer locations",
-				detail: "Keeps the simpler structure without taking tools away.",
-				chosen: true,
-			},
-		]}
-	>
+	<!-- 2 · The initial redesign -->
+	<CaseSection eyebrow="02 · The initial redesign" title="I restructured how people find data.">
 		<p>
-			Returning users had workflows, like the Data Spotlight feature and custom dashboard links,
-			that the initial redesign broke. Simplifying an interface can remove functionality people
-			depend on, so I restored these shortcuts in clearer locations instead of cutting them.
+			Using insights from my audit and competitive analysis, I developed a new site map and
+			homepage design that prioritized discoverability and clearer navigation. My initial redesign
+			focused on three changes:
 		</p>
-	</Decision>
-
-	<!-- 5 · Outcome -->
-	<CaseSection eyebrow="Outcome" title="Most testers preferred the redesign">
-		<div class="stat-row">
-			<div class="stat">
-				<p class="stat-value">70%</p>
-				<p class="stat-label">of participants preferred the redesigned site</p>
-			</div>
-			<div class="stat">
-				<p class="stat-value">83%</p>
-				<p class="stat-label">of returning users preferred it</p>
-			</div>
-		</div>
-		<p class="source-line">From 10 moderated sessions: 6 returning users and 4 new users.</p>
-		<blockquote class="outcome-quote">
-			“I like the [redesign] better… I'm not overwhelmed by what I'm looking at.”
-			<cite>Returning user</cite>
-		</blockquote>
+		<ol class="points">
+			<li>
+				<strong>Simplified navigation</strong>
+				Reorganized the menu with clearer labels and a more intuitive hierarchy.
+			</li>
+			<li>
+				<strong>Prominent search</strong>
+				Moved search to the top of the homepage to make it easier to find.
+			</li>
+			<li>
+				<strong>Data-first homepage</strong>
+				Replaced the photo-heavy layout with community indicators that communicate the platform's
+				purpose.
+			</li>
+		</ol>
 		<p>
-			I used these findings to revise the final design, restoring
-			key navigation shortcuts, fixing accessibility issues, and clarifying labels. The
-			redesign, which puts finding data first, simplifies the homepage hierarchy, and surfaces
-			commonly used resources earlier, launched on the live DataShare site and is in use today.
+			I translated these decisions into wireframes. Step through the iterations:
 		</p>
+		<WireframeStepper
+			steps={[
+				{
+					label: "Path A",
+					title: "Path A: keep the familiar layout",
+					note: "A cleaned-up version of the original, with four menus, the mission line, an Explore box, and the health assessment banner.",
+					src: wire("path-a"),
+					alt: "Path A wireframe: four menus, a mission quote with a Spanish-language link, an Explore box with Advanced Search, and a 2024 Community Health Assessment banner",
+					width: 1500,
+					height: 1000,
+				},
+				{
+					label: "Path B",
+					title: "Path B: lead with search",
+					note: "A search-first page asking “What data are you looking for?”, with a Data Spotlight showing a live number and map, and only three menus.",
+					src: wire("path-b"),
+					alt: "Path B wireframe: three menus, a large search box under the question What data are you looking for, and a Data Spotlight with a percentage and a map",
+					width: 1500,
+					height: 1000,
+				},
+				{
+					label: "Path C",
+					title: "Path C: a mix of both",
+					note: "Path A felt familiar to returning users but kept search in the middle of the page. Path B put search first for new users but dropped Local Priorities from the menu. I realized it needed both: A's fuller menu with B's search and live data.",
+					src: wire("path-c"),
+					alt: "Path C wireframe: four menus, an Explore Santa Cruz County Data search box with Advanced Search, and a Data Spotlight with a percentage and a map",
+					width: 1500,
+					height: 1000,
+				},
+				{
+					label: "First build",
+					title: "First build: on Conduent's staging site",
+					note: "Path C, built. This is the version I tested.",
+					src: wire("first-build"),
+					alt: "The first iteration built on the staging site, with numbered markers on the shorter menu, the search bar, and a Data Spotlight on breast cancer awareness with a map",
+					width: 1500,
+					height: 1000,
+				},
+			]}
+		/>
 	</CaseSection>
 
-	<!-- 6 · Reflection -->
-	<CaseSection eyebrow="Reflection" title="Simple isn't the same as usable">
-		<div class="landing">
-			<div>
-				<h3>What I learned</h3>
-				<p>
-					Clean visuals don't guarantee usability, and even well-intentioned simplification can
-					create new friction if it isn't grounded in real user behavior. My assumptions about
-					what felt intuitive didn't match what users needed, and testing pushed me to design
-					from evidence instead. It also meant balancing user needs, accessibility,
-					organizational goals, and technical constraints rather than optimizing for any one
-					of them.
-				</p>
-			</div>
-			<div>
-				<h3>What I'd do next</h3>
-				<ul>
-					<li>Refine search to return broader, more predictable results.</li>
-					<li>Run a second round of testing with color-blind and low-vision users.</li>
-					<li>Explore a lightweight onboarding flow for new users.</li>
-				</ul>
-			</div>
-		</div>
+	<!-- 3 · Usability testing -->
+	<CaseSection eyebrow="03 · Usability testing" title="Then I tested it against the original.">
+		<p>
+			I ran 10 moderated sessions, with 6 returning users and 4 new, comparing the original website with my redesign. Participants
+			completed the same two tasks on both versions, <strong>finding opioid programs</strong> and{" "}
+			<strong>finding the population ages 65+</strong>, with the order alternated to reduce bias.
+			I measured completion, ease (1–5), and preference, and had participants think aloud.
+		</p>
+		<dl class="metrics">
+			{
+				testingMetrics.map((m) => (
+					<div>
+						<dt>{m.value}</dt>
+						<dd>{m.label}</dd>
+					</div>
+				))
+			}
+		</dl>
+		<p>
+			The redesign performed better overall, but watching people use it showed that some of my
+			decisions introduced new problems:
+		</p>
+		<ol class="points">
+			<li>
+				<strong>Returning users missed Data Spotlights</strong>
+				I had cut it, but to them it was a shortcut, not clutter.
+			</li>
+			<li>
+				<strong>The opioid task got harder</strong>
+				I had nested it under a “Coalitions” menu that testers didn't understand.
+			</li>
+			<li>
+				<strong>Charts relied on color alone</strong>
+				A colorblind participant couldn't read them.
+			</li>
+		</ol>
+	</CaseSection>
+
+	<!-- 4 · What testing changed -->
+	<CaseSection eyebrow="04 · What testing changed" title="Less content didn't mean better design.">
+		<p>
+			Testing showed that some of what I removed was important to returning users, so I changed
+			the question.
+		</p>
+		<p class="statement bleed">
+			<s>What can I remove?</s>
+			<span class="statement-arrow" aria-hidden="true">&darr;</span>
+			How can I make complexity easier to understand?
+		</p>
+		<ol class="points">
+			<li>
+				<strong>Restored Data Spotlights</strong>
+				Back in the menu, with the shortcut links ordered by search, most-used first.
+			</li>
+			<li>
+				<strong>Shipped a colorblind mode</strong>
+				Built with the engineers. The real fix lives in Conduent's chart components, so I raised it
+				with Conduent.
+			</li>
+			<li>
+				<strong>Turned what worked into standards</strong>
+				A brand voice guide, plus a page checklist I applied to every page: plain labels, menu name
+				matches page title, 12pt minimum text, color never the only cue.
+			</li>
+		</ol>
+	</CaseSection>
+
+	<!-- 5 · Final site launch -->
+	<CaseSection eyebrow="05 · Final site launch" title="From research insights to a launched redesign.">
+		<p>
+			The redesign launched on the live DataShare site. Here's how someone finds data on it today.
+		</p>
+		<ClipTabs
+			width={1920}
+			height={1200}
+			clips={[
+				{
+					label: "Search",
+					src: video("search.mp4"),
+					poster: video("search-poster.jpg"),
+					alt: "Screen recording of the live site: typing mental health into the homepage search, opening Adults with Likely Serious Psychological Distress from the results, and choosing County to see 19.3%",
+					caption: "On the live site: search “mental health” from the homepage, then open an indicator.",
+				},
+			]}
+		/>
+	</CaseSection>
+
+	<!-- 6 · What I learned -->
+	<CaseSection eyebrow="06 · What I learned" title="Design from evidence, not assumptions.">
+		<p>
+			This project challenged my initial understanding of simplicity. I assumed that removing
+			content would make the experience easier to navigate, but usability testing revealed that
+			simplification could also remove familiar pathways and important context.
+		</p>
+		<h3>What I'd explore next</h3>
+		<p>
+			I would conduct post-launch usability testing to understand how the redesign performs in
+			real-world use, particularly for returning users. I'd also continue evaluating accessibility
+			across Conduent's shared components to identify improvements that extend beyond DataShare.
+		</p>
 	</CaseSection>
 </CaseStudyLayout>
 
+<script>
+	// Each before/after preview opens its full-length homepage in a scrollable dialog.
+	document.querySelectorAll<HTMLButtonElement>("[data-open]").forEach((button) => {
+		const dialog = document.getElementById(button.dataset.open!) as HTMLDialogElement;
+		button.addEventListener("click", () => {
+			dialog.showModal();
+			dialog.querySelector(".full-page-scroll")!.scrollTop = 0;
+		});
+		dialog.querySelector(".full-page-close")!.addEventListener("click", () => dialog.close());
+		// A click on the backdrop (outside the panel) closes it too.
+		dialog.addEventListener("click", (e) => {
+			if (e.target === dialog) dialog.close();
+		});
+		dialog.addEventListener("close", () => button.focus());
+	});
+</script>
+
 <style>
-	/* ---------- Problem: before / after at the same scale ---------- */
-	.pages {
-		display: flex;
-		justify-content: center;
-		align-items: flex-start;
-		gap: var(--space-4);
-		margin-top: var(--space-4);
+	/* ---------- DataShare theme ----------
+	   This page borrows DataShare's own palette (teal and orange on warm paper), so the
+	   case study feels like the product it describes. */
+	:global(:root) {
+		--color-bg: #f5f2eb;
+		--color-bg-raised: #ece7dc;
+		--color-ink: #1b2a33;
+		--color-ink-soft: #3f4c55;
+		--color-ink-faint: #5f6a72;
+		--color-accent: #1f6f7a;
+		--color-accent-ink: #f5f2eb;
+		--color-line: #ddd5c6;
+		--ds-orange: #e0832f;
 	}
 
-	.pages figure {
-		width: min(15rem, 45%);
-		margin: 0;
+	/* ---------- Hero ----------
+	   Text, results, and facts sit in the same reading column as every section below, so the
+	   left edge lines up down the whole page. Only the before/after pair runs wider. */
+	:global(.case-hero .container) {
+		max-width: calc(var(--content-width) + 2 * var(--space-3));
 	}
 
-	.pages img {
-		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 12px 32px -12px rgb(28 27 25 / 0.18);
-	}
-
-	.pages figcaption {
-		text-align: left;
+	.hero-eyebrow {
 		font-size: var(--text-sm);
-	}
-
-	.pages figcaption strong {
-		display: block;
-		font-size: var(--text-label);
-		letter-spacing: 0.08em;
+		font-weight: 700;
+		letter-spacing: 0.06em;
 		text-transform: uppercase;
 		color: var(--color-accent);
 	}
 
-	.pages-note,
-	.source-line {
-		font-size: var(--text-label);
-		color: var(--color-ink-faint);
-	}
-
-	.pages-note {
-		margin-top: var(--space-3);
-		text-align: center;
-	}
-
-	.hmw {
-		margin-top: var(--space-4);
-		padding-block: var(--space-3);
-		border-block: 1px solid var(--color-line);
-		font-family: var(--font-serif);
-		font-size: var(--text-xl);
-		font-style: italic;
-		line-height: 1.3;
-		text-align: center;
-		text-wrap: balance;
-		color: var(--color-ink);
-	}
-
-	.outcome-quote cite {
-		display: block;
-		margin-top: var(--space-1);
-		font-family: inherit;
-		font-size: var(--text-sm);
-		font-style: normal;
-		color: var(--color-ink-faint);
-	}
-
-	/* ---------- Process ---------- */
-	.steps {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: var(--space-3);
-	}
-
-	.steps li {
-		padding: var(--space-2) 0 0;
-		border-top: 2px solid var(--color-accent);
-		font-size: var(--text-sm);
-		line-height: 1.5;
-	}
-
-	.steps li::before {
-		content: none;
-	}
-
-	.steps strong {
-		display: block;
-		margin-bottom: 0.25rem;
-		font-family: var(--font-serif);
-		font-size: var(--text-lg);
+	.hero-title {
+		margin-top: var(--space-2);
+		font-size: clamp(2.75rem, 1.6rem + 4vw, 4.5rem);
 		font-weight: 500;
+		line-height: 1.02;
+		letter-spacing: -0.025em;
+		text-wrap: balance;
 	}
 
-	.step-num {
-		font-size: var(--text-label);
-		font-weight: 600;
-		color: var(--color-accent);
+	/* A hand-drawn orange underline that draws itself in once the hero appears. */
+	.hero-mark {
+		padding-bottom: 0.08em;
+		background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 20' preserveAspectRatio='none'%3E%3Cpath d='M3 13 C 60 5, 140 4, 297 9 M 20 17 C 100 12, 200 11, 285 15' fill='none' stroke='%23e0832f' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E")
+			left bottom / 0% 0.32em no-repeat;
+		transition: background-size 0.9s var(--ease-fluid) 0.6s;
 	}
 
-	/* ---------- Findings ---------- */
-	.findings {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-4);
+	:global(html:not(.js)) .hero-mark,
+	.hero-title.is-visible .hero-mark {
+		background-size: 100% 0.32em;
 	}
 
-	.findings li {
-		padding: var(--space-3) 0 0;
+	.hero-lede {
+		margin-top: var(--space-3);
+		font-size: var(--text-lg);
+		line-height: 1.55;
+		color: var(--color-ink-soft);
+	}
+
+	.metrics.hero-metrics {
+		grid-template-columns: 1.35fr 1fr 1fr;
+		margin-block: var(--space-4) 0;
+	}
+
+	.hero-metrics dt {
+		white-space: nowrap;
+	}
+
+	.hero-facts {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-3);
+		margin: var(--space-3) 0 0;
+		padding-top: var(--space-3);
 		border-top: 1px solid var(--color-line);
 	}
 
-	.findings li::before {
-		content: none;
+	.hero-facts dt {
+		font-size: var(--text-label);
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
 	}
 
-	.finding-head {
+	.hero-facts dd {
+		margin: 0.375rem 0 0;
+		font-size: var(--text-body);
+		line-height: 1.45;
+		color: var(--color-ink);
+	}
+
+	/* Before / after: two equal columns, centered and wider than the text, like other wide visuals. */
+	.hero-pair {
+		--pair-w: min(var(--wide-width) - 2 * var(--space-3), 100vw - 2 * var(--space-3));
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-3);
+		width: var(--pair-w);
+		margin: var(--space-5) 0 0 calc(50% - var(--pair-w) / 2);
+	}
+
+	.hero-pair figure {
+		margin: 0;
+	}
+
+	.hero-pair figcaption {
+		margin-bottom: var(--space-1);
+	}
+
+	.hero-chip {
+		display: inline-block;
+		padding: 0.3125rem 0.875rem;
+		border-radius: 999px;
+		font-size: var(--text-sm);
+		font-weight: 700;
+		color: #fff;
+	}
+
+	.hero-chip.is-before {
+		background: var(--color-ink);
+	}
+
+	.hero-chip.is-after {
+		background: var(--color-accent);
+	}
+
+	.hero-open {
+		position: relative;
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 0;
+		border-radius: 10px;
+		background: none;
+		cursor: zoom-in;
+	}
+
+	.hero-open:focus-visible {
+		outline: 3px solid var(--color-accent);
+		outline-offset: 4px;
+	}
+
+	/* "View full page" appears on hover and keyboard focus. */
+	.hero-open-cue {
+		position: absolute;
+		left: 50%;
+		bottom: var(--space-2);
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 1rem;
+		border-radius: 999px;
+		background: var(--color-ink);
+		box-shadow: 0 8px 20px -6px rgb(27 42 51 / 0.5);
+		font-size: var(--text-sm);
+		font-weight: 600;
+		color: #fff;
+		white-space: nowrap;
+		opacity: 0;
+		transform: translate(-50%, 6px);
+		transition:
+			opacity 0.25s var(--ease-fluid),
+			transform 0.25s var(--ease-fluid);
+	}
+
+	.hero-open:hover .hero-open-cue,
+	.hero-open:focus-visible .hero-open-cue {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
+
+	/* Touch screens have no hover, so the cue stays visible there. */
+	@media (hover: none) {
+		.hero-open-cue {
+			opacity: 1;
+			transform: translate(-50%, 0);
+		}
+	}
+
+	/* ---------- Full-page dialog ---------- */
+	.full-page {
+		width: min(64rem, 100vw - 2 * var(--space-2));
+		height: min(92vh, 100%);
+		max-height: none;
+		margin: auto;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		border-radius: 12px;
+		background: #fff;
+		box-shadow: 0 30px 80px -20px rgb(0 0 0 / 0.5);
+	}
+
+	.full-page[open] {
+		display: flex;
+		flex-direction: column;
+		animation: full-page-in 0.35s var(--ease-fluid);
+	}
+
+	.full-page::backdrop {
+		background: rgb(27 42 51 / 0.6);
+		backdrop-filter: blur(3px);
+	}
+
+	@keyframes full-page-in {
+		from {
+			opacity: 0;
+			transform: translateY(12px) scale(0.98);
+		}
+	}
+
+	.full-page-bar {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding: 0.75rem var(--space-2);
+		border-bottom: 1px solid var(--color-line);
+		background: var(--color-bg-raised);
+	}
+
+	.full-page-hint {
+		flex: 1;
+		font-size: var(--text-sm);
+		color: var(--color-ink-faint);
+	}
+
+	.full-page-close {
+		display: grid;
+		place-items: center;
+		width: 2.25rem;
+		height: 2.25rem;
+		border: 1px solid var(--color-line);
+		border-radius: 50%;
+		background: #fff;
+		color: var(--color-ink);
+		cursor: pointer;
+	}
+
+	.full-page-close:hover {
+		background: var(--color-bg);
+	}
+
+	.full-page-close:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+
+	.full-page-scroll {
+		flex: 1;
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+
+	.full-page-scroll img {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	.hero-pair img {
+		display: block;
+		width: 100%;
+		height: auto;
+		border: 1px solid var(--color-line);
+		border-radius: 10px;
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 18px 40px -18px rgb(28 27 25 / 0.28);
+		transition:
+			transform 0.4s var(--ease-fluid),
+			box-shadow 0.4s var(--ease-fluid);
+	}
+
+	.hero-open:hover img,
+	.hero-open:focus-visible img {
+		transform: translateY(-4px);
+		box-shadow: 0 1px 2px rgb(28 27 25 / 0.06), 0 26px 48px -18px rgb(28 27 25 / 0.34);
+	}
+
+	@media (max-width: 40rem) {
+		.metrics.hero-metrics,
+		.hero-facts,
+		.hero-pair {
+			grid-template-columns: 1fr;
+		}
+
+		.hero-pair {
+			gap: var(--space-3);
+			margin-top: var(--space-4);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.hero-mark,
+		.hero-pair img,
+		.hero-open-cue {
+			transition: none;
+		}
+
+		.full-page[open] {
+			animation: none;
+		}
+	}
+
+	/* Type: serif for headings only; everything else is the sans at body size or larger,
+	   with bold for the phrases a skimmer should catch. */
+	:global(.case-copy) strong {
 		font-weight: 600;
 		color: var(--color-ink);
 	}
 
-	/* All quotes on the page share one style */
-	:global(.case-copy) blockquote {
-		margin: var(--space-2) 0;
-		padding-left: var(--space-2);
-		border-left: 3px solid var(--color-accent);
-		font-family: var(--font-serif);
+	:global(.case-copy) h3 {
+		margin-top: var(--space-4);
 		font-size: var(--text-xl);
+	}
+
+	:global(.case-copy) li::before {
+		content: none;
+	}
+
+	/* ---------- Metrics: one style for every number on the page ---------- */
+	.metrics {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+		gap: var(--space-2);
+		margin: var(--space-3) 0;
+	}
+
+	.metrics div {
+		padding: var(--space-2);
+		border-top: 3px solid var(--color-accent);
+		background: #fff;
+		border-radius: 0 0 4px 4px;
+	}
+
+	.metrics dt {
+		font-family: var(--font-sans);
+		font-size: var(--text-2xl);
+		font-weight: 700;
+		line-height: 1.1;
+		letter-spacing: -0.02em;
+		color: var(--color-accent);
+	}
+
+	.metrics dd {
+		margin: var(--space-1) 0 0;
+		font-size: var(--text-body);
+		line-height: 1.4;
+		color: var(--color-ink-soft);
+	}
+
+	/* ---------- Points: bold title + one line, used for every list of three ---------- */
+	.points {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-3);
+		margin: var(--space-3) 0;
+	}
+
+	:global(.case-copy) .points li {
+		padding: var(--space-2) 0 0;
+		border-top: 2px solid var(--ds-orange);
+		line-height: 1.5;
+	}
+
+	.points strong {
+		display: block;
+		margin-bottom: 0.375rem;
+		font-size: var(--text-lg);
 		line-height: 1.3;
 	}
 
-	/* ---------- Reflection ---------- */
-	.landing {
+	/* ---------- Turning point ---------- */
+	.statement {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-4);
+		align-items: center;
+		gap: var(--space-1);
+		margin-block: var(--space-4);
+		font-family: var(--font-serif);
+		font-size: var(--text-2xl);
+		line-height: 1.2;
+		text-align: center;
+		text-wrap: balance;
+		color: var(--color-accent);
 	}
 
-	.landing h3 {
+	.statement s {
+		color: var(--color-ink-faint);
+		text-decoration-thickness: 2px;
+	}
+
+	.statement-arrow {
+		font-family: var(--font-sans);
 		font-size: var(--text-lg);
-		margin-bottom: var(--space-1);
+		color: var(--ds-orange);
+	}
+
+	/* ---------- Figures ---------- */
+	:global(.case-copy) figure img {
+		border: 0;
+		border-radius: 0;
 	}
 
 	@media (max-width: 40rem) {
-		.steps {
+		.points {
 			grid-template-columns: 1fr;
-		}
-
-		.pages {
 			gap: var(--space-2);
 		}
 	}
