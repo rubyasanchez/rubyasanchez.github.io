@@ -44,7 +44,7 @@ const isStory = Astro.slots.has("default");
 			hasHero ? (
 				<header class="case-header case-hero section">
 					<div class="container">
-						<a class="back-link reveal" href="/work">&larr; Case Studies</a>
+						<a class="back-link reveal" href="/#work">&larr; Case Studies</a>
 						<slot name="hero" />
 					</div>
 				</header>
@@ -52,7 +52,7 @@ const isStory = Astro.slots.has("default");
 				<Fragment>
 					<header class="case-header section">
 						<div class="container prose">
-							<a class="back-link reveal" href="/work">&larr; Case Studies</a>
+							<a class="back-link reveal" href="/#work">&larr; Case Studies</a>
 							<p class="eyebrow reveal" style="--i:1">{subtitle}</p>
 							<h1 class="reveal" style="--i:2">{title}</h1>
 							{tags?.length && <p class="case-tags reveal" style="--i:3">{tags.join(" · ")}</p>}

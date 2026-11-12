@@ -1,14 +1,16 @@
 ---
+// Work is a section of the homepage, so it links there; it stays marked as
+// current on the case studies, which still sit under /work/
 const navItems = [
-	{ href: "/work", label: "Work" },
-	{ href: "/about", label: "About" },
-	{ href: "/resume", label: "Resume" },
+	{ href: "/#work", label: "Work", section: "/work/" },
+	{ href: "/about", label: "About", section: "/about" },
+	{ href: "/resume", label: "Resume", section: "/resume" },
 ];
 
 const currentPath = Astro.url.pathname;
 
-function isActive(href: string) {
-	return currentPath.startsWith(href);
+function isActive(section?: string) {
+	return section ? currentPath.startsWith(section) : false;
 }
 ---
 
@@ -20,7 +22,7 @@ function isActive(href: string) {
 				{
 					navItems.map((item) => (
 						<li>
-							<a href={item.href} aria-current={isActive(item.href) ? "page" : undefined}>
+							<a href={item.href} aria-current={isActive(item.section) ? "page" : undefined}>
 								{item.label}
 							</a>
 						</li>

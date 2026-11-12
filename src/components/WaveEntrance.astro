@@ -22,7 +22,9 @@ const name = "Ruby Sanchez";
 			seen = sessionStorage.getItem("rs-entered") === "1";
 			sessionStorage.setItem("rs-entered", "1");
 		} catch {}
-		if (seen || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		// Skip it when arriving at a section (e.g. /#work from the nav), so the
+		// visitor lands straight on what they asked for
+		if (seen || location.hash || matchMedia("(prefers-reduced-motion: reduce)").matches) {
 			el.remove();
 			return;
 		}

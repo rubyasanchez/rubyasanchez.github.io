@@ -135,6 +135,26 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 </BaseLayout>
 
 <script>
+	// Arriving at a section from another page (/#work, /#about): the browser jumps there
+	// right away, but fonts and images loading above can still nudge it out of place.
+	// Settle on the section once they're in, unless the visitor has started scrolling.
+	const target = location.hash && document.getElementById(location.hash.slice(1));
+	if (target) {
+		let moved = false;
+		const stop = () => (moved = true);
+		const events = ["wheel", "touchstart", "keydown", "pointerdown"];
+		events.forEach((e) => addEventListener(e, stop, { once: true, passive: true }));
+		const settle = () => !moved && target.scrollIntoView({ behavior: "instant" });
+		Promise.all([
+			document.fonts.ready,
+			new Promise((done) => (document.readyState === "complete" ? done(0) : addEventListener("load", done))),
+		]).then(() => {
+			settle();
+			setTimeout(settle, 400);
+			events.forEach((e) => removeEventListener(e, stop));
+		});
+	}
+
 	// Feature panels start inset with soft corners and open to full width as they arrive
 	const panels = new IntersectionObserver(
 		(entries) => {
@@ -212,7 +232,7 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 <style>
 	/* ---------- Hero: calm and type-led ---------- */
 	.hero {
-		padding-block: clamp(4rem, 12vh, 8rem) var(--space-5);
+		padding-block: clamp(3rem, 9vh, 5.5rem) var(--space-4);
 	}
 
 	.hero-title {
@@ -258,10 +278,6 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 	}
 
 	/* ---------- Featured projects ---------- */
-	.featured {
-		scroll-margin-top: 4rem;
-	}
-
 	.feature {
 		margin-inline: var(--space-2);
 		border-radius: 2rem 2rem 0 0;

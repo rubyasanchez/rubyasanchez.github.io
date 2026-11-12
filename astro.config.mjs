@@ -4,4 +4,8 @@ import { defineConfig } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://rubyasanchez.github.io',
+	// The projects live on the homepage now; keep old /work links working
+	redirects: {
+		'/work': '/#work',
+	},
 });
