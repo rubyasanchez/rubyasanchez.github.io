@@ -5,14 +5,15 @@ import RollingWord from "../components/RollingWord.astro";
 import BeforeAfterToggle from "../components/BeforeAfterToggle.astro";
 import ContactDialog from "../components/ContactDialog.astro";
 
-// Work roles alternate with a bit of personality from the About page
+// One theme: the sides of her design work
 const roles = [
-	"a product thinker",
-	"a sunset chaser",
-	"a UX researcher",
-	"a former swim captain",
 	"a product designer",
-	"a home baker",
+	"a UX researcher",
+	"a human-centered problem solver",
+	"a systems thinker",
+	"a design-minded strategist",
+	"a usability-first thinker",
+	"an AI-curious creative",
 ];
 
 const compassImg = (name: string) => `/images/case-studies/compass/${name}`;
@@ -27,8 +28,8 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 			<h1 class="hero-title">
 				<span aria-hidden="true">I’m Ruby, <RollingWord words={roles} /></span>
 				<span class="sr-only">
-					I’m Ruby: a product thinker, UX researcher, and product designer. Also a sunset chaser,
-					former swim captain, and home baker.
+					I’m Ruby: a product designer, UX researcher, human-centered problem solver, systems
+					thinker, design-minded strategist, usability-first thinker, and AI-curious creative.
 				</span>
 			</h1>
 			<p class="hero-lede">
@@ -39,33 +40,6 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 	</section>
 
 	<div id="work" class="featured">
-		<article class="feature feature-compass" data-open>
-			<div class="container feature-inner">
-				<div class="feature-text">
-					<p class="feature-meta"><span>Product Design</span> · <span>AI Interaction Design</span> · <span>Design Leadership</span> · <span>2025</span></p>
-					<h2 class="feature-title">Compass</h2>
-					<p class="feature-premise">Making mentorship scale without making it feel automated.</p>
-					<a class="cta" href="/work/compass">View case study <span aria-hidden="true">↗</span></a>
-				</div>
-				<div class="fluid" data-fluid>
-					<a class="layered" href="/work/compass" data-cursor tabindex="-1" aria-hidden="true">
-						<span class="shot shot-desk">
-							<img
-								src={compassImg("home-queue.jpg")}
-								alt=""
-								width="1440"
-								height="1000"
-								loading="lazy"
-							/>
-						</span>
-						<span class="shot shot-phone">
-							<img src={compassImg("home-phone.jpg")} alt="" width="390" height="876" loading="lazy" />
-						</span>
-					</a>
-				</div>
-			</div>
-		</article>
-
 		<article class="feature feature-datashare" data-open>
 			<div class="container feature-inner">
 				<div class="feature-text">
@@ -98,14 +72,38 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 				</div>
 			</div>
 		</article>
+
+		<article class="feature feature-compass" data-open>
+			<div class="container feature-inner">
+				<div class="feature-text">
+					<p class="feature-meta"><span>Product Design</span> · <span>AI Interaction Design</span> · <span>Design Leadership</span> · <span>2025</span></p>
+					<h2 class="feature-title">Compass</h2>
+					<p class="feature-premise">Making mentorship scale without making it feel automated.</p>
+					<a class="cta" href="/work/compass">View case study <span aria-hidden="true">↗</span></a>
+				</div>
+				<div class="fluid" data-fluid>
+					<a class="layered" href="/work/compass" data-cursor tabindex="-1" aria-hidden="true">
+						<span class="shot shot-desk">
+							<img
+								src={compassImg("home-queue.jpg")}
+								alt=""
+								width="1440"
+								height="1000"
+								loading="lazy"
+							/>
+						</span>
+						<span class="shot shot-phone">
+							<img src={compassImg("home-phone.jpg")} alt="" width="390" height="876" loading="lazy" />
+						</span>
+					</a>
+				</div>
+			</div>
+		</article>
 	</div>
 
 	<section class="contact" aria-labelledby="contact-title">
 		<div class="container">
-			<h2 id="contact-title" class="contact-title">Let’s talk.</h2>
-			<p class="contact-lede">
-				Have a question about my work, or want to work together? My inbox is open.
-			</p>
+			<h2 id="contact-title" class="contact-title">Get in touch!</h2>
 			<ul class="contact-cards">
 				<li class="card card-email">
 					<p class="card-label">Email</p>
@@ -432,15 +430,6 @@ const datashareImg = (name: string) => `/images/case-studies/datashare/${name}`;
 		font-size: clamp(2.5rem, 1.5rem + 4.4vw, 5rem);
 		line-height: 1.05;
 		letter-spacing: -0.02em;
-	}
-
-	.contact-lede {
-		max-width: 30rem;
-		margin-top: var(--space-2);
-		font-family: var(--font-serif);
-		font-size: clamp(1.15rem, 1rem + 0.6vw, 1.5rem);
-		line-height: 1.4;
-		color: var(--color-ink-soft);
 	}
 
 	/* Three cards, each in one of the palette's fields */

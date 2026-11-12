@@ -2,6 +2,8 @@
 // A phrase that rises into place through a clipped edge, then hands off to the next.
 // It runs through the list once and settles back on the first phrase, so the hero
 // ends still. Screen readers get the full list from the parent heading instead.
+// It sits on its own line, and invisible copies of every phrase hold the line at the
+// height of the tallest one, so a phrase that wraps never moves the page below.
 interface Props {
 	words: string[];
 	interval?: number;
@@ -11,6 +13,7 @@ const { words, interval = 2200 } = Astro.props;
 ---
 
 <span class="roll" data-words={JSON.stringify(words)} data-interval={interval} aria-hidden="true">
+	{words.map((word) => <span class="ghost">{word}</span>)}
 	<span>{words[0]}</span>
 </span>
 
@@ -34,19 +37,14 @@ const { words, interval = 2200 } = Astro.props;
 			const next = document.createElement("span");
 			next.textContent = sequence[step++];
 			next.classList.add("is-below");
-			box.style.width = `${box.getBoundingClientRect().width}px`;
 			box.append(next);
-			const width = next.getBoundingClientRect().width;
+			next.getBoundingClientRect(); // commit the start position before animating
 
 			requestAnimationFrame(() => {
 				current.classList.add("is-above");
 				next.classList.remove("is-below");
-				box.style.width = `${width}px`;
 			});
-			setTimeout(() => {
-				current.remove();
-				box.style.width = "";
-			}, 750);
+			setTimeout(() => current.remove(), 750);
 			setTimeout(advance, interval);
 		};
 
@@ -60,21 +58,24 @@ const { words, interval = 2200 } = Astro.props;
 	/* overflow: clip (not hidden) keeps the phrase on the sentence's baseline;
 	   the padding leaves room for descenders and the negative margin cancels it out */
 	.roll {
-		display: inline-grid;
-		vertical-align: baseline;
+		display: grid;
 		overflow: clip;
 		padding-block: 0.06em 0.18em;
 		margin-block: -0.06em -0.18em;
-		transition: width 0.6s var(--ease-fluid);
 	}
 
+	/* Each phrase fills the line's full height, so sliding it by its own height
+	   always clears the clipped edge, even when the tallest phrase is two lines */
 	.roll > :global(span) {
 		grid-area: 1 / 1;
-		justify-self: start;
-		white-space: nowrap;
+		text-wrap: balance;
 		transition:
 			transform 0.7s var(--ease-fluid),
 			opacity 0.5s var(--ease-fluid);
+	}
+
+	.roll > .ghost {
+		visibility: hidden;
 	}
 
 	.roll > :global(span.is-below) {
