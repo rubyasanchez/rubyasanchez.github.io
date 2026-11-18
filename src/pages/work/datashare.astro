@@ -11,15 +11,10 @@ const wire = (name: string) => img(`wireframes/${name}.jpg`);
 // Every number on the page uses the same metric row, so a skim picks up each section's results.
 type Metric = { value: string; label: string };
 
-const problemMetrics: Metric[] = [
-	{ value: "475+", label: "community indicators on the platform" },
-	{ value: "2 of 4", label: "UX criteria failed in my audit" },
-];
-
 const heroMetrics: Metric[] = [
-	{ value: "40% → 80%", label: "task completion in usability testing" },
-	{ value: "7/10", label: "participants preferred the redesign" },
-	{ value: "Live", label: "launched on the public DataShare site" },
+	{ value: "30% → 80%", label: "task completion" },
+	{ value: "70%", label: "participants preferred the redesign" },
+	{ value: "Live", label: "launched on datasharescc.org" },
 ];
 
 const fullPages = [
@@ -59,10 +54,73 @@ const facts = [
 	},
 ];
 
-const testingMetrics: Metric[] = [
-	{ value: "7/10", label: "participants preferred the redesign" },
-	{ value: "5/6", label: "returning users preferred the redesign" },
-	{ value: "40% → 80%", label: "task completion, original site to redesign" },
+// Usability study at a glance (deck slide 41).
+const studySetup = [
+	{ label: "Who", value: "10 people: 6 returning users, 4 new" },
+	{ label: "Tasks", value: "Find opioid programs · Find how many people are 65–74" },
+	{ label: "Measures", value: "Completion, ease (1–5), preference, think-aloud" },
+	{ label: "Setup", value: "Same tasks on both sites, order alternated" },
+];
+
+// Headline results (deck slide 44: 3/10 → 8/10 on the demographics task; 7 of 10 preferred).
+const resultMetrics: Metric[] = [
+	{ value: "30% → 80%", label: "completed the demographics task" },
+	{ value: "70%", label: "preferred the redesign" },
+];
+
+// New vs. returning. 75% = 3 of 4 (deck slide 44). 83% = 5 of 6 (Ruby's one-pager; not in the deck).
+const groupMetrics: (Metric & { group: string })[] = [
+	{ group: "4 new users", value: "75%", label: "went straight to search" },
+	{ group: "6 returning users", value: "83%", label: "preferred the redesign" },
+];
+
+// Each finding traced through to what changed. Quotes are verbatim from the session
+// transcripts (ellipses mark cuts); images are crops of Ruby's deck.
+type Finding = {
+	title: string;
+	quotes: { text: string; who: string }[];
+	meant: string;
+	changed: string;
+	image?: { id: string; src: string; alt: string; width: number; height: number };
+};
+
+const findings: Finding[] = [
+	{
+		title: "Returning users went looking for Data Spotlights",
+		quotes: [
+			{
+				text: "One thing that maybe threw me off… is not having the data spotlight.",
+				who: "P1, returning user",
+			},
+		],
+		meant:
+			"What looked like clutter to me was a shortcut for the people who use the site most.",
+		changed:
+			"Data Spotlights went back in the main menu, with the shortcut links ordered by search, most-used first.",
+		image: {
+			id: "spotlights",
+			src: img("deck/spotlights-restored.jpg"),
+			alt: "Two menu bars. First iteration: Data, an empty dashed slot marked with a question mark, Local Priorities, Resources, About. Final site: the slot is filled by Data Spotlights.",
+			width: 2000,
+			height: 487,
+		},
+	},
+	{
+		title: "Jargon made people guess",
+		quotes: [
+			{ text: "I don't know what an indicator is.", who: "P4" },
+		],
+		meant: "Labels made sense to the organization, not to visitors.",
+		changed:
+			"A brand voice guide and a checklist for every page: plain labels, menus that match page titles, 12pt minimum text.",
+		image: {
+			id: "voice",
+			src: img("deck/brand-voice.jpg"),
+			alt: "DataShare brand voice guidelines. Core principle: data is only powerful when people understand it. Four voice attributes: encouraging, clear, collaborative, transparent. A do example in plain language and a don't example in jargon.",
+			width: 2000,
+			height: 812,
+		},
+	},
 ];
 ---
 
@@ -149,19 +207,9 @@ const testingMetrics: Metric[] = [
 	<!-- 1 · The problem -->
 	<CaseSection eyebrow="01 · The problem" title="The data was there. People couldn't find it.">
 		<p>
-			DataShare's homepage prioritized photos and events over data, so users didn't know where to
-			begin.
+			DataShare had <strong>475+ community indicators</strong>, but its homepage prioritized photos
+			and events over data, so users didn't know where to begin.
 		</p>
-		<dl class="metrics">
-			{
-				problemMetrics.map((m) => (
-					<div>
-						<dt>{m.value}</dt>
-						<dd>{m.label}</dd>
-					</div>
-				))
-			}
-		</dl>
 		<p>
 			I conducted a UX audit and competitive analysis of other public data platforms. Three
 			problems stood out:
@@ -184,30 +232,26 @@ const testingMetrics: Metric[] = [
 	</CaseSection>
 
 	<!-- 2 · The initial redesign -->
-	<CaseSection eyebrow="02 · The initial redesign" title="I restructured how people find data.">
+	<CaseSection eyebrow="02 · The initial redesign" title="I redesigned around search and real data.">
 		<p>
-			Using insights from my audit and competitive analysis, I developed a new site map and
-			homepage design that prioritized discoverability and clearer navigation. My initial redesign
-			focused on three changes:
+			My audit and competitor research pointed to one fix:
+			<strong>cut the clutter so the data comes first.</strong>
 		</p>
 		<ol class="points">
 			<li>
-				<strong>Simplified navigation</strong>
-				Reorganized the menu with clearer labels and a more intuitive hierarchy.
+				<strong>Shorter, clearer menu</strong>
+				Fewer items, plainer labels.
 			</li>
 			<li>
-				<strong>Prominent search</strong>
-				Moved search to the top of the homepage to make it easier to find.
+				<strong>Search front and center</strong>
+				The first thing you see.
 			</li>
 			<li>
-				<strong>Data-first homepage</strong>
-				Replaced the photo-heavy layout with community indicators that communicate the platform's
-				purpose.
+				<strong>Real data up top</strong>
+				Live indicators instead of photos.
 			</li>
 		</ol>
-		<p>
-			I translated these decisions into wireframes. Step through the iterations:
-		</p>
+		<p>I explored three directions before building one:</p>
 		<WireframeStepper
 			steps={[
 				{
@@ -251,16 +295,29 @@ const testingMetrics: Metric[] = [
 	</CaseSection>
 
 	<!-- 3 · Usability testing -->
-	<CaseSection eyebrow="03 · Usability testing" title="Then I tested it against the original.">
+	<CaseSection
+		eyebrow="03 · Usability testing"
+		title="Most preferred the redesign, but the feedback revealed a more nuanced story."
+	>
 		<p>
-			I ran 10 moderated sessions, with 6 returning users and 4 new, comparing the original website with my redesign. Participants
-			completed the same two tasks on both versions, <strong>finding opioid programs</strong> and{" "}
-			<strong>finding the population ages 65+</strong>, with the order alternated to reduce bias.
-			I measured completion, ease (1–5), and preference, and had participants think aloud.
+			I tested my first build against the original site. Each person did the same two tasks on
+			both, and I had them think aloud so I could see <strong>why</strong> they clicked where they
+			did, not just whether they got there.
 		</p>
+		<dl class="study">
+			{
+				studySetup.map((item) => (
+					<div>
+						<dt>{item.label}</dt>
+						<dd>{item.value}</dd>
+					</div>
+				))
+			}
+		</dl>
+
 		<dl class="metrics">
 			{
-				testingMetrics.map((m) => (
+				resultMetrics.map((m) => (
 					<div>
 						<dt>{m.value}</dt>
 						<dd>{m.label}</dd>
@@ -268,53 +325,98 @@ const testingMetrics: Metric[] = [
 				))
 			}
 		</dl>
-		<p>
-			The redesign performed better overall, but watching people use it showed that some of my
-			decisions introduced new problems:
-		</p>
-		<ol class="points">
-			<li>
-				<strong>Returning users missed Data Spotlights</strong>
-				I had cut it, but to them it was a shortcut, not clutter.
-			</li>
-			<li>
-				<strong>The opioid task got harder</strong>
-				I had nested it under a “Coalitions” menu that testers didn't understand.
-			</li>
-			<li>
-				<strong>Charts relied on color alone</strong>
-				A colorblind participant couldn't read them.
-			</li>
-		</ol>
+
+		<dl class="metrics">
+			{
+				groupMetrics.map((m) => (
+					<div>
+						<dt>{m.value}</dt>
+						<dd class="metric-group">{m.group}</dd>
+						<dd>{m.label}</dd>
+					</div>
+				))
+			}
+		</dl>
+
+		<blockquote class="quote">
+			<p>“I do like the second one better, in the sense that… I'm not overwhelmed by what I'm looking at.”</p>
+			<cite>P10</cite>
+		</blockquote>
 	</CaseSection>
 
 	<!-- 4 · What testing changed -->
-	<CaseSection eyebrow="04 · What testing changed" title="Less content didn't mean better design.">
+	<CaseSection eyebrow="04 · What testing changed" title="Watching people use it changed what I kept.">
 		<p>
-			Testing showed that some of what I removed was important to returning users, so I changed
-			the question.
+			I'd treated simplicity as removing things. Testing showed that some of what I removed was
+			how returning users found their way, so I changed the question.
 		</p>
 		<p class="statement bleed">
 			<s>What can I remove?</s>
 			<span class="statement-arrow" aria-hidden="true">&darr;</span>
 			How can I make complexity easier to understand?
 		</p>
-		<ol class="points">
-			<li>
-				<strong>Restored Data Spotlights</strong>
-				Back in the menu, with the shortcut links ordered by search, most-used first.
-			</li>
-			<li>
-				<strong>Shipped a colorblind mode</strong>
-				Built with the engineers. The real fix lives in Conduent's chart components, so I raised it
-				with Conduent.
-			</li>
-			<li>
-				<strong>Turned what worked into standards</strong>
-				A brand voice guide, plus a page checklist I applied to every page: plain labels, menu name
-				matches page title, 12pt minimum text, color never the only cue.
-			</li>
+		<ol class="trace">
+			{
+				findings.map((f, i) => (
+					<li>
+						<h3 class="trace-title">
+							<span class="trace-num" aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+							{f.title}
+						</h3>
+						<dl class="trace-steps">
+							<div>
+								<dt>What I saw</dt>
+								<dd>
+									{f.quotes.map((q) => (
+										<p class="trace-quote">
+											“{q.text}” <span class="trace-who">{q.who}</span>
+										</p>
+									))}
+								</dd>
+							</div>
+							<div>
+								<dt>What it meant</dt>
+								<dd>{f.meant}</dd>
+							</div>
+							<div class="is-change">
+								<dt>What I changed</dt>
+								<dd>
+									{f.changed}
+								</dd>
+							</div>
+						</dl>
+						{f.image && (
+							<button
+								type="button"
+								class="trace-shot"
+								data-open={`shot-${f.image.id}`}
+								aria-label={`View larger: ${f.image.alt}`}
+							>
+								<img src={f.image.src} alt={f.image.alt} width={f.image.width} height={f.image.height} loading="lazy" />
+							</button>
+						)}
+					</li>
+				))
+			}
 		</ol>
+		{
+			findings.map(
+				(f) =>
+					f.image && (
+						<dialog class="full-page is-fit" id={`shot-${f.image.id}`} aria-label={f.title}>
+							<div class="full-page-bar">
+								<span class="full-page-hint">{f.title}</span>
+								<button type="button" class="full-page-close" aria-label="Close">
+									<svg viewBox="0 0 16 16" width="16" height="16"><path d="M3 3l10 10M13 3 3 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" /></svg>
+								</button>
+							</div>
+							<div class="full-page-scroll">
+								<img src={f.image.src} alt={f.image.alt} width={f.image.width} height={f.image.height} loading="lazy" />
+							</div>
+						</dialog>
+					),
+			)
+		}
 	</CaseSection>
 
 	<!-- 5 · Final site launch -->
@@ -766,6 +868,212 @@ const testingMetrics: Metric[] = [
 		font-family: var(--font-sans);
 		font-size: var(--text-lg);
 		color: var(--ds-orange);
+	}
+
+	/* ---------- Usability testing ---------- */
+	.study {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: var(--space-2) var(--space-3);
+		margin: var(--space-3) 0;
+		padding-top: var(--space-2);
+		border-top: 1px solid var(--color-line);
+	}
+
+	.study dt,
+	.metric-group,
+	.trace-steps dt {
+		font-size: var(--text-label);
+		font-weight: 700;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--color-ink-faint);
+	}
+
+	.study dd {
+		margin: 0.25rem 0 0;
+		line-height: 1.45;
+	}
+
+	.quote {
+		margin: var(--space-4) 0;
+		padding-left: var(--space-3);
+		border-left: 3px solid var(--ds-orange);
+	}
+
+	.quote p {
+		margin: 0;
+		font-size: var(--text-xl);
+		font-weight: 500;
+		line-height: 1.35;
+		color: var(--color-ink);
+	}
+
+	.quote cite {
+		display: block;
+		margin-top: var(--space-1);
+		font-size: var(--text-sm);
+		font-style: normal;
+		font-weight: 600;
+		color: var(--color-ink-faint);
+	}
+
+	/* The group name sits above the number visually, but reads after it ("75%, 4 new users, …"). */
+	.metrics div:has(.metric-group) {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.metrics .metric-group {
+		order: -1;
+		margin: 0 0 var(--space-1);
+		font-size: var(--text-label);
+		color: var(--color-ink-faint);
+	}
+
+	/* ---------- Finding → meaning → change ---------- */
+	.trace {
+		display: grid;
+		gap: var(--space-5);
+		margin: var(--space-5) 0 0;
+		padding: 0;
+		list-style: none;
+		counter-reset: none;
+	}
+
+	:global(.case-copy) .trace > li {
+		padding: 0;
+		border: 0;
+	}
+
+	.trace-title {
+		display: flex;
+		align-items: baseline;
+		gap: var(--space-2);
+		margin: 0 0 var(--space-2);
+		font-size: var(--text-xl);
+		line-height: 1.25;
+	}
+
+	.trace-num {
+		font-family: var(--font-sans);
+		font-size: var(--text-lg);
+		font-weight: 700;
+		color: var(--ds-orange);
+	}
+
+	/* Three steps read left to right, joined by arrows; on phones they stack top to bottom. */
+	.trace-steps {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: var(--space-3);
+		margin: 0;
+	}
+
+	.trace-steps > div {
+		position: relative;
+		padding-top: var(--space-2);
+		border-top: 2px solid var(--color-line);
+	}
+
+	.trace-steps > div + div::before {
+		content: "→";
+		position: absolute;
+		top: -0.85rem;
+		left: calc(-1 * var(--space-3) / 2 - 0.5rem);
+		width: 1rem;
+		text-align: center;
+		font-weight: 700;
+		color: var(--ds-orange);
+		background: var(--color-bg);
+	}
+
+	.trace-steps > .is-change {
+		border-top-color: var(--color-accent);
+	}
+
+	.trace-steps .is-change dt {
+		color: var(--color-accent);
+	}
+
+	.trace-steps dd {
+		margin: var(--space-1) 0 0;
+		line-height: 1.5;
+	}
+
+	.trace-quote {
+		margin: 0;
+		font-style: italic;
+	}
+
+	.trace-quote + .trace-quote {
+		margin-top: var(--space-1);
+	}
+
+	.trace-who {
+		display: block;
+		margin-top: 0.25rem;
+		font-size: var(--text-sm);
+		font-style: normal;
+		font-weight: 600;
+		color: var(--color-ink-faint);
+	}
+
+	.trace-shot {
+		display: block;
+		width: 100%;
+		margin-top: var(--space-3);
+		padding: 0;
+		border: 1px solid var(--color-line);
+		border-radius: 8px;
+		overflow: hidden;
+		background: none;
+		cursor: zoom-in;
+	}
+
+	.trace-shot img {
+		display: block;
+		width: 100%;
+		height: auto;
+		transition: transform 0.5s var(--ease-fluid);
+	}
+
+	.trace-shot:hover img {
+		transform: scale(1.02);
+	}
+
+	.trace-shot:focus-visible {
+		outline: 3px solid var(--color-accent);
+		outline-offset: 3px;
+	}
+
+	/* Landscape deck images open at their natural height, not the tall full-page frame. */
+	.full-page.is-fit {
+		height: fit-content;
+		max-height: 92vh;
+	}
+
+	@media (max-width: 40rem) {
+		.study,
+		.trace-steps {
+			grid-template-columns: 1fr;
+		}
+
+		.trace-steps {
+			gap: var(--space-3);
+		}
+
+		.trace-steps > div + div::before {
+			content: "↓";
+			top: -1.6rem;
+			left: 0;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.trace-shot img {
+			transition: none;
+		}
 	}
 
 	/* ---------- Figures ---------- */
